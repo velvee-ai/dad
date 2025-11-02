@@ -1,13 +1,20 @@
-# Claude Flow Visualizer
+# DAAD - Diagram as a Delivery
 
-A VSCode extension that visualizes code flow using Claude Code and React Flow.
+> Transform code into understanding. Instantly.
 
-## Features
+**DAAD** brings AI-powered diagram generation to your IDE. Select any piece of code and watch it transform into an interactive flow chart, powered by Claude AI and visualized with React Flow.
 
-- Select any code in your editor
-- Right-click and choose "Visualize Code Flow with Claude"
-- Claude analyzes your code and generates a flow chart
-- Interactive visualization with React Flow
+### 🎯 Philosophy
+- **D**iagram **a**s **a** **D**elivery - Ship understanding, not just code
+- **D**esign **a**s **a** **D**iagram - Think visually, code better
+- **D**ata **a**s **a** **D**iagram - See the flow, grasp the logic
+
+### ✨ Features
+- 🤖 AI-powered analysis using Claude
+- 🎨 Beautiful interactive flow charts
+- 🚀 Works with any language
+- ⚡ One-click visualization
+- 📊 Real-time diagram generation
 
 ## Prerequisites
 
@@ -19,9 +26,26 @@ A VSCode extension that visualizes code flow using Claude Code and React Flow.
 
 ## Installation
 
+### From VSIX (Recommended)
+
+1. Download the latest `.vsix` file from releases
+2. Install via command line:
+   ```bash
+   code --install-extension daad-x.x.x.vsix
+   ```
+   Or install through VSCode:
+   - Open Command Palette (Cmd/Ctrl+Shift+P)
+   - Run "Extensions: Install from VSIX..."
+   - Select the downloaded file
+
 ### Development Mode
 
-1. Clone this repository
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/velvee-ai/daad.git
+   cd daad
+   ```
+
 2. Install dependencies:
    ```bash
    npm install
@@ -32,9 +56,7 @@ A VSCode extension that visualizes code flow using Claude Code and React Flow.
    npm run compile
    ```
 
-4. Open the project in VSCode
-
-5. Press `F5` to run the extension in a new Extension Development Host window
+4. Open in VSCode and press `F5` to run
 
 ## Usage
 
@@ -42,8 +64,7 @@ A VSCode extension that visualizes code flow using Claude Code and React Flow.
 2. Select the code you want to visualize (e.g., a function)
 3. Right-click on the selection
 4. Choose "Visualize Code Flow with Claude" from the context menu
-5. Wait for Claude to analyze the code
-6. View the interactive flow chart in the side panel
+5. View the interactive flow chart in the side panel
 
 ## How it Works
 
@@ -78,7 +99,7 @@ Claude can analyze code in any language it understands, including:
 ### Project Structure
 
 ```
-react-flow-research/
+daad/
 ├── src/
 │   ├── extension.ts           # Main extension entry
 │   ├── extension/
@@ -96,6 +117,7 @@ react-flow-research/
 
 - **Development build**: `npm run watch`
 - **Production build**: `npm run compile`
+- **Package extension**: `npm run package`
 
 ## Troubleshooting
 
@@ -113,17 +135,6 @@ If the flow chart doesn't appear:
 2. Look for any error messages
 3. Ensure your code selection is valid
 
-### Extension not activating
-
-1. Make sure you have selected code before right-clicking
-2. Check that the extension is enabled in the Extensions panel
-
-## Known Limitations
-
-- Requires Claude Code CLI to be installed separately
-- Large code selections may take longer to process
-- Complex nested structures might need manual node repositioning
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
@@ -131,3 +142,14 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 ## License
 
 ISC
+
+## Credits
+
+Built with ❤️ using:
+- [Claude AI](https://claude.ai) for code analysis
+- [React Flow](https://reactflow.dev) for visualization
+- [VSCode Extension API](https://code.visualstudio.com/api)
+
+---
+
+**DAAD** - Making code visual, one diagram at a time.
