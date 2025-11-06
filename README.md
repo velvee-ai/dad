@@ -60,11 +60,47 @@
 
 ## Usage
 
-1. Open any code file in VSCode
-2. Select the code you want to visualize (e.g., a function)
-3. Right-click on the selection
-4. Choose "Visualize Code Flow with Claude" from the context menu
-5. View the interactive flow chart in the side panel
+### Multiple Ways to Visualize Code
+
+#### 1. Smart Visualization (Auto-detect) - NEW!
+- **Keyboard Shortcut**: `Cmd+Shift+V` (Mac) or `Ctrl+Shift+V` (Windows/Linux)
+- **Right-click**: When cursor is in code (no selection)
+- Automatically detects and visualizes the function/class at cursor position
+
+#### 2. Visualize Selected Code
+- Select specific code snippet
+- Right-click → "Visualize Code Flow with Claude (Selection)"
+- Perfect for custom code blocks or partial functions
+
+#### 3. Visualize Entire File - NEW!
+- **Command Palette**: "Claude Flow: Visualize Entire File"
+- **Right-click in editor**: "Claude Flow: Visualize Entire File"
+- **File Explorer**: Right-click on any code file
+- Analyzes complete file structure and flow
+
+#### 4. Visualize All Functions - NEW!
+- **Command Palette**: "Claude Flow: Visualize All Functions"
+- Shows a list of all functions/classes in the file
+- Select individual functions or visualize all at once
+- Each function gets its own saved flow chart
+
+### View Saved Flow Charts
+- **Explorer Sidebar**: Look for "Saved Flow Charts" section in the Explorer panel
+- **Command Palette**: Use "Claude Flow: Open Saved Flow Charts" command
+- **Click to Load**: Click any saved chart in the sidebar to instantly load it
+- **Auto-save**: All charts are automatically saved to `.daad` folder
+
+### Smart Features
+- **Auto-detection**: Intelligently finds functions, classes, and methods
+- **Large file handling**: Automatically suggests chunking or function-by-function analysis
+- **Multi-language support**: Works with JS, TS, Python, Java, Go, Rust, C/C++, and more
+- **VSCode integration**: Uses VSCode's built-in symbol detection for accuracy
+
+### Storage Location
+All flow charts are saved in the `.daad` folder in your workspace root:
+- Each chart is saved as a `.daad.json` file
+- Files include the flow chart data, code snippet, and metadata
+- Charts are automatically named based on the code content and timestamp
 
 ## How it Works
 

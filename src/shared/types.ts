@@ -1,12 +1,20 @@
 export interface FlowNode {
   id: string;
-  type: 'start' | 'process' | 'decision' | 'loop' | 'call' | 'return' | 'end';
+  type: 'start' | 'process' | 'decision' | 'loop' | 'call' | 'return' | 'end' | 'file' | 'function' | 'code';
   data: {
     label: string;
     description?: string;
     codeLines?: string;
+    type?: 'file' | 'function' | 'code';
+    collapsed?: boolean;
+    childCount?: number;
+    onToggleCollapse?: () => void;
+    nodeType?: 'start' | 'process' | 'decision' | 'loop' | 'call' | 'return' | 'end' | 'file' | 'function' | 'code';
   };
   position: { x: number; y: number };
+  parentId?: string;
+  extent?: 'parent' | string;
+  hidden?: boolean;
 }
 
 export interface FlowEdge {
@@ -18,16 +26,23 @@ export interface FlowEdge {
   animated?: boolean;
   data?: {
     condition?: string;
+    isCrossCall?: boolean;
   };
+  hidden?: boolean;
 }
 
 export interface FlowChartData {
   nodes: FlowNode[];
   edges: FlowEdge[];
   metadata?: {
-    language: string;
+    language?: string;
     complexity?: number;
     summary?: string;
+    isHierarchical?: boolean;
+    levels?: {
+      files: string[];
+      functions: Map<string, string[]>;
+    };
   };
 }
 

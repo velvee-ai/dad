@@ -1,0 +1,123 @@
+{
+  "id": "1762137946950_8p0siy",
+  "name": "index_container_condition_1845",
+  "timestamp": 1762137946951,
+  "sourceFile": "/Users/sathish/git/daad/main/src/webview/index.tsx",
+  "codeSnippet": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\nconst container = document.getElementById('root');\nif (container) {\n  const root = createRoot(container);\n  root.render(\n    <React.StrictMode>\n      <App />\n    </React.StrictMode>\n  );\n}",
+  "language": "typescriptreact",
+  "flowChart": {
+    "nodes": [
+      {
+        "id": "n1",
+        "type": "start",
+        "data": {
+          "label": "Start"
+        },
+        "position": {
+          "x": 72.5,
+          "y": 20
+        }
+      },
+      {
+        "id": "n2",
+        "type": "process",
+        "data": {
+          "label": "Get root element"
+        },
+        "position": {
+          "x": 72.5,
+          "y": 150
+        }
+      },
+      {
+        "id": "n3",
+        "type": "decision",
+        "data": {
+          "label": "Container exists?"
+        },
+        "position": {
+          "x": 72.5,
+          "y": 280
+        }
+      },
+      {
+        "id": "n4",
+        "type": "process",
+        "data": {
+          "label": "Create root"
+        },
+        "position": {
+          "x": 20,
+          "y": 410
+        }
+      },
+      {
+        "id": "n5",
+        "type": "process",
+        "data": {
+          "label": "Render App"
+        },
+        "position": {
+          "x": 20,
+          "y": 540
+        }
+      },
+      {
+        "id": "n6",
+        "type": "end",
+        "data": {
+          "label": "End"
+        },
+        "position": {
+          "x": 72.5,
+          "y": 670
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "source": "n1",
+        "target": "n2"
+      },
+      {
+        "id": "e2",
+        "source": "n2",
+        "target": "n3"
+      },
+      {
+        "id": "e3",
+        "source": "n3",
+        "target": "n4",
+        "label": "Yes"
+      },
+      {
+        "id": "e4",
+        "source": "n4",
+        "target": "n5"
+      },
+      {
+        "id": "e5",
+        "source": "n5",
+        "target": "n6"
+      },
+      {
+        "id": "e6",
+        "source": "n3",
+        "target": "n6",
+        "label": "No"
+      }
+    ]
+  },
+  "metadata": {
+    "linesOfCode": 13,
+    "selectionStart": {
+      "line": 0,
+      "character": 0
+    },
+    "selectionEnd": {
+      "line": 12,
+      "character": 0
+    }
+  }
+}

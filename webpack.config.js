@@ -32,7 +32,7 @@ const extensionConfig = {
       }
     ]
   },
-  devtool: 'nosources-source-map',
+  devtool: process.env.NODE_ENV === 'production' ? false : 'nosources-source-map',
   infrastructureLogging: {
     level: "log",
   }
@@ -70,7 +70,7 @@ const webviewConfig = {
       }
     ]
   },
-  devtool: 'nosources-source-map'
+  devtool: process.env.NODE_ENV === 'production' ? false : 'nosources-source-map'
 };
 
 module.exports = [extensionConfig, webviewConfig];

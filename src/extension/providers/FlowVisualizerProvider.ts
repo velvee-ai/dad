@@ -7,6 +7,7 @@ export class FlowVisualizerProvider {
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
+  private _onSaveDiagram?: (data: FlowChartData) => void;
 
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.ViewColumn.Beside;
@@ -17,8 +18,8 @@ export class FlowVisualizerProvider {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      'claudeFlowVisualizer',
-      'Code Flow Visualization',
+      'daadVisualizer',
+      'DAAD - Code Flow Visualization',
       column,
       {
         enableScripts: true,
@@ -51,6 +52,11 @@ export class FlowVisualizerProvider {
           case 'error':
             vscode.window.showErrorMessage(`Flow visualizer error: ${message.text}`);
             break;
+          case 'saveEditedDiagram':
+            if (this._onSaveDiagram) {
+              this._onSaveDiagram(message.data);
+            }
+            break;
         }
       },
       null,
@@ -61,6 +67,13 @@ export class FlowVisualizerProvider {
   public updateFlowChart(data: FlowChartData) {
     this._panel.webview.postMessage({
       command: 'updateFlow',
+      data: data
+    });
+  }
+
+  public updateHierarchicalFlowChart(data: any) {
+    this._panel.webview.postMessage({
+      command: 'updateHierarchicalFlow',
       data: data
     });
   }
@@ -76,6 +89,10 @@ export class FlowVisualizerProvider {
     this._panel.webview.postMessage({
       command: 'showLoading'
     });
+  }
+
+  public setSaveHandler(handler: (data: FlowChartData) => void) {
+    this._onSaveDiagram = handler;
   }
 
   private _getHtmlForWebview() {

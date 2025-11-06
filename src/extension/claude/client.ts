@@ -1,16 +1,17 @@
 import { spawn } from 'child_process';
 import * as vscode from 'vscode';
 import { FlowChartData } from '../../shared/types';
+import { LayoutEngine } from '../utils/layoutEngine';
 
 export class ClaudeClient {
   private outputChannel: vscode.OutputChannel;
 
   constructor() {
-    this.outputChannel = vscode.window.createOutputChannel('Claude Flow Visualizer');
+    this.outputChannel = vscode.window.createOutputChannel('DAAD');
   }
 
   async analyzeCode(code: string, language: string): Promise<FlowChartData> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       // Limit code size to prevent issues
       const MAX_CODE_LENGTH = 2000;
       let truncatedCode = code;
@@ -24,7 +25,8 @@ export class ClaudeClient {
 
       const prompt = this.createSimplifiedPrompt(truncatedCode, language, wasTruncated);
 
-      this.outputChannel.appendLine('=== STARTING CLAUDE ANALYSIS ===');
+      this.outputChannel.appendLine('=== STARTING CLAUDE CODE CLI ANALYSIS ===');
+      this.outputChannel.appendLine('API Provider: Claude Code CLI (local process)');
       this.outputChannel.appendLine(`Language: ${language}`);
       this.outputChannel.appendLine(`Code length: ${truncatedCode.length} characters`);
       this.outputChannel.appendLine('Prompt preview (first 200 chars):');
@@ -50,7 +52,7 @@ export class ClaudeClient {
         error += data.toString();
       });
 
-      claude.on('close', (exitCode) => {
+      claude.on('close', async (exitCode) => {
         if (exitCode !== 0) {
           this.outputChannel.appendLine(`Claude process exited with code ${exitCode}`);
           this.outputChannel.appendLine(`Error: ${error}`);
@@ -104,7 +106,7 @@ export class ClaudeClient {
               flowChart = response;
             } else {
               // Fallback: create a simple flow chart
-              flowChart = this.createFallbackFlowChart(truncatedCode, language);
+              flowChart = await this.createFallbackFlowChart(truncatedCode, language);
             }
           } catch (parseError) {
             this.outputChannel.appendLine(`JSON parse error: ${parseError}`);
@@ -118,32 +120,29 @@ export class ClaudeClient {
                 flowChart = extracted.flowChart || extracted;
               } catch (e) {
                 this.outputChannel.appendLine('Failed to parse extracted JSON');
-                flowChart = this.createFallbackFlowChart(truncatedCode, language);
+                flowChart = await this.createFallbackFlowChart(truncatedCode, language);
               }
             } else {
-              flowChart = this.createFallbackFlowChart(truncatedCode, language);
+              flowChart = await this.createFallbackFlowChart(truncatedCode, language);
             }
           }
 
           // Validate and fix the flow chart structure
-          flowChart = this.validateAndFixFlowChart(flowChart);
+          flowChart = await this.validateAndFixFlowChart(flowChart);
 
-          // Add default positions if not provided
-          if (flowChart.nodes) {
-            flowChart.nodes = flowChart.nodes.map((node, index) => ({
-              ...node,
-              position: node.position || { x: 250, y: index * 100 }
-            }));
-          }
+          // Apply smart auto-layout to position nodes properly
+          // Use async smart layout that chooses best algorithm
+          flowChart = await LayoutEngine.applySmartLayout(flowChart);
 
-          this.outputChannel.appendLine('Successfully processed flow chart');
+          this.outputChannel.appendLine('Successfully processed flow chart with auto-layout');
+          this.outputChannel.appendLine(`Nodes: ${flowChart.nodes.length}, Edges: ${flowChart.edges.length}`);
           resolve(flowChart);
         } catch (err) {
           this.outputChannel.appendLine(`Failed to process Claude response: ${err}`);
           this.outputChannel.appendLine('Creating fallback visualization...');
 
-          // Return a simple fallback flow chart
-          const fallback = this.createFallbackFlowChart(truncatedCode, language);
+          // Return a simple fallback flow chart with auto-layout
+          const fallback = await this.createFallbackFlowChart(truncatedCode, language);
           resolve(fallback);
         }
       });
@@ -183,10 +182,10 @@ Code to analyze:
 ${code}`;
   }
 
-  private validateAndFixFlowChart(flowChart: any): FlowChartData {
+  private async validateAndFixFlowChart(flowChart: any): Promise<FlowChartData> {
     // Ensure basic structure
     if (!flowChart || typeof flowChart !== 'object') {
-      return this.createFallbackFlowChart('', 'unknown');
+      return await this.createFallbackFlowChart('', 'unknown');
     }
 
     // Ensure nodes array exists
@@ -246,7 +245,7 @@ ${code}`;
     return flowChart;
   }
 
-  private createFallbackFlowChart(code: string, language: string): FlowChartData {
+  private async createFallbackFlowChart(code: string, language: string): Promise<FlowChartData> {
     this.outputChannel.appendLine('Creating fallback flow chart...');
 
     // Create a simple flow chart based on code structure
@@ -255,13 +254,13 @@ ${code}`;
         id: 'start',
         type: 'start',
         data: { label: 'Start', description: `Analyzing ${language} code` },
-        position: { x: 250, y: 0 }
+        position: { x: 0, y: 0 } // Will be repositioned by layout engine
       },
       {
         id: 'analyze',
         type: 'process',
         data: { label: 'Code Analysis', description: 'Processing code structure' },
-        position: { x: 250, y: 100 }
+        position: { x: 0, y: 0 } // Will be repositioned by layout engine
       }
     ];
 
@@ -275,7 +274,6 @@ ${code}`;
     ];
 
     // Add some basic detection for common patterns
-    let nodeY = 200;
     let lastNodeId = 'analyze';
 
     if (code.includes('if')) {
@@ -283,7 +281,7 @@ ${code}`;
         id: 'if_detected',
         type: 'decision' as const,
         data: { label: 'Conditional', description: 'if statement detected' },
-        position: { x: 250, y: nodeY }
+        position: { x: 0, y: 0 } // Will be repositioned by layout engine
       };
       nodes.push(ifNode);
       edges.push({
@@ -293,7 +291,6 @@ ${code}`;
         type: 'default' as const
       });
       lastNodeId = ifNode.id;
-      nodeY += 100;
     }
 
     if (code.includes('for') || code.includes('while')) {
@@ -301,7 +298,7 @@ ${code}`;
         id: 'loop_detected',
         type: 'loop' as const,
         data: { label: 'Loop', description: 'loop detected' },
-        position: { x: 250, y: nodeY }
+        position: { x: 0, y: 0 } // Will be repositioned by layout engine
       };
       nodes.push(loopNode);
       edges.push({
@@ -311,7 +308,6 @@ ${code}`;
         type: 'default' as const
       });
       lastNodeId = loopNode.id;
-      nodeY += 100;
     }
 
     if (code.includes('function') || code.includes('def') || code.includes('func')) {
@@ -319,7 +315,7 @@ ${code}`;
         id: 'func_detected',
         type: 'call' as const,
         data: { label: 'Function', description: 'function detected' },
-        position: { x: 250, y: nodeY }
+        position: { x: 0, y: 0 } // Will be repositioned by layout engine
       };
       nodes.push(funcNode);
       edges.push({
@@ -329,7 +325,6 @@ ${code}`;
         type: 'default' as const
       });
       lastNodeId = funcNode.id;
-      nodeY += 100;
     }
 
     // Add end node
@@ -337,7 +332,7 @@ ${code}`;
       id: 'end',
       type: 'end' as const,
       data: { label: 'End', description: '' },
-      position: { x: 250, y: nodeY }
+      position: { x: 0, y: 0 } // Will be repositioned by layout engine
     };
     nodes.push(endNode);
     edges.push({
@@ -347,7 +342,7 @@ ${code}`;
       type: 'default' as const
     });
 
-    return {
+    const flowChart = {
       nodes,
       edges,
       metadata: {
@@ -355,6 +350,9 @@ ${code}`;
         summary: 'Fallback visualization (Claude response could not be parsed)'
       }
     };
+
+    // Apply smart auto-layout to the fallback flow chart
+    return await LayoutEngine.applySmartLayout(flowChart);
   }
 
   dispose() {
