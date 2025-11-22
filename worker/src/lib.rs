@@ -4,11 +4,9 @@ use worker::*;
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     // Log the request
     console_log!(
-        "{} - [{}], located at: {:?}, within: {}",
+        "{} - [{}]",
         Date::now().to_string(),
-        req.path(),
-        req.cf().coordinates().unwrap_or_default(),
-        req.cf().region().unwrap_or_else(|| "unknown region".into())
+        req.path()
     );
 
     // Create a new router
@@ -23,7 +21,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 "version": env!("CARGO_PKG_VERSION")
             }))
         })
-        .post_async("/api/diagram", |mut req, ctx| async move {
+        .post_async("/api/diagram", |mut req, _ctx| async move {
             let body = req.text().await?;
 
             // Here you could process diagram data, store it in KV, etc.
