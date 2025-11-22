@@ -1,0 +1,15 @@
+# Node
+node_modules/
+package-lock.json
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

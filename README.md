@@ -109,34 +109,46 @@ All flow charts are saved in the `.daad` folder in your workspace root:
 3. **JSON Response**: Claude returns a flow chart structure as JSON
 4. **React Flow Visualization**: The webview renders the flow chart using React Flow
 
-## Cloudflare Worker (Optional)
+## Cloudflare Workers (Optional)
 
-DAAD includes a Rust-based Cloudflare Worker for serverless diagram processing and API endpoints.
+DAAD includes Cloudflare Workers for serverless diagram processing and API endpoints in both Rust and TypeScript.
+
+### Implementations
+
+**Rust Worker** (`worker/`)
+- 🦀 Compiled to WebAssembly for performance
+- 📦 Smaller bundle size
+- ⚡ Great for CPU-intensive tasks
+
+**TypeScript Worker** (`worker-js/`)
+- 📝 Native JavaScript/TypeScript
+- 🚀 Simpler development workflow
+- 🔧 Better for rapid prototyping
 
 ### Features
-- 🦀 Built with Rust for maximum performance
 - ⚡ Serverless architecture on Cloudflare's global network
 - 🔐 Secure diagram storage with KV namespaces
 - 🌐 RESTful API endpoints for diagram operations
+- 🎯 Identical APIs for performance comparison
 
 ### Quick Start
 
-1. Navigate to the worker directory:
-   ```bash
-   cd worker
-   ```
+**Rust Worker:**
+```bash
+cd worker
+npx wrangler dev      # Local development
+npx wrangler deploy   # Deploy
+```
 
-2. Start local development:
-   ```bash
-   npx wrangler dev
-   ```
+**TypeScript Worker:**
+```bash
+cd worker-js
+npm install
+npm run dev           # Local development
+npm run deploy        # Deploy
+```
 
-3. Deploy to Cloudflare:
-   ```bash
-   npx wrangler deploy
-   ```
-
-For detailed setup and usage instructions, see [worker/README.md](worker/README.md).
+For detailed setup, see [worker/README.md](worker/README.md) and [worker-js/README.md](worker-js/README.md).
 
 ## AWS Lambda (Optional)
 
@@ -214,6 +226,10 @@ daad/
 ├── worker/                   # Cloudflare Worker (Rust/WASM)
 │   ├── src/                  # Worker source code
 │   ├── Cargo.toml           # Rust dependencies
+│   └── wrangler.toml        # Worker configuration
+├── worker-js/                # Cloudflare Worker (TypeScript)
+│   ├── src/                  # Worker source code
+│   ├── package.json         # Node dependencies
 │   └── wrangler.toml        # Worker configuration
 ├── aws-lambda/               # AWS Lambda (Rust/Native)
 │   ├── src/                  # Lambda source code
