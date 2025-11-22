@@ -11,6 +11,8 @@ NC='\033[0m'
 
 # Configuration
 REGION="${DO_REGION:-nyc1}"
+# Convert region to lowercase (DO requires lowercase slugs)
+REGION=$(echo "$REGION" | tr '[:upper:]' '[:lower:]')
 CLUSTER_NAME="${CLUSTER_NAME:-microbus-cluster}"
 REGISTRY_NAME="${REGISTRY_NAME:-microbus-registry}"
 NODE_SIZE="${NODE_SIZE:-s-2vcpu-4gb}"
