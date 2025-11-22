@@ -85,10 +85,29 @@ echo -e "${YELLOW}Step 3: Setting up Kubernetes cluster${NC}"
 if doctl kubernetes cluster get $CLUSTER_NAME &> /dev/null; then
     echo "Cluster '$CLUSTER_NAME' already exists"
 else
+    # Get latest stable Kubernetes version
+    echo "Fetching latest Kubernetes version..."
+
+    # Try with jq first
+    if command -v jq &> /dev/null; then
+        K8S_VERSION=$(doctl kubernetes options versions -o json | jq -r '.[0].slug' 2>/dev/null)
+    else
+        # Fallback: parse without jq
+        K8S_VERSION=$(doctl kubernetes options versions 2>/dev/null | grep -m1 "^[0-9]" | awk '{print $1}')
+    fi
+
+    # If still empty, use a known working version
+    if [ -z "$K8S_VERSION" ]; then
+        echo -e "${YELLOW}Could not fetch latest version, using default${NC}"
+        K8S_VERSION="1.31.1-do.5"
+    fi
+
+    echo "Using Kubernetes version: $K8S_VERSION"
     echo "Creating cluster '$CLUSTER_NAME' (this takes 3-5 minutes)..."
+
     doctl kubernetes cluster create $CLUSTER_NAME \
         --region $REGION \
-        --version 1.28.2-do.0 \
+        --version $K8S_VERSION \
         --node-pool "name=${CLUSTER_NAME}-pool;size=$NODE_SIZE;count=$NODE_COUNT;auto-scale=true;min-nodes=2;max-nodes=5" \
         --wait
 fi
