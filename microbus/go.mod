@@ -1,4 +1,4 @@
-module github.com/velvee-ai/dad
+module github.com/velvee-ai/dad/microbus
 
 go 1.24.7
 

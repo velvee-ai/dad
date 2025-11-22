@@ -26,7 +26,7 @@ import (
 	"github.com/microbus-io/fabric/coreservices/httpingress"
 	"github.com/microbus-io/fabric/coreservices/metrics"
 	"github.com/microbus-io/fabric/coreservices/openapiportal"
-	"github.com/velvee-ai/dad/examples/helloworld"
+	"github.com/velvee-ai/dad/microbus/examples/helloworld"
 )
 
 /*

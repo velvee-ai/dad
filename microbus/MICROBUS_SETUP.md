@@ -20,10 +20,10 @@ Before you begin, ensure you have the following installed:
 
 ### Step 1: Start Infrastructure Services
 
-Navigate to the setup directory and start NATS and Grafana using Docker Compose:
+Navigate to the microbus/setup directory and start NATS and Grafana using Docker Compose:
 
 ```bash
-cd setup
+cd microbus/setup
 docker compose -f microbus.yaml -p microbus up -d
 ```
 
@@ -42,6 +42,7 @@ docker ps
 If you haven't already, download the Go module dependencies:
 
 ```bash
+cd microbus
 go mod tidy
 ```
 
@@ -49,10 +50,10 @@ go mod tidy
 
 ### Step 3: Run the Application
 
-Navigate to the main directory and run the application:
+Navigate to the microbus/main directory and run the application:
 
 ```bash
-cd main
+cd microbus/main
 go run main.go
 ```
 
@@ -85,18 +86,19 @@ http://localhost:3000
 
 ```
 dad/
-├── setup/                      # Infrastructure setup
-│   ├── microbus.yaml          # Docker Compose configuration
-│   └── grafana/
-│       └── dashboards/        # Grafana dashboard configurations
-├── main/                       # Main application entry point
-│   ├── main.go                # Application bootstrap
-│   └── config.yaml            # Service configuration
-├── examples/                   # Example microservices
-│   └── helloworld/            # Simple hello world service
-│       └── service.go
-├── go.mod                      # Go module definition
-└── go.sum                      # Go dependencies checksums
+└── microbus/                   # Microbus framework
+    ├── setup/                  # Infrastructure setup
+    │   ├── microbus.yaml      # Docker Compose configuration
+    │   └── grafana/
+    │       └── dashboards/    # Grafana dashboard configurations
+    ├── main/                   # Main application entry point
+    │   ├── main.go            # Application bootstrap
+    │   └── config.yaml        # Service configuration
+    ├── examples/               # Example microservices
+    │   └── helloworld/        # Simple hello world service
+    │       └── service.go
+    ├── go.mod                  # Go module definition
+    └── go.sum                  # Go dependencies checksums
 ```
 
 ## Configuration
@@ -163,7 +165,7 @@ func (svc *Service) OnShutdown(ctx context.Context) (err error) {
 
 Then add to `main/main.go`:
 ```go
-import "github.com/velvee-ai/dad/examples/myservice"
+import "github.com/velvee-ai/dad/microbus/examples/myservice"
 
 // In main():
 app.Add(
@@ -176,7 +178,7 @@ app.Add(
 To stop the NATS and Grafana services:
 
 ```bash
-cd setup
+cd microbus/setup
 docker compose -f microbus.yaml -p microbus down
 ```
 

@@ -60,7 +60,7 @@ Thumbs.db
 *.dll
 *.so
 *.dylib
-/main/main
+/microbus/main/main
 
 # Test binary, built with `go test -c`
 *.test
