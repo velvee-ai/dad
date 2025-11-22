@@ -1,0 +1,11 @@
+name = "daad-worker"
+main = "build/worker/shim.mjs"
+compatibility_date = "2025-11-22"
+
+[build]
+command = "cargo install -q worker-build && worker-build --release"
+
+[[kv_namespaces]]
+binding = "DIAGRAMS"
+id = "preview_id"
+preview_id = "preview_id"

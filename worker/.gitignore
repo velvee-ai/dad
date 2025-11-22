@@ -1,0 +1,18 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Cloudflare Workers
+/build/
+/dist/
+worker-build
+.wrangler/
+.dev.vars
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

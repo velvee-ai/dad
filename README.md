@@ -109,6 +109,35 @@ All flow charts are saved in the `.daad` folder in your workspace root:
 3. **JSON Response**: Claude returns a flow chart structure as JSON
 4. **React Flow Visualization**: The webview renders the flow chart using React Flow
 
+## Cloudflare Worker (Optional)
+
+DAAD includes a Rust-based Cloudflare Worker for serverless diagram processing and API endpoints.
+
+### Features
+- 🦀 Built with Rust for maximum performance
+- ⚡ Serverless architecture on Cloudflare's global network
+- 🔐 Secure diagram storage with KV namespaces
+- 🌐 RESTful API endpoints for diagram operations
+
+### Quick Start
+
+1. Navigate to the worker directory:
+   ```bash
+   cd worker
+   ```
+
+2. Start local development:
+   ```bash
+   npx wrangler dev
+   ```
+
+3. Deploy to Cloudflare:
+   ```bash
+   npx wrangler deploy
+   ```
+
+For detailed setup and usage instructions, see [worker/README.md](worker/README.md).
+
 ## Supported Languages
 
 Claude can analyze code in any language it understands, including:
@@ -145,6 +174,10 @@ daad/
 │   │   ├── App.tsx           # Main React component
 │   │   └── components/       # Custom nodes/edges
 │   └── shared/               # Shared types
+├── worker/                   # Cloudflare Worker (Rust)
+│   ├── src/                  # Worker source code
+│   ├── Cargo.toml           # Rust dependencies
+│   └── wrangler.toml        # Worker configuration
 ├── dist/                     # Compiled output
 └── package.json              # Extension manifest
 ```
