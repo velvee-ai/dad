@@ -52,3 +52,22 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Go specific
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/main/main
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+go.work
+
+# Dependency directories (remove the comment below to include it)
+vendor/

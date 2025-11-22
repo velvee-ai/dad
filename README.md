@@ -16,6 +16,28 @@
 - ⚡ One-click visualization
 - 📊 Real-time diagram generation
 
+---
+
+## 🚀 Microbus Framework Integration
+
+This repository now includes the [Microbus Fabric](https://github.com/microbus-io/fabric) framework - a complete microservices development platform with observability, messaging, and deployment capabilities.
+
+**Quick Start with Microbus:**
+```bash
+# Start infrastructure (NATS + Grafana)
+cd setup && docker compose -f microbus.yaml -p microbus up -d
+
+# Run the application
+cd main && go run main.go
+
+# Test the service
+curl "http://localhost:8080/helloworld.example/?name=World"
+```
+
+📖 **[Full Microbus Setup Guide →](MICROBUS_SETUP.md)**
+
+---
+
 ## Prerequisites
 
 1. **Claude Code CLI** must be installed and available in your PATH
