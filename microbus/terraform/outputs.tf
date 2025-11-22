@@ -37,3 +37,23 @@ output "cloudwatch_log_group_nats" {
   description = "Name of the CloudWatch log group for NATS"
   value       = aws_cloudwatch_log_group.nats.name
 }
+
+output "ecs_service_app_name" {
+  description = "Name of the ECS service for the application"
+  value       = aws_ecs_service.microbus_app.name
+}
+
+output "ecs_service_nats_name" {
+  description = "Name of the ECS service for NATS"
+  value       = aws_ecs_service.nats.name
+}
+
+output "service_discovery_namespace" {
+  description = "Service discovery namespace"
+  value       = aws_service_discovery_private_dns_namespace.main.name
+}
+
+output "application_url" {
+  description = "URL to access the application"
+  value       = "http://${aws_lb.main.dns_name}/helloworld.example/?name=World"
+}

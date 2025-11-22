@@ -41,9 +41,9 @@ variable "log_retention_days" {
 }
 
 variable "app_image" {
-  description = "Docker image for the application"
+  description = "Docker image for the application (leave empty to use ECR repo URL automatically)"
   type        = string
-  default     = "microbus-app:latest"
+  default     = ""
 }
 
 variable "app_cpu" {
