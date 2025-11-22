@@ -5,7 +5,13 @@ compatibility_date = "2025-11-22"
 [build]
 command = "cargo install -q worker-build && worker-build --release"
 
-[[kv_namespaces]]
-binding = "DIAGRAMS"
-id = "preview_id"
-preview_id = "preview_id"
+# Uncomment and configure KV namespace when needed:
+# 1. Create namespace: npx wrangler kv:namespace create "DIAGRAMS"
+# 2. Update the id below with the returned namespace ID
+# 3. Create preview namespace: npx wrangler kv:namespace create "DIAGRAMS" --preview
+# 4. Update preview_id with the returned preview namespace ID
+#
+# [[kv_namespaces]]
+# binding = "DIAGRAMS"
+# id = "your_namespace_id_here"
+# preview_id = "your_preview_namespace_id_here"
