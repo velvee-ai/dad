@@ -8,12 +8,9 @@ terraform {
     }
   }
 
-  backend "s3" {
-    # Configure your S3 backend here
-    # bucket = "your-terraform-state-bucket"
-    # key    = "microbus/terraform.tfstate"
-    # region = "us-east-1"
-  }
+  # For local state (default), comment out or remove the backend block
+  # For remote state, use backend.hcl configuration file
+  # Run: terraform init -backend-config=backend.hcl
 }
 
 provider "aws" {
