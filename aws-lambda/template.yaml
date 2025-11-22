@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: DAAD Lambda - Rust-based AWS Lambda function for diagram processing
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: provided.al2023
+    Architectures:
+      - arm64
+
+Resources:
+  DaadLambdaFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: rust-cargolambda
+    Properties:
+      FunctionName: daad-lambda
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        RootGet:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+        HealthGet:
+          Type: Api
+          Properties:
+            Path: /api/health
+            Method: get
+        DiagramPost:
+          Type: Api
+          Properties:
+            Path: /api/diagram
+            Method: post
+        VersionGet:
+          Type: Api
+          Properties:
+            Path: /lambda-version
+            Method: get
+
+Outputs:
+  DaadLambdaApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  DaadLambdaFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt DaadLambdaFunction.Arn
+  DaadLambdaFunctionIamRole:
+    Description: "IAM Role created for Lambda function"
+    Value: !GetAtt DaadLambdaFunctionRole.Arn

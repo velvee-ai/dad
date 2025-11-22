@@ -138,6 +138,43 @@ DAAD includes a Rust-based Cloudflare Worker for serverless diagram processing a
 
 For detailed setup and usage instructions, see [worker/README.md](worker/README.md).
 
+## AWS Lambda (Optional)
+
+DAAD also includes a Rust-based AWS Lambda implementation for performance comparison and AWS ecosystem integration.
+
+### Features
+- 🦀 Native Rust on ARM64 for maximum performance
+- ⚡ Serverless architecture on AWS
+- 🔄 Identical API endpoints as Cloudflare Worker
+- 📊 Perfect for performance benchmarking
+
+### Quick Start
+
+1. Navigate to the aws-lambda directory:
+   ```bash
+   cd aws-lambda
+   ```
+
+2. Build locally:
+   ```bash
+   cargo lambda build --release --arm64
+   ```
+
+3. Deploy to AWS:
+   ```bash
+   cargo lambda deploy --enable-function-url
+   ```
+
+For detailed setup, deployment, and performance testing, see [aws-lambda/README.md](aws-lambda/README.md).
+
+## Performance Comparison
+
+Compare Cloudflare Workers vs AWS Lambda performance with identical Rust implementations. See [PERFORMANCE_COMPARISON.md](PERFORMANCE_COMPARISON.md) for:
+- Detailed testing methodology
+- Latency benchmarks
+- Cost analysis
+- When to use each platform
+
 ## Supported Languages
 
 Claude can analyze code in any language it understands, including:
@@ -174,10 +211,14 @@ daad/
 │   │   ├── App.tsx           # Main React component
 │   │   └── components/       # Custom nodes/edges
 │   └── shared/               # Shared types
-├── worker/                   # Cloudflare Worker (Rust)
+├── worker/                   # Cloudflare Worker (Rust/WASM)
 │   ├── src/                  # Worker source code
 │   ├── Cargo.toml           # Rust dependencies
 │   └── wrangler.toml        # Worker configuration
+├── aws-lambda/               # AWS Lambda (Rust/Native)
+│   ├── src/                  # Lambda source code
+│   ├── Cargo.toml           # Rust dependencies
+│   └── template.yaml        # SAM template
 ├── dist/                     # Compiled output
 └── package.json              # Extension manifest
 ```
