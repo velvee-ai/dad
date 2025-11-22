@@ -36,8 +36,9 @@ curl "http://localhost:8080/helloworld.example/?name=World"
 
 📖 **[Full Microbus Setup Guide →](microbus/MICROBUS_SETUP.md)**
 
-**Deploy to AWS:**
-- [AWS Deployment Guide](microbus/AWS_DEPLOYMENT.md) - ECS, EKS, Terraform, and CI/CD
+**Deploy to Cloud:**
+- [AWS Deployment](microbus/AWS_DEPLOYMENT.md) - ECS, EKS, Terraform, and CI/CD
+- [DigitalOcean Deployment](microbus/DIGITALOCEAN_DEPLOYMENT.md) - DOKS, simpler & cheaper ⭐
 
 ---
 

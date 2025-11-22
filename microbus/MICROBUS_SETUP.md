@@ -209,33 +209,41 @@ If you encounter errors like "dial tcp: lookup storage.googleapis.com":
 
 ## Deploying to Production
 
-Ready to deploy to AWS? Check out our comprehensive deployment guide:
+Ready to deploy to the cloud? Choose your platform:
 
-📖 **[AWS Deployment Guide →](AWS_DEPLOYMENT.md)**
+### 📖 [DigitalOcean Deployment →](DIGITALOCEAN_DEPLOYMENT.md) ⭐ Recommended for Startups
 
-The guide covers:
-- **AWS ECS deployment** with Fargate (recommended)
-- **AWS EKS deployment** with Kubernetes
+**Why DigitalOcean?**
+- ✅ **Simpler**: Easy setup, transparent pricing
+- ✅ **Cheaper**: From $36/month (vs $55+ on AWS)
+- ✅ **Free $200 credit**: 60-day trial
+- ✅ **Great docs**: Beginner-friendly
+
+**Quick Deploy:**
+```bash
+./scripts/deploy-to-digitalocean.sh
+```
+
+### 📖 [AWS Deployment →](AWS_DEPLOYMENT.md)
+
+**Why AWS?**
+- ✅ **Enterprise features**: Advanced IAM, compliance
+- ✅ **Global reach**: More regions worldwide
+- ✅ **Ecosystem**: Integrates with other AWS services
+
+**Quick Deploy:**
+```bash
+./scripts/deploy-to-ecr.sh
+cd terraform && terraform apply
+```
+
+### Deployment Features (Both Platforms)
+
 - **Infrastructure as Code** with Terraform
 - **CI/CD pipelines** with GitHub Actions
-- **Observability** with CloudWatch and Grafana
+- **Observability** with Grafana
 - **Auto-scaling** and load balancing
 - **Security best practices**
-
-### Quick Deploy
-
-```bash
-# Build and push to AWS ECR
-./scripts/deploy-to-ecr.sh
-
-# Deploy with Terraform
-cd terraform
-terraform init
-terraform apply
-
-# Or deploy to Kubernetes
-kubectl apply -f k8s/
-```
 
 ## Learn More
 
@@ -243,6 +251,7 @@ kubectl apply -f k8s/
 - [Quick Start Guide](https://github.com/microbus-io/fabric/blob/main/docs/howto/quick-start.md)
 - [Examples](https://github.com/microbus-io/fabric/tree/main/examples)
 - [AWS Deployment Guide](AWS_DEPLOYMENT.md)
+- [DigitalOcean Deployment Guide](DIGITALOCEAN_DEPLOYMENT.md)
 
 ## Key Features
 

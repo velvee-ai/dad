@@ -1,0 +1,47 @@
+# DigitalOcean Configuration
+# Copy this file to terraform.tfvars and customize
+
+# Required: Your DigitalOcean API token
+# Get it from: https://cloud.digitalocean.com/account/api/tokens
+do_token = "your-digitalocean-api-token-here"
+
+# Region (choose closest to your users)
+# Options: nyc1, nyc3, sfo3, ams3, sgp1, lon1, fra1, tor1, blr1
+region = "nyc1"
+
+# Cluster configuration
+cluster_name        = "microbus-cluster"
+kubernetes_version  = "1.28.2-do.0"
+
+# Node configuration
+# s-2vcpu-2gb: $12/month (2GB RAM) - minimum
+# s-2vcpu-4gb: $18/month (4GB RAM) - recommended
+# s-4vcpu-8gb: $36/month (8GB RAM) - production
+node_size           = "s-2vcpu-4gb"
+node_count          = 3
+
+# Autoscaling
+enable_auto_scale   = true
+min_nodes           = 2
+max_nodes           = 5
+
+# Container Registry
+registry_name       = "microbus-registry"
+# starter: free (500MB)
+# basic: $5/month (5GB)
+# professional: $20/month (100GB)
+registry_tier       = "basic"
+
+# Environment
+environment         = "dev"
+
+# Storage
+nats_storage_size    = "10Gi"
+grafana_storage_size = "10Gi"
+
+# Security (optional)
+enable_firewall     = false
+# allowed_ssh_ips     = ["YOUR_IP_ADDRESS/32"]
+
+# Tags
+tags                = ["microbus", "terraform", "dev"]
