@@ -207,11 +207,42 @@ If you encounter errors like "dial tcp: lookup storage.googleapis.com":
 2. Check the configured port in `main/config.yaml`
 3. Ensure no firewall is blocking the port
 
+## Deploying to Production
+
+Ready to deploy to AWS? Check out our comprehensive deployment guide:
+
+📖 **[AWS Deployment Guide →](AWS_DEPLOYMENT.md)**
+
+The guide covers:
+- **AWS ECS deployment** with Fargate (recommended)
+- **AWS EKS deployment** with Kubernetes
+- **Infrastructure as Code** with Terraform
+- **CI/CD pipelines** with GitHub Actions
+- **Observability** with CloudWatch and Grafana
+- **Auto-scaling** and load balancing
+- **Security best practices**
+
+### Quick Deploy
+
+```bash
+# Build and push to AWS ECR
+./scripts/deploy-to-ecr.sh
+
+# Deploy with Terraform
+cd terraform
+terraform init
+terraform apply
+
+# Or deploy to Kubernetes
+kubectl apply -f k8s/
+```
+
 ## Learn More
 
 - [Microbus Fabric Documentation](https://github.com/microbus-io/fabric/tree/main/docs)
 - [Quick Start Guide](https://github.com/microbus-io/fabric/blob/main/docs/howto/quick-start.md)
 - [Examples](https://github.com/microbus-io/fabric/tree/main/examples)
+- [AWS Deployment Guide](AWS_DEPLOYMENT.md)
 
 ## Key Features
 

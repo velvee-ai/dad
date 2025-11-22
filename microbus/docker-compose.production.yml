@@ -1,0 +1,80 @@
+# Production-ready Docker Compose configuration
+# This is a reference for deploying to AWS ECS or other container platforms
+
+version: '3.8'
+
+services:
+  nats:
+    image: nats:2-alpine
+    container_name: nats-server
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command:
+      - "--jetstream"
+      - "--store_dir=/data"
+    volumes:
+      - nats-data:/data
+    networks:
+      - microbus-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  microbus-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microbus-app
+    ports:
+      - "8080:8080"
+    environment:
+      - NATS_URL=nats://nats:4222
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://grafana:4317
+      - HTTP_PORT=8080
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - microbus-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  grafana:
+    image: grafana/otel-lgtm
+    container_name: grafana-lgtm
+    ports:
+      - "3000:3000"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - microbus-network
+    restart: unless-stopped
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+networks:
+  microbus-network:
+    driver: bridge
+
+volumes:
+  nats-data:
+    driver: local
+  grafana-data:
+    driver: local
