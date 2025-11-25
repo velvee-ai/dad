@@ -1,206 +1,39 @@
 {
-  "name": "daad",
-  "displayName": "DAAD - Diagram as a Delivery",
-  "description": "Visualize code flow and architecture using AI (OpenRouter/Claude) and React Flow",
+  "name": "daad-monorepo",
   "version": "0.0.1",
-  "publisher": "daad",
-  "engines": {
-    "vscode": "^1.74.0"
-  },
+  "private": true,
+  "description": "DAAD - Diagram as a Delivery Monorepo",
   "repository": {
     "type": "git",
     "url": "https://github.com/velvee-ai/daad.git"
   },
-  "categories": [
-    "Visualization",
-    "Programming Languages"
+  "workspaces": [
+    "apps/*",
+    "packages/*"
   ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "main": "./dist/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "daad.visualize",
-        "title": "DAAD: Visualize Code Flow (Selection)"
-      },
-      {
-        "command": "daad.visualizeFile",
-        "title": "DAAD: Visualize Entire File",
-        "icon": "$(file-code)"
-      },
-      {
-        "command": "daad.visualizeAllFunctions",
-        "title": "DAAD: Visualize All Functions",
-        "icon": "$(symbol-method)"
-      },
-      {
-        "command": "daad.visualizeSmart",
-        "title": "DAAD: Smart Visualize (Auto-detect)",
-        "icon": "$(sparkle)"
-      },
-      {
-        "command": "daad.visualizeProject",
-        "title": "DAAD: Visualize Entire Project (Hierarchical)",
-        "icon": "$(graph)"
-      },
-      {
-        "command": "daad.listSaved",
-        "title": "DAAD: Open Saved Diagrams",
-        "icon": "$(list-flat)"
-      },
-      {
-        "command": "daad.openSavedFolder",
-        "title": "DAAD: Open .daad Folder",
-        "icon": "$(folder-opened)"
-      },
-      {
-        "command": "daad.loadChart",
-        "title": "DAAD: Load Diagram"
-      }
-    ],
-    "views": {
-      "explorer": [
-        {
-          "id": "daadSavedCharts",
-          "name": "DAAD Diagrams",
-          "icon": "$(graph)",
-          "contextualTitle": "DAAD Diagrams"
-        }
-      ]
-    },
-    "viewsWelcome": [
-      {
-        "view": "daadSavedCharts",
-        "contents": "No saved diagrams yet.\n[Visualize Code](command:daad.visualize)\nSelect code and visualize to save diagrams automatically."
-      }
-    ],
-    "menus": {
-      "editor/context": [
-        {
-          "command": "daad.visualize",
-          "when": "editorHasSelection",
-          "group": "navigation@1"
-        },
-        {
-          "command": "daad.visualizeSmart",
-          "when": "editorTextFocus && !editorHasSelection",
-          "group": "navigation@2"
-        },
-        {
-          "command": "daad.visualizeFile",
-          "when": "editorTextFocus",
-          "group": "navigation@3"
-        },
-        {
-          "command": "daad.visualizeAllFunctions",
-          "when": "editorTextFocus",
-          "group": "navigation@4"
-        }
-      ],
-      "explorer/context": [
-        {
-          "command": "daad.visualizeFile",
-          "when": "resourceExtname =~ /\\.(js|ts|jsx|tsx|py|java|go|rs|c|cpp|cs)$/",
-          "group": "navigation"
-        }
-      ],
-      "commandPalette": [
-        {
-          "command": "daad.visualize",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "daad.visualizeFile",
-          "when": "editorTextFocus"
-        },
-        {
-          "command": "daad.visualizeAllFunctions",
-          "when": "editorTextFocus"
-        },
-        {
-          "command": "daad.visualizeSmart",
-          "when": "editorTextFocus"
-        }
-      ]
-    },
-    "keybindings": [
-      {
-        "command": "daad.visualizeSmart",
-        "key": "ctrl+shift+v",
-        "mac": "cmd+shift+v",
-        "when": "editorTextFocus"
-      }
-    ],
-    "configuration": {
-      "title": "DAAD - Diagram as a Delivery",
-      "properties": {
-        "daad.apiProvider": {
-          "type": "string",
-          "enum": [
-            "claude",
-            "openrouter"
-          ],
-          "default": "claude",
-          "description": "API provider to use for code analysis (Claude Code CLI or OpenRouter)"
-        },
-        "daad.openRouterApiKey": {
-          "type": "string",
-          "default": "",
-          "description": "OpenRouter API key (get one at https://openrouter.ai/keys)"
-        },
-        "daad.openRouterModel": {
-          "type": "string",
-          "default": "qwen/qwen-2.5-coder-32b-instruct",
-          "description": "OpenRouter model to use",
-          "enum": [
-            "qwen/qwen-2.5-coder-32b-instruct",
-            "anthropic/claude-3.5-sonnet",
-            "anthropic/claude-3-haiku",
-            "openai/gpt-4o",
-            "openai/gpt-4o-mini",
-            "google/gemini-flash-1.5",
-            "meta-llama/llama-3.1-70b-instruct"
-          ]
-        }
-      }
-    }
-  },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "NODE_ENV=production webpack --mode production",
-    "watch": "webpack --mode development --watch",
-    "package": "vsce package",
-    "install-extension": "code --install-extension daad-0.0.1.vsix",
-    "pretest": "npm run compile",
-    "test": "node ./out/test/runTest.js"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish"
   },
   "devDependencies": {
-    "@types/dagre": "^0.7.53",
-    "@types/node": "^24.9.2",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@types/vscode": "^1.74.0",
-    "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.6.2",
-    "css-loader": "^7.1.2",
-    "style-loader": "^4.0.0",
-    "ts-loader": "^9.5.4",
-    "typescript": "^5.9.3",
-    "webpack": "^5.102.1",
-    "webpack-cli": "^6.0.1"
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.0.0",
+    "prettier": "^3.2.5",
+    "turbo": "^1.12.5",
+    "typescript": "^5.0.0"
   },
-  "dependencies": {
-    "@integratorivan/react-flow-smart-edge": "^1.0.1",
-    "dagre": "^0.8.5",
-    "dexie": "^4.2.1",
-    "dexie-export-import": "^4.1.4",
-    "elkjs": "^0.11.0",
-    "fake-indexeddb": "^6.2.4",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "reactflow": "^11.11.4",
-    "use-undoable": "^5.0.0"
+  "packageManager": "pnpm@8.0.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   }
 }

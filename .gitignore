@@ -6,6 +6,16 @@ jspm_packages/
 dist/
 *.vsix
 build/Release
+bin/
+
+# Monorepo
+.turbo
+.changeset/*.md
+!.changeset/README.md
+
+# Cloudflare Workers
+.wrangler
+.dev.vars
 
 # Testing
 .vscode-test/
