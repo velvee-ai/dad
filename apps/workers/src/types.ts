@@ -5,9 +5,13 @@ export interface Env {
   // R2 bucket binding for preview diagram storage
   PREVIEW_DIAGRAMS: R2Bucket;
 
+  // R2 bucket binding for general storage (legacy/alternative)
+  DAAD_BUCKET?: R2Bucket;
+
   // Environment variables
-  ENVIRONMENT: string;
-  CORS_ORIGINS: string;
+  ENVIRONMENT?: string;
+  CORS_ORIGINS?: string;
+  DRY_RUN?: string; // For cleanup worker dry-run mode
 
   // API Keys (stored as secrets)
   OPENROUTER_API_KEY?: string;

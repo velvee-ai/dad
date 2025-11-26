@@ -4,6 +4,7 @@ import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
 import { testR2Handler, healthCheckHandler } from './handlers/test';
+import cleanupWorker from './scheduled/cleanup';
 import type { Env } from './types';
 
 const app = new Hono<{ Bindings: Env }>();
@@ -49,4 +50,8 @@ app.notFound((c) => {
   );
 });
 
-export default app;
+// Export the main worker with both HTTP and scheduled handlers
+export default {
+  fetch: app.fetch,
+  scheduled: cleanupWorker.scheduled,
+};
