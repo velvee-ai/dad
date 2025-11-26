@@ -4,6 +4,8 @@
 
 A monorepo containing all DAAD tools for AI-powered code visualization and diagram generation.
 
+**[📋 View Complete Feature List](./FEATURES.md)** - Detailed implementation status of all features
+
 ## 🎯 Philosophy
 
 - **D**iagram **a**s **a** **D**elivery - Ship understanding, not just code
@@ -74,9 +76,23 @@ pnpm format
 
 ## 📚 Documentation
 
-- **[QUICK_START.md](./QUICK_START.md)** - Detailed quick start guide
-- **[MONOREPO_MIGRATION_PLAN.md](./MONOREPO_MIGRATION_PLAN.md)** - Migration plan and architecture
-- **[MONOREPO_IMPLEMENTATION.md](./MONOREPO_IMPLEMENTATION.md)** - Implementation summary
+### Getting Started
+
+- **[Quick Start Guide](./docs/guides/QUICK_START.md)** - Get up and running quickly
+- **[Installation Guide](./docs/guides/INSTALLATION.md)** - Detailed installation instructions
+- **[Deployment Checklist](./docs/guides/DEPLOYMENT_CHECKLIST.md)** - Production deployment guide
+- **[Testing Guide](./docs/guides/TESTING.md)** - How to test the applications
+- **[Editing Guide](./docs/guides/EDITING_GUIDE.md)** - Code contribution guidelines
+
+### Architecture & Implementation
+
+- **[Batch Processing](./docs/BATCH_PROCESSING.md)** - Batch diagram generation architecture
+- **[SVG Rendering Implementation](./docs/architecture/SVG_RENDERING_IMPLEMENTATION.md)** - SVG export system
+- **[Monitoring Implementation](./docs/architecture/MONITORING_IMPLEMENTATION.md)** - Metrics and alerting
+- **[Caching Integration](./docs/architecture/CACHING_INTEGRATION.md)** - KV cache layer
+- **[Diagram Storage Architecture](./docs/architecture/DIAGRAM_STORAGE_ARCHITECTURE.md)** - R2 storage system
+- **[Cleanup Worker Implementation](./docs/architecture/CLEANUP_WORKER_IMPLEMENTATION.md)** - Scheduled cleanup
+- **[Preview Panel Implementation](./docs/architecture/PREVIEW_PANEL_IMPLEMENTATION.md)** - VSCode preview panel
 
 ### Package-Specific Documentation
 
@@ -84,20 +100,29 @@ pnpm format
 - [CLI README](./apps/cli/README.md)
 - [Workers README](./apps/workers/README.md)
 
+### Historical Documentation
+
+Archived planning and migration documents can be found in [docs/archive](./docs/archive/)
+
 ## 🏗️ Project Structure
 
 ```
 daad-monorepo/
 ├── apps/
-│   ├── vscode-extension/    # VSCode plugin (TypeScript + React)
-│   ├── cli/                  # CLI tool (Go + D2)
-│   └── workers/              # Backend API (TypeScript + Cloudflare)
+│   ├── vscode-extension/    # VSCode plugin (TypeScript + React) - PRODUCTION READY ✅
+│   ├── cli/                  # CLI tool (Go + D2) - PARTIAL (SVG export works)
+│   └── workers/              # Backend API (TypeScript + Cloudflare) - PRODUCTION READY ✅
 ├── packages/
 │   ├── shared-types/        # Shared TypeScript types
-│   ├── diagram-schema/      # Diagram validation & schemas
-│   └── config/              # Shared configs (ESLint, etc.)
-├── turbo.json               # Build pipeline config
-├── pnpm-workspace.yaml     # Workspace configuration
+│   ├── diagram-schema/      # Schema validation & format conversion
+│   └── config/              # Shared ESLint and TypeScript configs
+├── docs/
+│   ├── guides/              # User guides and tutorials
+│   ├── architecture/        # Implementation and architecture docs
+│   └── archive/             # Historical planning documents
+├── examples/                # Example code and usage patterns
+├── turbo.json               # Turborepo build pipeline config
+├── pnpm-workspace.yaml      # PNPM workspace configuration
 └── package.json             # Root package.json
 ```
 
