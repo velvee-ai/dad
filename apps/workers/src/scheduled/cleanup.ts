@@ -5,10 +5,7 @@
  * It identifies sessions that have exceeded the TTL and deletes all associated objects.
  */
 
-interface Env {
-  DAAD_BUCKET: R2Bucket;
-  DRY_RUN?: string; // Set to "true" for testing without actual deletion
-}
+import type { Env } from '../types';
 
 interface CleanupStats {
   startTime: Date;
@@ -253,6 +250,11 @@ export default {
 
     console.log(`Starting scheduled cleanup (dry run: ${dryRun}) at ${new Date().toISOString()}`);
     console.log(`Cron: ${event.cron}, Scheduled time: ${new Date(event.scheduledTime).toISOString()}`);
+
+    if (!env.DAAD_BUCKET) {
+      console.error('DAAD_BUCKET binding not configured. Skipping cleanup.');
+      return;
+    }
 
     try {
       const stats = await cleanupExpiredSessions(env.DAAD_BUCKET, dryRun);
