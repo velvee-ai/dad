@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "diagrams": {
+    "example-diagram": {
+      "id": "example-diagram",
+      "name": "Example Flow",
+      "createdAt": "2025-11-26T06:42:55Z",
+      "updatedAt": "2025-11-26T06:42:55.48618816Z",
+      "sourceFile": "example.go",
+      "language": "go",
+      "format": "json",
+      "size": 420
+    },
+    "go-diagram": {
+      "id": "go-diagram",
+      "name": "Go Function",
+      "createdAt": "2025-11-26T06:42:13Z",
+      "updatedAt": "2025-11-26T06:42:13.723151992Z",
+      "sourceFile": "",
+      "language": "go",
+      "format": "json",
+      "size": 195
+    },
+    "js-diagram": {
+      "id": "js-diagram",
+      "name": "JS Function",
+      "createdAt": "2025-11-26T06:42:13Z",
+      "updatedAt": "2025-11-26T06:42:13.723437616Z",
+      "sourceFile": "",
+      "language": "javascript",
+      "format": "json",
+      "size": 203
+    },
+    "multi-format": {
+      "id": "multi-format",
+      "name": "Multi Format Diagram",
+      "createdAt": "2025-11-26T06:42:55Z",
+      "updatedAt": "2025-11-26T06:42:55.486673571Z",
+      "sourceFile": "",
+      "language": "go",
+      "format": "mermaid",
+      "size": 357
+    }
+  }
+}
