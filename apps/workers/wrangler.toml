@@ -7,10 +7,11 @@ compatibility_date = "2024-01-01"
 # binding = "DAAD_KV"
 # id = "your-kv-namespace-id"
 
-# Bind an R2 Bucket
-# [[r2_buckets]]
-# binding = "DAAD_BUCKET"
-# bucket_name = "daad-diagrams"
+# Bind an R2 Bucket for preview storage
+[[r2_buckets]]
+binding = "PREVIEW_BUCKET"
+bucket_name = "daad-previews"
+preview_bucket_name = "daad-previews-dev"
 
 # Environment variables (use wrangler secret put for sensitive values)
 # [vars]

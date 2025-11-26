@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
+import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
 
 const app = new Hono();
 
@@ -25,6 +26,11 @@ app.get('/api/diagrams', diagramHandler.list);
 app.post('/api/diagrams', diagramHandler.save);
 app.get('/api/diagrams/:id', diagramHandler.get);
 app.delete('/api/diagrams/:id', diagramHandler.delete);
+
+// Preview API routes
+app.post('/api/preview/analyze', analyzePreview);
+app.get('/api/preview/:sha/manifest', getManifest);
+app.get('/api/preview/:sha/:fileId', getDiagram);
 
 // Error handling
 app.onError((err, c) => {
