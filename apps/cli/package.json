@@ -1,0 +1,12 @@
+{
+  "name": "@daad/cli",
+  "version": "0.0.1",
+  "description": "CLI tool for DAAD code analysis and diagram generation",
+  "private": true,
+  "scripts": {
+    "build": "make build",
+    "dev": "make run",
+    "test": "make test",
+    "clean": "make clean"
+  }
+}

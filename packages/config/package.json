@@ -1,0 +1,10 @@
+{
+  "name": "@daad/config",
+  "version": "0.0.1",
+  "description": "Shared configuration files for DAAD",
+  "main": "./index.js",
+  "files": [
+    "eslint",
+    "typescript"
+  ]
+}
