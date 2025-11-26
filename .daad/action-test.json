@@ -1,6 +1,6 @@
 {
   "mode": "incremental",
-  "timestamp": "2025-11-26T07:18:09+00:00",
-  "files_processed": 4,
-  "changed_files": ["apps/workers/src/handlers/diagram.ts","apps/workers/src/handlers/test.ts","apps/workers/src/index.ts","apps/workers/src/types.ts"]
+  "timestamp": "2025-11-26T08:07:27+00:00",
+  "files_processed": 3,
+  "changed_files": ["apps/workers/src/index.ts","apps/workers/src/scheduled/cleanup.ts","apps/workers/src/types.ts"]
 }
