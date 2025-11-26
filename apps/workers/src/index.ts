@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
+import cleanupWorker from './scheduled/cleanup';
 
 const app = new Hono();
 
@@ -49,4 +50,8 @@ app.notFound((c) => {
   );
 });
 
-export default app;
+// Export the main worker with both HTTP and scheduled handlers
+export default {
+  fetch: app.fetch,
+  scheduled: cleanupWorker.scheduled,
+};
