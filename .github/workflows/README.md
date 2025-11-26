@@ -2,28 +2,29 @@
 
 This directory contains GitHub Actions workflows for the DAAD project.
 
+> **Note**: The diagram generation logic has been extracted into a reusable action at `.github/actions/generate-diagrams/`. See the [action documentation](../actions/generate-diagrams/README.md) for detailed usage.
+
 ## Workflows
 
 ### Generate Diagrams (`generate-diagrams.yml`)
 
-Automatically generates code diagrams when code is pushed to the main/master branch.
+Automatically generates code diagrams when code is pushed to the main/master branch using the DAAD Generate Diagrams action.
 
 #### Triggers
 
 - **Push to main/master**: Runs automatically when code is merged (excluding changes to `.daad/`, markdown files, and workflow files)
-- **Manual dispatch**: Can be triggered manually with option to force regenerate all diagrams
+- **Manual dispatch**: Can be triggered manually with choice of `incremental` or `full` mode
 
-#### What it does
+#### How it works
 
-1. **Incremental Generation** (default):
-   - Detects files changed in the latest commit
-   - Only processes code files (`.ts`, `.js`, `.tsx`, `.jsx`, `.go`, `.py`, `.java`, `.rb`, `.rs`)
-   - Generates diagrams only for changed files
-   - Commits results to `.daad/` directory
+This workflow uses the reusable **DAAD Generate Diagrams** action. The action handles:
+- Building and installing the DAAD CLI
+- Detecting changed files (in incremental mode)
+- Generating diagrams using AI
+- Committing changes back to the repository
+- Providing detailed output summaries
 
-2. **Full Regeneration** (manual trigger with `force_regenerate: true`):
-   - Regenerates all diagrams in the repository
-   - Useful after CLI updates or when diagrams need to be refreshed
+See [action documentation](../actions/generate-diagrams/README.md) for complete details.
 
 #### Prerequisites
 
@@ -62,30 +63,37 @@ Or via the GitHub web interface:
 
 ##### Automatic (on merge to main)
 
-Simply merge your pull request to `main` or `master`. The workflow will:
-1. Detect which code files changed
-2. Generate diagrams for those files
-3. Commit the results with `[skip ci]` to avoid triggering another workflow run
+Simply merge your pull request to `main` or `master`. The workflow will automatically:
+1. Run in incremental mode
+2. Detect which code files changed
+3. Generate diagrams for those files
+4. Commit the results with `[skip ci]`
 
 ##### Manual trigger
 
-1. Go to Actions tab in GitHub
-2. Select "Generate Diagrams" workflow
-3. Click "Run workflow"
+1. Go to **Actions** tab in GitHub
+2. Select **"Generate Diagrams"** workflow
+3. Click **"Run workflow"**
 4. Choose:
    - Branch to run on (usually `main`)
-   - Whether to force regenerate all diagrams (default: false)
-5. Click "Run workflow"
+   - Mode: `incremental` (changed files only) or `full` (regenerate all)
+5. Click **"Run workflow"**
 
-#### Workflow features
+#### Simplified workflow
 
-- **Smart caching**: Caches Go dependencies to speed up builds
-- **Incremental processing**: Only processes changed files
-- **Prevents loops**: Uses `[skip ci]` in commit messages
-- **Retry logic**: Automatically retries failed pushes up to 3 times
-- **Detailed summary**: Shows what was processed in the workflow summary
-- **Fast execution**: Typically completes in under 5 minutes
-- **Safe**: Only processes specific file types, ignores documentation changes
+The workflow is now just ~60 lines instead of ~160, thanks to the reusable action:
+
+```yaml
+- name: Generate diagrams
+  uses: ./.github/actions/generate-diagrams
+  with:
+    mode: ${{ inputs.mode || 'incremental' }}
+    openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
+    claude-api-key: ${{ secrets.CLAUDE_API_KEY }}
+    commit-changes: true
+```
+
+All the complexity (Go setup, caching, change detection, committing) is handled by the action.
 
 #### Workflow outputs
 
@@ -137,26 +145,22 @@ Commit: abc123def456...
 
 #### Customization
 
-To modify the workflow behavior, edit `.github/workflows/generate-diagrams.yml`:
+To customize the workflow, you can pass additional inputs to the action:
 
-- **Change trigger branches**: Modify the `branches` list under `on.push`
-- **Adjust file patterns**: Update the `grep` pattern in the incremental generation step
-- **Change timeout**: Modify `timeout-minutes` in the job configuration
-- **Add more file types**: Extend the regex pattern for `CHANGED_FILES`
+```yaml
+- name: Generate diagrams
+  uses: ./.github/actions/generate-diagrams
+  with:
+    mode: incremental
+    openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
+    working-directory: ./packages/my-app
+    output-directory: .diagrams
+    file-patterns: '**/*.{ts,tsx}'
+    base-ref: origin/main
+    commit-message: 'chore: regenerate diagrams [skip ci]'
+```
 
-#### Performance considerations
-
-- **Incremental mode**: Processes only changed files (fast, recommended)
-- **Full regeneration**: Processes all files (slow, use sparingly)
-- **Caching**: Go dependencies are cached between runs
-- **Typical runtime**: 2-5 minutes for incremental, 5-10+ for full regeneration
-
-#### Security
-
-- API keys are stored as encrypted GitHub secrets
-- Secrets are never exposed in logs or outputs
-- Workflow uses official GitHub Actions from trusted sources
-- `GITHUB_TOKEN` is automatically provided with limited scope
+See the [action documentation](../actions/generate-diagrams/README.md) for all available inputs and examples.
 
 ## Adding new workflows
 
