@@ -1,18 +1,29 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
+import { batchAnalyzeHandler } from './handlers/batch-analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
 import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
 import { testR2Handler, healthCheckHandler } from './handlers/test';
+import { analyticsMiddleware, metricsEndpoint, healthCheckWithMetrics } from './middleware/analytics';
+import { initializeMetrics } from './monitoring/metrics';
 import cleanupWorker from './scheduled/cleanup';
 import { createCacheManager } from './storage/cache';
 import type { Env } from './types';
 
 const app = new Hono<{ Bindings: Env }>();
 
+// Initialize metrics on first request
+app.use('/*', async (c, next) => {
+  initializeMetrics(c.env.ANALYTICS);
+  await next();
+});
+
+// CORS middleware
 app.use('/*', cors());
 
+// Cache middleware
 app.use('/*', async (c, next) => {
   const cacheEnabled = c.env.CACHE_ENABLED === 'true';
   const cache = createCacheManager(c.env.DAAD_CACHE, cacheEnabled);
@@ -20,9 +31,15 @@ app.use('/*', async (c, next) => {
   await next();
 });
 
-// Health check
-app.get('/', healthCheckHandler);
+// Analytics middleware for all routes
+app.use('/*', analyticsMiddleware);
+
+// Health check with metrics
+app.get('/', healthCheckWithMetrics);
 app.get('/health', healthCheckHandler);
+
+// Metrics endpoint
+app.get('/metrics', metricsEndpoint);
 
 // Test routes
 app.get('/api/test/r2', testR2Handler);
@@ -55,6 +72,7 @@ app.post('/api/metrics/cache/reset', (c) => {
 
 // API routes
 app.post('/api/analyze', analyzeHandler);
+app.post('/api/batch/analyze', batchAnalyzeHandler);
 app.post('/api/export', exportHandler);
 app.get('/api/diagrams', diagramHandler.list);
 app.post('/api/diagrams', diagramHandler.save);

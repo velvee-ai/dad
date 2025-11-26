@@ -7,11 +7,26 @@ import {
   CacheTTL,
   getWithCache,
 } from '../storage/cache';
+import { getMetrics } from '../monitoring/metrics';
+import { PerformanceTimer } from '../monitoring/logger';
 
 export async function exportHandler(c: Context) {
+  const metrics = getMetrics();
+  const timer = new PerformanceTimer();
+  const logger = c.get('logger');
+
   try {
     const body: ExportRequest = await c.req.json();
     const cache = c.get('cache') as CacheManager;
+
+    timer.mark('parsed_request');
+
+    logger?.info('Exporting diagram', {
+      format: body.format,
+      nodeCount: body.diagram.nodes.length,
+    });
+
+    timer.mark('export_start');
 
     const diagramHash = JSON.stringify(body.diagram);
     const cacheKey = `${body.format}:${hashString(diagramHash)}`;
@@ -40,18 +55,35 @@ export async function exportHandler(c: Context) {
       CacheTTL.EXPORT
     );
 
+    timer.mark('export_complete');
+    const exportDuration = timer.getDurationBetween('export_start', 'export_complete');
+
     const response: ExportResponse = {
       content: cachedExport || '',
       format: body.format,
       success: true,
     };
 
+    logger?.info('Export completed', {
+      duration: timer.getDuration(),
+      exportDuration,
+      format: body.format,
+      contentLength: cachedExport?.length || 0,
+    });
+
     return c.json(response);
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    metrics.trackError(err, 'export_handler');
+
+    logger?.error('Export failed', err, {
+      duration: timer.getDuration(),
+    });
+
     return c.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: err.message,
       },
       400
     );

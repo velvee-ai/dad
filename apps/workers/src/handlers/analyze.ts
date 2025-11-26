@@ -1,12 +1,30 @@
 import { Context } from 'hono';
 import type { AnalyzeRequest, AnalyzeResponse } from '@daad/shared-types';
+import { getMetrics } from '../monitoring/metrics';
+import { PerformanceTimer } from '../monitoring/logger';
 
 export async function analyzeHandler(c: Context) {
+  const metrics = getMetrics();
+  const timer = new PerformanceTimer();
+  const logger = c.get('logger');
+
   try {
     const body: AnalyzeRequest = await c.req.json();
+    timer.mark('parsed_request');
+
+    logger?.info('Analyzing code', {
+      language: body.language,
+      codeLength: body.code.length,
+    });
 
     // TODO: Implement actual code analysis using AI
     // For now, return a mock response
+    timer.mark('analysis_start');
+
+    // Simulate AI API call metrics
+    const aiCallDuration = 100; // Mock duration
+    metrics.trackAIApiCall('mock-ai-provider', aiCallDuration, 0.001, true);
+
     const response: AnalyzeResponse = {
       diagram: {
         nodes: [
@@ -41,12 +59,32 @@ export async function analyzeHandler(c: Context) {
       success: true,
     };
 
+    timer.mark('analysis_complete');
+    const totalDuration = timer.getDuration();
+    const analysisDuration = timer.getDurationBetween('analysis_start', 'analysis_complete');
+
+    metrics.trackDiagramGeneration(analysisDuration, true);
+
+    logger?.info('Analysis completed', {
+      duration: totalDuration,
+      analysisDuration,
+      nodeCount: response.diagram.nodes.length,
+    });
+
     return c.json(response);
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    metrics.trackError(err, 'analyze_handler');
+    metrics.trackDiagramGeneration(timer.getDuration(), false);
+
+    logger?.error('Analysis failed', err, {
+      duration: timer.getDuration(),
+    });
+
     return c.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: err.message,
       },
       400
     );

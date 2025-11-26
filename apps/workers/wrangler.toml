@@ -8,6 +8,11 @@ binding = "DAAD_CACHE"
 id = "daad_cache_namespace"
 preview_id = "daad_cache_preview"
 
+# Cloudflare Analytics Engine binding for metrics
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+# Dataset will be automatically created when first used
+
 # R2 Buckets for preview diagram storage
 [[r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
@@ -28,8 +33,12 @@ ENVIRONMENT = "development"
 CORS_ORIGINS = "*"
 CACHE_ENABLED = "true"
 CACHE_DEFAULT_TTL = "604800"
+LOG_LEVEL = "INFO"
 # Set to "true" to enable dry-run mode for cleanup (no actual deletions)
 DRY_RUN = "false"
+
+# Optional: Webhook for alert notifications
+# ALERT_WEBHOOK_URL = "https://your-webhook-url.com"
 
 # Scheduled cleanup worker - runs daily at 2 AM UTC
 [triggers]
@@ -50,11 +59,15 @@ bucket_name = "daad-preview-diagrams"
 binding = "DAAD_BUCKET"
 bucket_name = "daad-diagrams"
 
+[[env.production.analytics_engine_datasets]]
+binding = "ANALYTICS"
+
 [env.production.vars]
 ENVIRONMENT = "production"
 DRY_RUN = "false"
 CACHE_ENABLED = "true"
 CACHE_DEFAULT_TTL = "604800"
+LOG_LEVEL = "INFO"
 
 [env.development]
 name = "daad-workers-dev"
@@ -70,9 +83,13 @@ bucket_name = "daad-preview-diagrams-dev"
 binding = "DAAD_BUCKET"
 bucket_name = "daad-diagrams-preview"
 
+[[env.development.analytics_engine_datasets]]
+binding = "ANALYTICS"
+
 [env.development.vars]
 ENVIRONMENT = "development"
 CORS_ORIGINS = "*"
 DRY_RUN = "true"
 CACHE_ENABLED = "true"
 CACHE_DEFAULT_TTL = "604800"
+LOG_LEVEL = "DEBUG"
