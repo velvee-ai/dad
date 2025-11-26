@@ -6,17 +6,31 @@ import { diagramHandler } from './handlers/diagram';
 import { handleRenderSVG, handleGetFormats } from './handlers/render';
 import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
 import { testR2Handler, healthCheckHandler } from './handlers/test';
+import { analyticsMiddleware, metricsEndpoint, healthCheckWithMetrics } from './middleware/analytics';
+import { initializeMetrics } from './monitoring/metrics';
 import cleanupWorker from './scheduled/cleanup';
 import type { Env } from './types';
 
 const app = new Hono<{ Bindings: Env }>();
 
+// Initialize metrics on first request
+app.use('/*', async (c, next) => {
+  initializeMetrics(c.env.ANALYTICS);
+  await next();
+});
+
 // CORS middleware
 app.use('/*', cors());
 
-// Health check
-app.get('/', healthCheckHandler);
+// Analytics middleware for all routes
+app.use('/*', analyticsMiddleware);
+
+// Health check with metrics
+app.get('/', healthCheckWithMetrics);
 app.get('/health', healthCheckHandler);
+
+// Metrics endpoint
+app.get('/metrics', metricsEndpoint);
 
 // Test routes
 app.get('/api/test/r2', testR2Handler);
