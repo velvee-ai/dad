@@ -16,7 +16,8 @@
     "@daad/shared-types": "workspace:*",
     "@daad/diagram-schema": "workspace:*",
     "hono": "^3.12.8",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "svgo": "^3.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240129.0",

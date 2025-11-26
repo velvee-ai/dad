@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
+import { handleRenderSVG, handleGetFormats } from './handlers/render';
 
 const app = new Hono();
 
@@ -25,6 +26,10 @@ app.get('/api/diagrams', diagramHandler.list);
 app.post('/api/diagrams', diagramHandler.save);
 app.get('/api/diagrams/:id', diagramHandler.get);
 app.delete('/api/diagrams/:id', diagramHandler.delete);
+
+// Render routes
+app.post('/api/render/svg', handleRenderSVG);
+app.get('/api/render/formats', handleGetFormats);
 
 // Error handling
 app.onError((err, c) => {
