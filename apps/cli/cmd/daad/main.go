@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/velvee-ai/daad/apps/cli/internal/generator"
 	"github.com/velvee-ai/daad/apps/cli/internal/renderer"
 )
 
@@ -41,16 +42,83 @@ var analyzeCmd = &cobra.Command{
 }
 
 var generateCmd = &cobra.Command{
-	Use:   "generate <input> -o <output>",
-	Short: "Generate diagram from analysis result",
-	Args:  cobra.ExactArgs(1),
+	Use:   "generate [path]",
+	Short: "Generate diagrams for code files",
+	Long:  `Generate flow diagrams for code files. Supports incremental generation to only process changed files.`,
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		input := args[0]
+		incremental, _ := cmd.Flags().GetBool("incremental")
 		output, _ := cmd.Flags().GetString("output")
-		fmt.Printf("Generating diagram from: %s\n", input)
-		fmt.Printf("Output file: %s\n", output)
-		fmt.Println("TODO: Implement diagram generation")
+		baseBranch, _ := cmd.Flags().GetString("base-branch")
+		force, _ := cmd.Flags().GetBool("force")
+
+		path := "."
+		if len(args) > 0 {
+			path = args[0]
+		}
+
+		if incremental {
+			runIncrementalGeneration(output, baseBranch, force)
+		} else {
+			runStandardGeneration(path, output)
+		}
 	},
+}
+
+func runIncrementalGeneration(outputDir, baseBranch string, force bool) {
+	fmt.Println("=== Incremental Diagram Generation ===")
+	fmt.Printf("Output directory: %s\n", outputDir)
+	fmt.Printf("Base branch: %s\n", baseBranch)
+	fmt.Println()
+
+	config := generator.IncrementalConfig{
+		MetadataFile:    ".daad/metadata.json",
+		BaseBranch:      baseBranch,
+		OutputDir:       outputDir,
+		ForceRegenerate: force,
+	}
+
+	gen := generator.NewIncrementalGenerator(config)
+
+	// Get changed files
+	fmt.Println("Detecting changed files...")
+	changes, err := gen.GetChangedFiles()
+	if err != nil {
+		fmt.Printf("Error detecting changes: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Found %d changed file(s)\n\n", len(changes))
+
+	// Filter by supported languages
+	changes = gen.FilterByLanguage(changes)
+	fmt.Printf("Filtered to %d supported file(s)\n\n", len(changes))
+
+	if len(changes) == 0 {
+		fmt.Println("No files to process. All diagrams are up to date!")
+		return
+	}
+
+	// Print files to process
+	fmt.Println("Files to evaluate:")
+	for _, change := range changes {
+		fmt.Printf("  - %s (%s, %s)\n", change.Path, change.Language, change.Status)
+	}
+	fmt.Println()
+
+	// Process files
+	fmt.Println("Processing files:")
+	results := gen.ProcessFiles(changes)
+
+	// Print summary
+	generator.PrintSummary(results)
+}
+
+func runStandardGeneration(path, output string) {
+	fmt.Printf("Generating diagram from: %s\n", path)
+	fmt.Printf("Output file: %s\n", output)
+	fmt.Println("TODO: Implement standard diagram generation")
+	fmt.Println("Tip: Use --incremental flag for faster incremental generation")
 }
 
 var exportCmd = &cobra.Command{
@@ -119,7 +187,11 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(exportCmd)
 
-	generateCmd.Flags().StringP("output", "o", "diagram.d2", "Output file")
+	// Generate command flags
+	generateCmd.Flags().StringP("output", "o", ".daad/diagrams", "Output directory for diagrams")
+	generateCmd.Flags().Bool("incremental", false, "Enable incremental generation (only process changed files)")
+	generateCmd.Flags().String("base-branch", "main", "Base branch for detecting changes (used with --incremental)")
+	generateCmd.Flags().BoolP("force", "f", false, "Force regenerate all diagrams (used with --incremental)")
 
 	// Export command flags
 	exportCmd.Flags().String("format", "svg", "Export format (d2, mermaid, svg)")

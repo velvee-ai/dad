@@ -1,0 +1,351 @@
+name: 'DAAD Generate Diagrams'
+description: 'Automatically generate code diagrams using DAAD CLI'
+author: 'Velvee AI'
+
+branding:
+  icon: 'git-branch'
+  color: 'blue'
+
+inputs:
+  mode:
+    description: 'Generation mode: "incremental" (only changed files) or "full" (all files)'
+    required: false
+    default: 'incremental'
+
+  openrouter-api-key:
+    description: 'OpenRouter API key for diagram generation'
+    required: false
+
+  claude-api-key:
+    description: 'Claude API key for diagram generation (alternative to OpenRouter)'
+    required: false
+
+  cli-version:
+    description: 'Version of DAAD CLI to use (uses local build if not specified)'
+    required: false
+    default: 'local'
+
+  go-version:
+    description: 'Go version to use for building CLI'
+    required: false
+    default: '1.21'
+
+  working-directory:
+    description: 'Working directory for the action'
+    required: false
+    default: '.'
+
+  output-directory:
+    description: 'Directory where diagrams will be stored'
+    required: false
+    default: '.daad'
+
+  file-patterns:
+    description: 'File patterns to include (space-separated glob patterns)'
+    required: false
+    default: '**/*.{ts,js,tsx,jsx,go,py,java,rb,rs}'
+
+  commit-changes:
+    description: 'Whether to commit generated diagrams'
+    required: false
+    default: 'true'
+
+  commit-message:
+    description: 'Custom commit message (use {files} for file count, {sha} for commit hash)'
+    required: false
+    default: 'docs: update diagrams [skip ci]'
+
+  git-user-name:
+    description: 'Git user name for commits'
+    required: false
+    default: 'github-actions[bot]'
+
+  git-user-email:
+    description: 'Git user email for commits'
+    required: false
+    default: 'github-actions[bot]@users.noreply.github.com'
+
+  base-ref:
+    description: 'Base git ref to compare against for incremental mode (default: HEAD~1)'
+    required: false
+    default: 'HEAD~1'
+
+outputs:
+  diagrams-generated:
+    description: 'Number of diagrams generated'
+
+  files-changed:
+    description: 'Number of files changed'
+
+  changes-committed:
+    description: 'Whether changes were committed (true/false)'
+
+  commit-sha:
+    description: 'SHA of the commit if changes were committed'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if [[ "${{ inputs.mode }}" != "incremental" && "${{ inputs.mode }}" != "full" ]]; then
+          echo "::error::Invalid mode: ${{ inputs.mode }}. Must be 'incremental' or 'full'"
+          exit 1
+        fi
+
+        if [[ -z "${{ inputs.openrouter-api-key }}" && -z "${{ inputs.claude-api-key }}" ]]; then
+          echo "::warning::No API keys provided. Set openrouter-api-key or claude-api-key input"
+        fi
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache-dependency-path: apps/cli/go.sum
+
+    - name: Cache Go build
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('apps/cli/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install DAAD CLI
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "::group::Building DAAD CLI"
+
+        if [[ "${{ inputs.cli-version }}" == "local" ]]; then
+          echo "Building local DAAD CLI..."
+          cd apps/cli
+          make build
+          CLI_PATH="$(pwd)/bin/daad"
+          echo "Built CLI at: $CLI_PATH"
+        else
+          echo "Installing DAAD CLI version ${{ inputs.cli-version }}..."
+          # TODO: Implement versioned CLI installation when releases are available
+          echo "::error::Versioned CLI installation not yet implemented. Use cli-version: 'local'"
+          exit 1
+        fi
+
+        # Add to PATH for subsequent steps
+        echo "$(dirname $CLI_PATH)" >> $GITHUB_PATH
+
+        echo "::endgroup::"
+
+        echo "::group::Verifying DAAD CLI"
+        "$CLI_PATH" version || echo "CLI version command not yet implemented"
+        echo "::endgroup::"
+
+    - name: Detect changed files
+      if: inputs.mode == 'incremental'
+      id: detect-changes
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "::group::Detecting changed files"
+
+        # Get list of changed files
+        CHANGED_FILES=$(git diff --name-only ${{ inputs.base-ref }} HEAD | \
+          grep -E '\.(ts|js|tsx|jsx|go|py|java|rb|rs)$' || true)
+
+        if [[ -z "$CHANGED_FILES" ]]; then
+          echo "No code files changed"
+          echo "changed_files=" >> $GITHUB_OUTPUT
+          echo "file_count=0" >> $GITHUB_OUTPUT
+        else
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+        fi
+
+        echo "::endgroup::"
+
+    - name: Generate diagrams (incremental)
+      if: inputs.mode == 'incremental' && steps.detect-changes.outputs.file_count != '0'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        OPENROUTER_API_KEY: ${{ inputs.openrouter-api-key }}
+        CLAUDE_API_KEY: ${{ inputs.claude-api-key }}
+      run: |
+        echo "::group::Generating diagrams (incremental mode)"
+
+        mkdir -p "${{ inputs.output-directory }}"
+
+        # TODO: Update this when CLI implements actual diagram generation
+        echo "Processing ${{ steps.detect-changes.outputs.file_count }} changed files..."
+
+        # Placeholder: Create a test file to demonstrate the action works
+        TIMESTAMP=$(date -Iseconds)
+        cat > "${{ inputs.output-directory }}/action-test.json" <<EOF
+        {
+          "mode": "incremental",
+          "timestamp": "$TIMESTAMP",
+          "files_processed": ${{ steps.detect-changes.outputs.file_count }},
+          "changed_files": $(echo '${{ steps.detect-changes.outputs.changed_files }}' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+        }
+        EOF
+
+        echo "Diagrams generated in ${{ inputs.output-directory }}/"
+        echo "::endgroup::"
+
+    - name: Generate diagrams (full)
+      if: inputs.mode == 'full'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        OPENROUTER_API_KEY: ${{ inputs.openrouter-api-key }}
+        CLAUDE_API_KEY: ${{ inputs.claude-api-key }}
+      run: |
+        echo "::group::Generating diagrams (full regeneration)"
+
+        mkdir -p "${{ inputs.output-directory }}"
+
+        # TODO: Update this when CLI implements actual diagram generation
+        echo "Regenerating all diagrams..."
+
+        # Placeholder: Create a test file
+        TIMESTAMP=$(date -Iseconds)
+        cat > "${{ inputs.output-directory }}/action-test.json" <<EOF
+        {
+          "mode": "full",
+          "timestamp": "$TIMESTAMP",
+          "files_processed": "all"
+        }
+        EOF
+
+        echo "All diagrams regenerated in ${{ inputs.output-directory }}/"
+        echo "::endgroup::"
+
+    - name: Check for changes
+      id: check-changes
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [[ -n "$(git status --porcelain ${{ inputs.output-directory }}/)" ]]; then
+          echo "changes_detected=true" >> $GITHUB_OUTPUT
+
+          CHANGED_COUNT=$(git status --porcelain ${{ inputs.output-directory }}/ | wc -l)
+          echo "changed_count=$CHANGED_COUNT" >> $GITHUB_OUTPUT
+
+          echo "::notice::$CHANGED_COUNT diagram files changed"
+        else
+          echo "changes_detected=false" >> $GITHUB_OUTPUT
+          echo "changed_count=0" >> $GITHUB_OUTPUT
+          echo "::notice::No diagram changes detected"
+        fi
+
+    - name: Configure Git
+      if: inputs.commit-changes == 'true' && steps.check-changes.outputs.changes_detected == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        git config user.name "${{ inputs.git-user-name }}"
+        git config user.email "${{ inputs.git-user-email }}"
+
+    - name: Commit and push changes
+      if: inputs.commit-changes == 'true' && steps.check-changes.outputs.changes_detected == 'true'
+      id: commit
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "::group::Committing changes"
+
+        git add "${{ inputs.output-directory }}/"
+
+        # Prepare commit message
+        COMMIT_MSG="${{ inputs.commit-message }}"
+        COMMIT_MSG="${COMMIT_MSG//\{files\}/${{ steps.check-changes.outputs.changed_count }}}"
+        COMMIT_MSG="${COMMIT_MSG//\{sha\}/${{ github.sha }}}"
+
+        # Create detailed commit message
+        cat > /tmp/commit-msg.txt <<EOF
+        $COMMIT_MSG
+
+        Auto-generated by DAAD CLI via GitHub Actions
+
+        - Mode: ${{ inputs.mode }}
+        - Files changed: ${{ steps.check-changes.outputs.changed_count }}
+        - Workflow: ${{ github.workflow }}
+        - Run: ${{ github.run_number }}
+        - Commit: ${{ github.sha }}
+        EOF
+
+        git commit -F /tmp/commit-msg.txt
+
+        COMMIT_SHA=$(git rev-parse HEAD)
+        echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+
+        echo "::endgroup::"
+
+        echo "::group::Pushing changes"
+        # Push with retry logic
+        for i in {1..3}; do
+          if git push; then
+            echo "::notice::Successfully pushed changes (commit: $COMMIT_SHA)"
+            echo "push_success=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "::warning::Push failed, attempt $i/3"
+          sleep 2
+          git pull --rebase
+        done
+
+        echo "::error::Failed to push after 3 attempts"
+        echo "push_success=false" >> $GITHUB_OUTPUT
+        exit 1
+        echo "::endgroup::"
+
+    - name: Set outputs
+      shell: bash
+      run: |
+        if [[ "${{ inputs.mode }}" == "incremental" ]]; then
+          echo "files-changed=${{ steps.detect-changes.outputs.file_count }}" >> $GITHUB_OUTPUT
+        else
+          echo "files-changed=all" >> $GITHUB_OUTPUT
+        fi
+
+        echo "diagrams-generated=${{ steps.check-changes.outputs.changed_count }}" >> $GITHUB_OUTPUT
+        echo "changes-committed=${{ steps.check-changes.outputs.changes_detected }}" >> $GITHUB_OUTPUT
+
+        if [[ -n "${{ steps.commit.outputs.commit_sha }}" ]]; then
+          echo "commit-sha=${{ steps.commit.outputs.commit_sha }}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Generate summary
+      if: always()
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "## 📊 DAAD Diagram Generation Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Mode | \`${{ inputs.mode }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| Files Processed | ${{ steps.detect-changes.outputs.file_count || 'all' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Diagrams Changed | ${{ steps.check-changes.outputs.changed_count || '0' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Changes Committed | ${{ steps.check-changes.outputs.changes_detected || 'false' }} |" >> $GITHUB_STEP_SUMMARY
+
+        if [[ -n "${{ steps.commit.outputs.commit_sha }}" ]]; then
+          echo "| Commit SHA | \`${{ steps.commit.outputs.commit_sha }}\` |" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        if [[ -d "${{ inputs.output-directory }}" ]]; then
+          echo "### Generated Files" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          ls -lh "${{ inputs.output-directory }}/" 2>/dev/null || echo "No files in ${{ inputs.output-directory }}/"
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        fi

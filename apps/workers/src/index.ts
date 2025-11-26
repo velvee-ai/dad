@@ -4,20 +4,22 @@ import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
 import { handleRenderSVG, handleGetFormats } from './handlers/render';
+import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
+import { testR2Handler, healthCheckHandler } from './handlers/test';
+import cleanupWorker from './scheduled/cleanup';
+import type { Env } from './types';
 
-const app = new Hono();
+const app = new Hono<{ Bindings: Env }>();
 
 // CORS middleware
 app.use('/*', cors());
 
 // Health check
-app.get('/', (c) => {
-  return c.json({
-    name: 'DAAD Workers API',
-    version: '0.0.1',
-    status: 'healthy',
-  });
-});
+app.get('/', healthCheckHandler);
+app.get('/health', healthCheckHandler);
+
+// Test routes
+app.get('/api/test/r2', testR2Handler);
 
 // API routes
 app.post('/api/analyze', analyzeHandler);
@@ -30,6 +32,11 @@ app.delete('/api/diagrams/:id', diagramHandler.delete);
 // Render routes
 app.post('/api/render/svg', handleRenderSVG);
 app.get('/api/render/formats', handleGetFormats);
+
+// Preview API routes
+app.post('/api/preview/analyze', analyzePreview);
+app.get('/api/preview/:sha/manifest', getManifest);
+app.get('/api/preview/:sha/:fileId', getDiagram);
 
 // Error handling
 app.onError((err, c) => {
@@ -54,4 +61,8 @@ app.notFound((c) => {
   );
 });
 
-export default app;
+// Export the main worker with both HTTP and scheduled handlers
+export default {
+  fetch: app.fetch,
+  scheduled: cleanupWorker.scheduled,
+};

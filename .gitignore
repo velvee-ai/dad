@@ -59,6 +59,10 @@ Thumbs.db
 .cache
 .parcel-cache
 
+# DAAD
+.daad/metadata.json
+.daad/diagrams/
+
 # Temporary files
 *.tmp
 *.temp

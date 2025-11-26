@@ -50,3 +50,20 @@ export interface ClaudeResponse {
   flowChart: FlowChartData;
   error?: string;
 }
+
+// Preview Session Types
+export interface ChangedFile {
+  path: string;
+  status: 'added' | 'modified' | 'deleted';
+  diagram: FlowChartData;
+  baseDiagram?: FlowChartData;
+}
+
+export interface PreviewSession {
+  id: string;
+  url: string;
+  expiresAt: number;
+  changedFiles: ChangedFile[];
+  baseBranch: string;
+  createdAt: number;
+}
