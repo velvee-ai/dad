@@ -9,6 +9,7 @@ Cloudflare Workers backend API for DAAD.
 - Diagram storage (R2/KV)
 - CORS enabled
 - TypeScript with Hono framework
+- **Scheduled cleanup worker** for expired preview sessions
 
 ## Development
 
@@ -108,11 +109,55 @@ wrangler secret put OPENROUTER_API_KEY
 wrangler secret put CLAUDE_API_KEY
 ```
 
+## Scheduled Workers
+
+### Cleanup Worker
+
+Automatically cleans up expired preview sessions from R2 storage.
+
+**Configuration:**
+- Runs daily at 2 AM UTC (configurable in `wrangler.toml`)
+- 7-day TTL for preview sessions
+- Supports dry-run mode for testing
+
+**Testing:**
+
+```bash
+# Dry-run mode (no actual deletions)
+./scripts/test-cleanup.sh dry-run
+
+# Live mode (actual deletions)
+./scripts/test-cleanup.sh live
+```
+
+**Manual trigger via Cloudflare dashboard:**
+1. Go to Workers & Pages
+2. Select your worker
+3. Go to "Triggers" tab
+4. Click "Send Test Event" for the cron trigger
+
+See `src/scheduled/README.md` for detailed documentation.
+
+## R2 Bucket Setup
+
+The worker requires an R2 bucket for preview sessions:
+
+```bash
+# Create R2 bucket
+wrangler r2 bucket create daad-diagrams
+
+# For preview environment
+wrangler r2 bucket create daad-diagrams-preview
+```
+
+Update `wrangler.toml` with your bucket names.
+
 ## TODO
 
 - [ ] Implement actual AI code analysis
-- [ ] Set up R2 bucket for diagram storage
+- [x] Set up R2 bucket for diagram storage
 - [ ] Set up KV for metadata
 - [ ] Add authentication
 - [ ] Add rate limiting
 - [ ] Add tests
+- [x] Implement scheduled cleanup worker

@@ -154,3 +154,42 @@ export interface BatchProgress {
   elapsed: number;
   estimatedTimeRemaining: number | null;
 }
+
+// Preview API Types
+export interface FileChange {
+  fileId: string;
+  filename: string;
+  code: string;
+  language: string;
+}
+
+export interface PreviewAnalyzeRequest {
+  changes: FileChange[];
+  options?: AnalyzeOptions;
+}
+
+export interface PreviewDiagram {
+  fileId: string;
+  filename: string;
+  diagram: Diagram;
+  url: string;
+}
+
+export interface PreviewManifest {
+  sha: string;
+  timestamp: number;
+  diagrams: {
+    fileId: string;
+    filename: string;
+    language: string;
+    formats: ExportFormat[];
+  }[];
+}
+
+export interface PreviewAnalyzeResponse {
+  success: boolean;
+  sha: string;
+  diagrams: PreviewDiagram[];
+  manifest: PreviewManifest;
+  error?: string;
+}

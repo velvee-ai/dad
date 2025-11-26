@@ -2,16 +2,57 @@ name = "daad-workers"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
-# Bind a KV Namespace
-# [[kv_namespaces]]
-# binding = "DAAD_KV"
-# id = "your-kv-namespace-id"
+# R2 Buckets for preview diagram storage
+[[r2_buckets]]
+binding = "PREVIEW_DIAGRAMS"
+bucket_name = "daad-preview-diagrams"
+preview_bucket_name = "daad-preview-diagrams-dev"
 
-# Bind an R2 Bucket
-# [[r2_buckets]]
-# binding = "DAAD_BUCKET"
-# bucket_name = "daad-diagrams"
+# R2 Bucket for general storage (cleanup worker target)
+[[r2_buckets]]
+binding = "DAAD_BUCKET"
+bucket_name = "daad-diagrams"
+preview_bucket_name = "daad-diagrams-preview"
 
-# Environment variables (use wrangler secret put for sensitive values)
-# [vars]
-# ENVIRONMENT = "development"
+# Environment variables
+# Use `wrangler secret put OPENROUTER_API_KEY` for production
+# Use `wrangler secret put CLAUDE_API_KEY` for production
+[vars]
+ENVIRONMENT = "development"
+CORS_ORIGINS = "*"
+# Set to "true" to enable dry-run mode for cleanup (no actual deletions)
+DRY_RUN = "false"
+
+# Scheduled cleanup worker - runs daily at 2 AM UTC
+[triggers]
+crons = ["0 2 * * *"]
+
+# Environment-specific configurations
+[env.production]
+name = "daad-workers"
+[[env.production.r2_buckets]]
+binding = "PREVIEW_DIAGRAMS"
+bucket_name = "daad-preview-diagrams"
+
+[[env.production.r2_buckets]]
+binding = "DAAD_BUCKET"
+bucket_name = "daad-diagrams"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+DRY_RUN = "false"
+
+[env.development]
+name = "daad-workers-dev"
+[[env.development.r2_buckets]]
+binding = "PREVIEW_DIAGRAMS"
+bucket_name = "daad-preview-diagrams-dev"
+
+[[env.development.r2_buckets]]
+binding = "DAAD_BUCKET"
+bucket_name = "daad-diagrams-preview"
+
+[env.development.vars]
+ENVIRONMENT = "development"
+CORS_ORIGINS = "*"
+DRY_RUN = "true"
