@@ -3,20 +3,32 @@ import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
+import { analyticsMiddleware, metricsEndpoint, healthCheckWithMetrics } from './middleware/analytics';
+import { initializeMetrics } from './monitoring/metrics';
 
-const app = new Hono();
+type Bindings = {
+  ANALYTICS?: AnalyticsEngineDataset;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
+
+// Initialize metrics on first request
+app.use('/*', async (c, next) => {
+  initializeMetrics(c.env.ANALYTICS);
+  await next();
+});
 
 // CORS middleware
 app.use('/*', cors());
 
-// Health check
-app.get('/', (c) => {
-  return c.json({
-    name: 'DAAD Workers API',
-    version: '0.0.1',
-    status: 'healthy',
-  });
-});
+// Analytics middleware for all routes
+app.use('/*', analyticsMiddleware);
+
+// Health check with metrics
+app.get('/', healthCheckWithMetrics);
+
+// Metrics endpoint
+app.get('/metrics', metricsEndpoint);
 
 // API routes
 app.post('/api/analyze', analyzeHandler);
@@ -49,4 +61,18 @@ app.notFound((c) => {
   );
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+
+  // Scheduled handler for cleanup jobs
+  async scheduled(event: ScheduledEvent, env: any, ctx: ExecutionContext) {
+    const { cleanupHandler } = await import('./scheduled/cleanup');
+
+    try {
+      const result = await cleanupHandler(event, env);
+      console.log('Cleanup job completed:', result);
+    } catch (error) {
+      console.error('Cleanup job failed:', error);
+    }
+  },
+};

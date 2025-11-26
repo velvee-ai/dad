@@ -2,6 +2,11 @@ name = "daad-workers"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
+# Cloudflare Analytics Engine binding for metrics
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+# Dataset will be automatically created when first used
+
 # Bind a KV Namespace
 # [[kv_namespaces]]
 # binding = "DAAD_KV"
@@ -13,5 +18,13 @@ compatibility_date = "2024-01-01"
 # bucket_name = "daad-diagrams"
 
 # Environment variables (use wrangler secret put for sensitive values)
-# [vars]
-# ENVIRONMENT = "development"
+[vars]
+ENVIRONMENT = "development"
+LOG_LEVEL = "INFO"
+
+# Optional: Webhook for alert notifications
+# ALERT_WEBHOOK_URL = "https://your-webhook-url.com"
+
+# Scheduled cleanup job (runs daily at 2 AM UTC)
+[triggers]
+crons = ["0 2 * * *"]
