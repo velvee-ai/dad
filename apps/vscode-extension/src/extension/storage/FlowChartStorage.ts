@@ -22,6 +22,15 @@ export interface SavedFlowChart {
     lastModified?: number;
     editCount?: number;
   };
+  renderedOutputs?: {
+    svg?: {
+      d2?: string; // Path to D2 SVG file
+      mermaid?: string; // Path to Mermaid SVG file
+      lastRendered?: number;
+    };
+    d2Source?: string; // Path to D2 source file
+    mermaidSource?: string; // Path to Mermaid source file
+  };
 }
 
 export class FlowChartStorage {
@@ -292,5 +301,139 @@ export class FlowChartStorage {
 
     fs.writeFileSync(filePath, JSON.stringify(existing, null, 2));
     return true;
+  }
+
+  /**
+   * Save rendered SVG output for a flow chart
+   */
+  async saveSVGOutput(
+    id: string,
+    svgContent: string,
+    format: 'd2' | 'mermaid'
+  ): Promise<boolean> {
+    const existing = await this.loadFlowChart(id);
+    if (!existing) {
+      return false;
+    }
+
+    // Initialize renderedOutputs if not present
+    if (!existing.renderedOutputs) {
+      existing.renderedOutputs = {};
+    }
+    if (!existing.renderedOutputs.svg) {
+      existing.renderedOutputs.svg = {};
+    }
+
+    // Save SVG file
+    const svgFileName = `${id}.${format}.svg`;
+    const svgFilePath = path.join(this.storageDir, svgFileName);
+    fs.writeFileSync(svgFilePath, svgContent);
+
+    // Update metadata
+    existing.renderedOutputs.svg[format] = svgFileName;
+    existing.renderedOutputs.svg.lastRendered = Date.now();
+
+    // Save updated JSON
+    const fileName = `${id}${this.FILE_EXTENSION}`;
+    const filePath = path.join(this.storageDir, fileName);
+    fs.writeFileSync(filePath, JSON.stringify(existing, null, 2));
+
+    return true;
+  }
+
+  /**
+   * Save diagram source file (D2 or Mermaid)
+   */
+  async saveDiagramSource(
+    id: string,
+    sourceContent: string,
+    format: 'd2' | 'mermaid'
+  ): Promise<boolean> {
+    const existing = await this.loadFlowChart(id);
+    if (!existing) {
+      return false;
+    }
+
+    // Initialize renderedOutputs if not present
+    if (!existing.renderedOutputs) {
+      existing.renderedOutputs = {};
+    }
+
+    // Save source file
+    const extension = format === 'd2' ? 'd2' : 'mmd';
+    const sourceFileName = `${id}.${extension}`;
+    const sourceFilePath = path.join(this.storageDir, sourceFileName);
+    fs.writeFileSync(sourceFilePath, sourceContent);
+
+    // Update metadata
+    if (format === 'd2') {
+      existing.renderedOutputs.d2Source = sourceFileName;
+    } else {
+      existing.renderedOutputs.mermaidSource = sourceFileName;
+    }
+
+    // Save updated JSON
+    const fileName = `${id}${this.FILE_EXTENSION}`;
+    const filePath = path.join(this.storageDir, fileName);
+    fs.writeFileSync(filePath, JSON.stringify(existing, null, 2));
+
+    return true;
+  }
+
+  /**
+   * Get SVG output path for a flow chart
+   */
+  async getSVGPath(id: string, format: 'd2' | 'mermaid'): Promise<string | null> {
+    const existing = await this.loadFlowChart(id);
+    if (!existing?.renderedOutputs?.svg?.[format]) {
+      return null;
+    }
+
+    const svgFileName = existing.renderedOutputs.svg[format];
+    return path.join(this.storageDir, svgFileName);
+  }
+
+  /**
+   * Load SVG content for a flow chart
+   */
+  async loadSVGContent(id: string, format: 'd2' | 'mermaid'): Promise<string | null> {
+    const svgPath = await this.getSVGPath(id, format);
+    if (!svgPath || !fs.existsSync(svgPath)) {
+      return null;
+    }
+
+    return fs.readFileSync(svgPath, 'utf-8');
+  }
+
+  /**
+   * Get diagram source path
+   */
+  async getDiagramSourcePath(id: string, format: 'd2' | 'mermaid'): Promise<string | null> {
+    const existing = await this.loadFlowChart(id);
+    if (!existing?.renderedOutputs) {
+      return null;
+    }
+
+    const sourceFileName = format === 'd2'
+      ? existing.renderedOutputs.d2Source
+      : existing.renderedOutputs.mermaidSource;
+
+    if (!sourceFileName) {
+      return null;
+    }
+
+    return path.join(this.storageDir, sourceFileName);
+  }
+
+  /**
+   * Load diagram source content
+   */
+  async loadDiagramSourceContent(id: string, format: 'd2' | 'mermaid'): Promise<string | null> {
+    const sourcePath = await this.getDiagramSourcePath(id, format);
+    if (!sourcePath || !fs.existsSync(sourcePath)) {
+      return null;
+    }
+
+    return fs.readFileSync(sourcePath, 'utf-8');
   }
 }

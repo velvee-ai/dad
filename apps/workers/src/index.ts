@@ -4,6 +4,7 @@ import { analyzeHandler } from './handlers/analyze';
 import { batchAnalyzeHandler } from './handlers/batch-analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
+import { handleRenderSVG, handleGetFormats } from './handlers/render';
 import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
 import { testR2Handler, healthCheckHandler } from './handlers/test';
 import { analyticsMiddleware, metricsEndpoint, healthCheckWithMetrics } from './middleware/analytics';
@@ -43,6 +44,10 @@ app.get('/api/diagrams', diagramHandler.list);
 app.post('/api/diagrams', diagramHandler.save);
 app.get('/api/diagrams/:id', diagramHandler.get);
 app.delete('/api/diagrams/:id', diagramHandler.delete);
+
+// Render routes
+app.post('/api/render/svg', handleRenderSVG);
+app.get('/api/render/formats', handleGetFormats);
 
 // Preview API routes
 app.post('/api/preview/analyze', analyzePreview);
