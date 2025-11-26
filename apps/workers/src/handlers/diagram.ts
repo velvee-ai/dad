@@ -2,34 +2,60 @@ import { Context } from 'hono';
 import type { SavedDiagram } from '@daad/shared-types';
 import { getMetrics } from '../monitoring/metrics';
 import { PerformanceTimer } from '../monitoring/logger';
-
-// TODO: Implement actual storage using R2/KV
-// For now, these are mock handlers
+import type { Env } from '../types';
 
 export const diagramHandler = {
-  async list(c: Context) {
+  async list(c: Context<{ Bindings: Env }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');
 
-    logger?.info('Listing diagrams');
+    try {
+      logger?.info('Listing diagrams');
+      timer.mark('r2_list_start');
 
-    // TODO: Fetch from KV/R2
-    // For now, simulate KV cache miss
-    metrics.trackKVOperation('get', false);
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+      const listed = await bucket.list();
 
-    logger?.info('Diagrams listed', {
-      duration: timer.getDuration(),
-      count: 0,
-    });
+      timer.mark('r2_list_complete');
+      metrics.trackR2Operation('get', timer.getDurationBetween('r2_list_start', 'r2_list_complete'));
 
-    return c.json({
-      diagrams: [],
-      total: 0,
-    });
+      const diagrams = await Promise.all(
+        listed.objects.map(async (obj) => {
+          const object = await bucket.get(obj.key);
+          if (!object) return null;
+          return await object.json();
+        })
+      );
+
+      logger?.info('Diagrams listed', {
+        duration: timer.getDuration(),
+        count: listed.objects.length,
+      });
+
+      return c.json({
+        diagrams: diagrams.filter(Boolean),
+        total: listed.objects.length,
+      });
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      metrics.trackError(err, 'diagram_list');
+
+      logger?.error('Failed to list diagrams', err, {
+        duration: timer.getDuration(),
+      });
+
+      return c.json(
+        {
+          error: 'Failed to list diagrams',
+          message: err.message,
+        },
+        500
+      );
+    }
   },
 
-  async save(c: Context) {
+  async save(c: Context<{ Bindings: Env }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');
@@ -40,13 +66,21 @@ export const diagramHandler = {
 
       timer.mark('r2_save_start');
 
-      // TODO: Save to R2/KV
-      // For now, simulate R2 operation
-      const r2Duration = 50; // Mock duration
-      metrics.trackR2Operation('put', r2Duration);
-      metrics.trackKVOperation('put', true);
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+      const key = `diagrams/${body.id}.json`;
+
+      await bucket.put(key, JSON.stringify(body), {
+        httpMetadata: {
+          contentType: 'application/json',
+        },
+        customMetadata: {
+          createdAt: new Date().toISOString(),
+          type: 'preview-diagram',
+        },
+      });
 
       timer.mark('r2_save_complete');
+      metrics.trackR2Operation('put', timer.getDurationBetween('r2_save_start', 'r2_save_complete'));
 
       logger?.info('Diagram saved', {
         duration: timer.getDuration(),
@@ -77,58 +111,103 @@ export const diagramHandler = {
     }
   },
 
-  async get(c: Context) {
+  async get(c: Context<{ Bindings: Env }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');
-    const id = c.req.param('id');
 
-    logger?.info('Fetching diagram', { id });
+    try {
+      const id = c.req.param('id');
+      logger?.info('Fetching diagram', { id });
 
-    // TODO: Fetch from R2/KV
-    // Simulate KV cache miss and R2 fetch
-    timer.mark('kv_check');
-    metrics.trackKVOperation('get', false);
+      timer.mark('r2_fetch_start');
 
-    timer.mark('r2_fetch_start');
-    const r2Duration = 75; // Mock duration
-    metrics.trackR2Operation('get', r2Duration);
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+      const key = `diagrams/${id}.json`;
+      const object = await bucket.get(key);
 
-    logger?.warn('Diagram fetch not implemented', {
-      duration: timer.getDuration(),
-      id,
-    });
+      timer.mark('r2_fetch_complete');
+      metrics.trackR2Operation('get', timer.getDurationBetween('r2_fetch_start', 'r2_fetch_complete'));
 
-    return c.json(
-      {
-        error: 'Not implemented',
-        message: `Diagram ${id} fetch not implemented yet`,
-      },
-      501
-    );
+      if (!object) {
+        logger?.warn('Diagram not found', { id });
+        return c.json(
+          {
+            error: 'Not found',
+            message: `Diagram ${id} not found`,
+          },
+          404
+        );
+      }
+
+      const diagram = await object.json();
+
+      logger?.info('Diagram fetched', {
+        duration: timer.getDuration(),
+        id,
+      });
+
+      return c.json(diagram);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      metrics.trackError(err, 'diagram_get');
+
+      logger?.error('Failed to fetch diagram', err, {
+        duration: timer.getDuration(),
+      });
+
+      return c.json(
+        {
+          error: 'Failed to fetch diagram',
+          message: err.message,
+        },
+        500
+      );
+    }
   },
 
-  async delete(c: Context) {
+  async delete(c: Context<{ Bindings: Env }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');
-    const id = c.req.param('id');
 
-    logger?.info('Deleting diagram', { id });
+    try {
+      const id = c.req.param('id');
+      logger?.info('Deleting diagram', { id });
 
-    // TODO: Delete from R2/KV
-    // Simulate R2 delete operation
-    const r2Duration = 40; // Mock duration
-    metrics.trackR2Operation('delete', r2Duration);
+      timer.mark('r2_delete_start');
 
-    logger?.info('Diagram deleted', {
-      duration: timer.getDuration(),
-      id,
-    });
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+      const key = `diagrams/${id}.json`;
+      await bucket.delete(key);
 
-    return c.json({
-      success: true,
-      message: `Diagram ${id} deleted`,
-    });
+      timer.mark('r2_delete_complete');
+      metrics.trackR2Operation('delete', timer.getDurationBetween('r2_delete_start', 'r2_delete_complete'));
+
+      logger?.info('Diagram deleted', {
+        duration: timer.getDuration(),
+        id,
+      });
+
+      return c.json({
+        success: true,
+        message: `Diagram ${id} deleted`,
+      });
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      metrics.trackError(err, 'diagram_delete');
+
+      logger?.error('Diagram deletion failed', err, {
+        duration: timer.getDuration(),
+      });
+
+      return c.json(
+        {
+          success: false,
+          error: err.message,
+        },
+        500
+      );
+    }
   },
 };

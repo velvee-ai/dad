@@ -1,187 +1,323 @@
 /**
- * Scheduled Cleanup Worker
+ * Scheduled Cleanup Worker for Expired Preview Sessions
  *
- * Runs periodically to clean up old diagrams and optimize storage.
+ * This worker runs daily to clean up expired preview sessions from R2 storage.
+ * It identifies sessions that have exceeded the TTL and deletes all associated objects.
  * Includes comprehensive metrics tracking.
  */
 
+import type { Env } from '../types';
 import { getMetrics } from '../monitoring/metrics';
 import { StructuredLogger, PerformanceTimer } from '../monitoring/logger';
 
-interface CleanupConfig {
-  maxAgeMs: number; // Maximum age of diagrams to keep (in milliseconds)
-  batchSize: number; // Number of diagrams to process per batch
+interface CleanupStats {
+  startTime: Date;
+  endTime?: Date;
+  sessionsScanned: number;
+  sessionsExpired: number;
+  objectsDeleted: number;
+  bytesFreed: number;
+  errors: string[];
 }
 
-const DEFAULT_CONFIG: CleanupConfig = {
-  maxAgeMs: 30 * 24 * 60 * 60 * 1000, // 30 days
-  batchSize: 100,
-};
+interface SessionMetadata {
+  sessionId: string;
+  createdAt: string;
+  expiresAt: string;
+  ttlDays: number;
+}
 
-export interface CleanupResult {
-  diagramsDeleted: number;
-  bytesFreed: number;
-  duration: number;
-  errors: number;
+// Configuration
+const PREVIEW_SESSION_TTL_DAYS = 7;
+const BATCH_DELETE_SIZE = 1000; // R2 delete limit per batch
+const SESSION_PREFIX = 'previews/'; // Base path for preview sessions
+
+/**
+ * Check if a session has expired based on its metadata
+ */
+function isSessionExpired(metadata: SessionMetadata, now: Date): boolean {
+  const expiresAt = new Date(metadata.expiresAt);
+  return expiresAt < now;
 }
 
 /**
- * Cleanup handler for scheduled events
+ * Extract session ID from an R2 object key
+ * Expected format: previews/{sessionId}/...
  */
-export async function cleanupHandler(
-  event: ScheduledEvent,
-  env: any,
-  config: CleanupConfig = DEFAULT_CONFIG
-): Promise<CleanupResult> {
-  const metrics = getMetrics();
-  const logger = new StructuredLogger({
-    job: 'cleanup',
-    cron: event.cron,
-    scheduledTime: new Date(event.scheduledTime).toISOString(),
-  });
-  const timer = new PerformanceTimer();
+function extractSessionId(key: string): string | null {
+  const match = key.match(/^previews\/([^\/]+)\//);
+  return match ? match[1] : null;
+}
 
-  logger.info('Cleanup job started', {
-    maxAgeMs: config.maxAgeMs,
-    maxAgeDays: config.maxAgeMs / (24 * 60 * 60 * 1000),
-  });
+/**
+ * List all objects in a session folder
+ */
+async function listSessionObjects(
+  bucket: R2Bucket,
+  sessionId: string
+): Promise<R2Object[]> {
+  const objects: R2Object[] = [];
+  const prefix = `${SESSION_PREFIX}${sessionId}/`;
 
-  const result: CleanupResult = {
-    diagramsDeleted: 0,
-    bytesFreed: 0,
-    duration: 0,
-    errors: 0,
-  };
-
-  try {
-    timer.mark('list_start');
-
-    // TODO: Implement actual cleanup logic with R2/KV
-    // For now, this is a placeholder with metrics tracking
-
-    // Step 1: List diagrams (from KV metadata)
-    logger.info('Listing diagrams for cleanup');
-    const kvListDuration = 50; // Mock duration
-    metrics.trackKVOperation('get', true);
-    timer.mark('list_complete');
-
-    // Mock: Find old diagrams
-    const oldDiagrams: Array<{ id: string; size: number }> = []; // Empty for now
-
-    logger.info('Found diagrams to clean', {
-      count: oldDiagrams.length,
-      listDuration: timer.getDurationBetween('list_start', 'list_complete'),
+  let cursor: string | undefined;
+  do {
+    const listed = await bucket.list({
+      prefix,
+      cursor,
+      limit: 1000,
     });
 
-    // Step 2: Delete old diagrams in batches
-    timer.mark('delete_start');
+    objects.push(...listed.objects);
+    cursor = listed.truncated ? listed.cursor : undefined;
+  } while (cursor);
 
-    for (let i = 0; i < oldDiagrams.length; i += config.batchSize) {
-      const batch = oldDiagrams.slice(i, i + config.batchSize);
-      logger.debug('Processing batch', {
-        batchNumber: Math.floor(i / config.batchSize) + 1,
-        batchSize: batch.length,
+  return objects;
+}
+
+/**
+ * Delete objects in batches
+ */
+async function deleteObjectsBatch(
+  bucket: R2Bucket,
+  keys: string[],
+  dryRun: boolean,
+  metrics: ReturnType<typeof getMetrics>
+): Promise<number> {
+  let deleted = 0;
+
+  // Process in batches
+  for (let i = 0; i < keys.length; i += BATCH_DELETE_SIZE) {
+    const batch = keys.slice(i, i + BATCH_DELETE_SIZE);
+
+    if (dryRun) {
+      console.log(`[DRY RUN] Would delete ${batch.length} objects:`, batch.slice(0, 5), '...');
+      deleted += batch.length;
+    } else {
+      const timer = new PerformanceTimer();
+      // Delete each object individually (R2 doesn't have batch delete in all SDKs)
+      await Promise.all(
+        batch.map(async (key) => {
+          try {
+            await bucket.delete(key);
+            deleted++;
+          } catch (error) {
+            console.error(`Failed to delete ${key}:`, error);
+            throw error;
+          }
+        })
+      );
+
+      // Track batch delete metrics
+      metrics.trackR2Operation('delete', timer.getDuration());
+    }
+  }
+
+  return deleted;
+}
+
+/**
+ * Identify and clean up expired sessions
+ */
+async function cleanupExpiredSessions(
+  bucket: R2Bucket,
+  dryRun: boolean,
+  metrics: ReturnType<typeof getMetrics>,
+  logger: StructuredLogger
+): Promise<CleanupStats> {
+  const stats: CleanupStats = {
+    startTime: new Date(),
+    sessionsScanned: 0,
+    sessionsExpired: 0,
+    objectsDeleted: 0,
+    bytesFreed: 0,
+    errors: [],
+  };
+
+  const now = new Date();
+  const processedSessions = new Set<string>();
+
+  try {
+    // List all objects with preview prefix
+    let cursor: string | undefined;
+
+    do {
+      const listed = await bucket.list({
+        prefix: SESSION_PREFIX,
+        cursor,
+        limit: 1000,
       });
 
-      for (const diagram of batch) {
-        try {
-          // Delete from R2
-          const r2DeleteDuration = 40; // Mock duration
-          metrics.trackR2Operation('delete', r2DeleteDuration);
+      // Group objects by session
+      for (const obj of listed.objects) {
+        const sessionId = extractSessionId(obj.key);
+        if (!sessionId || processedSessions.has(sessionId)) {
+          continue;
+        }
 
-          // Delete metadata from KV
-          metrics.trackKVOperation('get', true);
+        processedSessions.add(sessionId);
+        stats.sessionsScanned++;
 
-          result.diagramsDeleted++;
-          result.bytesFreed += diagram.size;
+        // Get session metadata from a marker file
+        const metadataKey = `${SESSION_PREFIX}${sessionId}/.metadata`;
+        const metadataObj = await bucket.get(metadataKey);
 
-          logger.debug('Deleted diagram', {
-            id: diagram.id,
-            size: diagram.size,
-          });
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          result.errors++;
-          metrics.trackError(err, 'cleanup_delete_diagram');
-          logger.error('Failed to delete diagram', err, {
-            id: diagram.id,
-          });
+        if (!metadataObj) {
+          // No metadata found - consider orphaned session
+          // Default to TTL-based expiry check using object upload time
+          const sessionObjects = await listSessionObjects(bucket, sessionId);
+          if (sessionObjects.length === 0) continue;
+
+          // Find oldest object to determine session age
+          const oldestObj = sessionObjects.reduce((oldest, obj) =>
+            obj.uploaded < oldest.uploaded ? obj : oldest
+          );
+
+          const ageInDays = (now.getTime() - oldestObj.uploaded.getTime()) / (1000 * 60 * 60 * 24);
+
+          if (ageInDays > PREVIEW_SESSION_TTL_DAYS) {
+            logger.info(`Found orphaned expired session: ${sessionId} (age: ${ageInDays.toFixed(1)} days)`);
+            stats.sessionsExpired++;
+
+            // Delete all session objects
+            const keys = sessionObjects.map(o => o.key);
+            const bytesInSession = sessionObjects.reduce((sum, o) => sum + o.size, 0);
+
+            const deleted = await deleteObjectsBatch(bucket, keys, dryRun, metrics);
+            stats.objectsDeleted += deleted;
+            stats.bytesFreed += bytesInSession;
+
+            logger.info(`${dryRun ? '[DRY RUN] Would delete' : 'Deleted'} ${deleted} objects (${(bytesInSession / 1024 / 1024).toFixed(2)} MB) from session ${sessionId}`);
+          }
+        } else {
+          // Parse metadata
+          const metadataText = await metadataObj.text();
+          const metadata: SessionMetadata = JSON.parse(metadataText);
+
+          if (isSessionExpired(metadata, now)) {
+            logger.info(`Found expired session: ${sessionId} (expired: ${metadata.expiresAt})`);
+            stats.sessionsExpired++;
+
+            // List all objects in this session
+            const sessionObjects = await listSessionObjects(bucket, sessionId);
+            const keys = sessionObjects.map(o => o.key);
+            const bytesInSession = sessionObjects.reduce((sum, o) => sum + o.size, 0);
+
+            // Delete all session objects
+            const deleted = await deleteObjectsBatch(bucket, keys, dryRun, metrics);
+            stats.objectsDeleted += deleted;
+            stats.bytesFreed += bytesInSession;
+
+            logger.info(`${dryRun ? '[DRY RUN] Would delete' : 'Deleted'} ${deleted} objects (${(bytesInSession / 1024 / 1024).toFixed(2)} MB) from session ${sessionId}`);
+          }
         }
       }
 
-      // Small delay between batches to avoid overloading
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+      cursor = listed.truncated ? listed.cursor : undefined;
+    } while (cursor);
 
-    timer.mark('delete_complete');
-
-    result.duration = timer.getDuration();
-
-    logger.info('Cleanup job completed', {
-      diagramsDeleted: result.diagramsDeleted,
-      bytesFreed: result.bytesFreed,
-      bytesFreedbMB: (result.bytesFreed / (1024 * 1024)).toFixed(2),
-      duration: result.duration,
-      errors: result.errors,
-      deleteDuration: timer.getDurationBetween('delete_start', 'delete_complete'),
-    });
-
-    // Track cleanup metrics
-    metrics.trackAIApiCall('cleanup-job', result.duration, 0, result.errors === 0);
-
-    return result;
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    stats.errors.push(errorMessage);
+
     const err = error instanceof Error ? error : new Error(String(error));
-    result.duration = timer.getDuration();
-    result.errors++;
-
-    metrics.trackError(err, 'cleanup_job');
-    logger.error('Cleanup job failed', err, {
-      duration: result.duration,
-      partialResult: result,
-    });
-
-    throw error;
+    metrics.trackError(err, 'cleanup_scan');
+    logger.error('Cleanup error', err);
   }
+
+  stats.endTime = new Date();
+  return stats;
 }
 
 /**
- * Get cleanup statistics
+ * Format cleanup stats for logging
  */
-export async function getCleanupStats(env: any): Promise<{
-  totalDiagrams: number;
-  totalSize: number;
-  oldestDiagram: Date | null;
-  newestDiagram: Date | null;
-}> {
-  const logger = new StructuredLogger({ operation: 'cleanup_stats' });
-  const timer = new PerformanceTimer();
-  const metrics = getMetrics();
+function formatStats(stats: CleanupStats): string {
+  const duration = stats.endTime
+    ? ((stats.endTime.getTime() - stats.startTime.getTime()) / 1000).toFixed(2)
+    : 'N/A';
 
-  try {
-    logger.info('Fetching cleanup stats');
+  const mbFreed = (stats.bytesFreed / 1024 / 1024).toFixed(2);
 
-    // TODO: Implement actual stats fetching from KV/R2
-    // Mock response for now
-    metrics.trackKVOperation('get', true);
+  return `
+Cleanup Summary:
+  Duration: ${duration}s
+  Sessions Scanned: ${stats.sessionsScanned}
+  Sessions Expired: ${stats.sessionsExpired}
+  Objects Deleted: ${stats.objectsDeleted}
+  Storage Freed: ${mbFreed} MB
+  Errors: ${stats.errors.length}
+${stats.errors.length > 0 ? `  Error Details: ${stats.errors.join(', ')}` : ''}
+  `.trim();
+}
 
-    const stats = {
-      totalDiagrams: 0,
-      totalSize: 0,
-      oldestDiagram: null,
-      newestDiagram: null,
-    };
+/**
+ * Scheduled event handler
+ */
+export default {
+  async scheduled(
+    event: ScheduledEvent,
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<void> {
+    const metrics = getMetrics();
+    const logger = new StructuredLogger({
+      job: 'cleanup',
+      cron: event.cron,
+      scheduledTime: new Date(event.scheduledTime).toISOString(),
+    });
+    const timer = new PerformanceTimer();
 
-    logger.info('Cleanup stats fetched', {
-      duration: timer.getDuration(),
-      ...stats,
+    const dryRun = env.DRY_RUN === 'true';
+
+    logger.info(`Starting scheduled cleanup (dry run: ${dryRun})`, {
+      cron: event.cron,
+      scheduledTime: new Date(event.scheduledTime).toISOString(),
     });
 
-    return stats;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
-    metrics.trackError(err, 'cleanup_stats');
-    logger.error('Failed to fetch cleanup stats', err);
-    throw error;
-  }
-}
+    if (!env.DAAD_BUCKET) {
+      logger.error('DAAD_BUCKET binding not configured. Skipping cleanup.');
+      return;
+    }
+
+    try {
+      const stats = await cleanupExpiredSessions(env.DAAD_BUCKET, dryRun, metrics, logger);
+
+      const summary = formatStats(stats);
+      logger.info('Cleanup completed', {
+        duration: timer.getDuration(),
+        summary,
+        stats,
+      });
+
+      console.log(summary);
+
+      // Track cleanup job metrics
+      metrics.trackAIApiCall(
+        'cleanup-job',
+        timer.getDuration(),
+        0,
+        stats.errors.length === 0
+      );
+
+      // Log to analytics if available
+      if (env.ANALYTICS) {
+        env.ANALYTICS.writeDataPoint({
+          blobs: ['cleanup', event.cron],
+          doubles: [stats.objectsDeleted, stats.bytesFreed, timer.getDuration()],
+          indexes: [`success:${stats.errors.length === 0}`],
+        });
+      }
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      metrics.trackError(err, 'cleanup_job');
+
+      logger.error('Fatal error during scheduled cleanup', err, {
+        duration: timer.getDuration(),
+      });
+
+      console.error('Fatal error during scheduled cleanup:', error);
+      throw error; // Re-throw to mark the execution as failed
+    }
+  },
+};

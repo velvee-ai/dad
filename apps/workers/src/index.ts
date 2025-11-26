@@ -3,14 +3,14 @@ import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
+import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
+import { testR2Handler, healthCheckHandler } from './handlers/test';
 import { analyticsMiddleware, metricsEndpoint, healthCheckWithMetrics } from './middleware/analytics';
 import { initializeMetrics } from './monitoring/metrics';
+import cleanupWorker from './scheduled/cleanup';
+import type { Env } from './types';
 
-type Bindings = {
-  ANALYTICS?: AnalyticsEngineDataset;
-};
-
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono<{ Bindings: Env }>();
 
 // Initialize metrics on first request
 app.use('/*', async (c, next) => {
@@ -26,9 +26,13 @@ app.use('/*', analyticsMiddleware);
 
 // Health check with metrics
 app.get('/', healthCheckWithMetrics);
+app.get('/health', healthCheckHandler);
 
 // Metrics endpoint
 app.get('/metrics', metricsEndpoint);
+
+// Test routes
+app.get('/api/test/r2', testR2Handler);
 
 // API routes
 app.post('/api/analyze', analyzeHandler);
@@ -37,6 +41,11 @@ app.get('/api/diagrams', diagramHandler.list);
 app.post('/api/diagrams', diagramHandler.save);
 app.get('/api/diagrams/:id', diagramHandler.get);
 app.delete('/api/diagrams/:id', diagramHandler.delete);
+
+// Preview API routes
+app.post('/api/preview/analyze', analyzePreview);
+app.get('/api/preview/:sha/manifest', getManifest);
+app.get('/api/preview/:sha/:fileId', getDiagram);
 
 // Error handling
 app.onError((err, c) => {
@@ -61,18 +70,8 @@ app.notFound((c) => {
   );
 });
 
+// Export the main worker with both HTTP and scheduled handlers
 export default {
   fetch: app.fetch,
-
-  // Scheduled handler for cleanup jobs
-  async scheduled(event: ScheduledEvent, env: any, ctx: ExecutionContext) {
-    const { cleanupHandler } = await import('./scheduled/cleanup');
-
-    try {
-      const result = await cleanupHandler(event, env);
-      console.log('Cleanup job completed:', result);
-    } catch (error) {
-      console.error('Cleanup job failed:', error);
-    }
-  },
+  scheduled: cleanupWorker.scheduled,
 };

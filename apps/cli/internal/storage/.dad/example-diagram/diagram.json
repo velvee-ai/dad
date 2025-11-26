@@ -1,0 +1,24 @@
+{
+  "id": "example-diagram",
+  "name": "Example Flow",
+  "timestamp": 1764139375486,
+  "sourceFile": "example.go",
+  "codeSnippet": "func example() {}",
+  "language": "go",
+  "flowChart": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start",
+        "data": {
+          "label": "Start"
+        },
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "edges": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "multi-format",
+  "name": "Multi Format Diagram",
+  "timestamp": 1764139375486,
+  "sourceFile": "",
+  "codeSnippet": "",
+  "language": "go",
+  "flowChart": {
+    "nodes": [
+      {
+        "id": "n1",
+        "type": "process",
+        "data": {
+          "label": "Process"
+        },
+        "position": null
+      }
+    ],
+    "edges": []
+  }
+}
