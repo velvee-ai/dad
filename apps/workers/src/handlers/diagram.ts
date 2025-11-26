@@ -3,6 +3,13 @@ import type { SavedDiagram } from '@daad/shared-types';
 import { getMetrics } from '../monitoring/metrics';
 import { PerformanceTimer } from '../monitoring/logger';
 import type { Env } from '../types';
+import {
+  CacheManager,
+  CacheKeyPrefix,
+  CacheTTL,
+  getWithCache,
+  invalidateCache,
+} from '../storage/cache';
 
 export const diagramHandler = {
   async list(c: Context<{ Bindings: Env }>) {
@@ -12,30 +19,42 @@ export const diagramHandler = {
 
     try {
       logger?.info('Listing diagrams');
+      const cache = c.get('cache') as CacheManager;
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+
       timer.mark('r2_list_start');
 
-      const bucket = c.env.PREVIEW_DIAGRAMS;
-      const listed = await bucket.list();
+      const diagrams = await getWithCache<SavedDiagram[]>(
+        cache,
+        CacheKeyPrefix.DIAGRAM,
+        'list',
+        async () => {
+          const listed = await bucket.list();
+
+          const results = await Promise.all(
+            listed.objects.map(async (obj) => {
+              const object = await bucket.get(obj.key);
+              if (!object) return null;
+              return await object.json();
+            })
+          );
+
+          return results.filter(Boolean) as SavedDiagram[];
+        },
+        CacheTTL.DIAGRAM
+      );
 
       timer.mark('r2_list_complete');
       metrics.trackR2Operation('get', timer.getDurationBetween('r2_list_start', 'r2_list_complete'));
 
-      const diagrams = await Promise.all(
-        listed.objects.map(async (obj) => {
-          const object = await bucket.get(obj.key);
-          if (!object) return null;
-          return await object.json();
-        })
-      );
-
       logger?.info('Diagrams listed', {
         duration: timer.getDuration(),
-        count: listed.objects.length,
+        count: diagrams?.length || 0,
       });
 
       return c.json({
-        diagrams: diagrams.filter(Boolean),
-        total: listed.objects.length,
+        diagrams: diagrams || [],
+        total: diagrams?.length || 0,
       });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -47,8 +66,8 @@ export const diagramHandler = {
 
       return c.json(
         {
-          error: 'Failed to list diagrams',
-          message: err.message,
+          success: false,
+          error: err.message,
         },
         500
       );
@@ -62,13 +81,14 @@ export const diagramHandler = {
 
     try {
       const body: SavedDiagram = await c.req.json();
+      const cache = c.get('cache') as CacheManager;
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+
       logger?.info('Saving diagram', { id: body.id });
 
       timer.mark('r2_save_start');
 
-      const bucket = c.env.PREVIEW_DIAGRAMS;
       const key = `diagrams/${body.id}.json`;
-
       await bucket.put(key, JSON.stringify(body), {
         httpMetadata: {
           contentType: 'application/json',
@@ -81,6 +101,9 @@ export const diagramHandler = {
 
       timer.mark('r2_save_complete');
       metrics.trackR2Operation('put', timer.getDurationBetween('r2_save_start', 'r2_save_complete'));
+
+      await cache.set(CacheKeyPrefix.DIAGRAM, body.id, body, CacheTTL.DIAGRAM);
+      await invalidateCache(cache, CacheKeyPrefix.DIAGRAM, 'list');
 
       logger?.info('Diagram saved', {
         duration: timer.getDuration(),
@@ -118,36 +141,49 @@ export const diagramHandler = {
 
     try {
       const id = c.req.param('id');
+      const cache = c.get('cache') as CacheManager;
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+
       logger?.info('Fetching diagram', { id });
 
       timer.mark('r2_fetch_start');
 
-      const bucket = c.env.PREVIEW_DIAGRAMS;
-      const key = `diagrams/${id}.json`;
-      const object = await bucket.get(key);
+      const diagram = await getWithCache<SavedDiagram>(
+        cache,
+        CacheKeyPrefix.DIAGRAM,
+        id,
+        async () => {
+          const key = `diagrams/${id}.json`;
+          const object = await bucket.get(key);
+          if (!object) return null;
+          return await object.json();
+        },
+        CacheTTL.DIAGRAM
+      );
 
       timer.mark('r2_fetch_complete');
       metrics.trackR2Operation('get', timer.getDurationBetween('r2_fetch_start', 'r2_fetch_complete'));
 
-      if (!object) {
+      if (!diagram) {
         logger?.warn('Diagram not found', { id });
         return c.json(
           {
-            error: 'Not found',
-            message: `Diagram ${id} not found`,
+            success: false,
+            error: 'Diagram not found',
           },
           404
         );
       }
-
-      const diagram = await object.json();
 
       logger?.info('Diagram fetched', {
         duration: timer.getDuration(),
         id,
       });
 
-      return c.json(diagram);
+      return c.json({
+        success: true,
+        diagram,
+      });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       metrics.trackError(err, 'diagram_get');
@@ -158,8 +194,8 @@ export const diagramHandler = {
 
       return c.json(
         {
-          error: 'Failed to fetch diagram',
-          message: err.message,
+          success: false,
+          error: err.message,
         },
         500
       );
@@ -173,16 +209,21 @@ export const diagramHandler = {
 
     try {
       const id = c.req.param('id');
+      const cache = c.get('cache') as CacheManager;
+      const bucket = c.env.PREVIEW_DIAGRAMS;
+
       logger?.info('Deleting diagram', { id });
 
       timer.mark('r2_delete_start');
 
-      const bucket = c.env.PREVIEW_DIAGRAMS;
       const key = `diagrams/${id}.json`;
       await bucket.delete(key);
 
       timer.mark('r2_delete_complete');
       metrics.trackR2Operation('delete', timer.getDurationBetween('r2_delete_start', 'r2_delete_complete'));
+
+      await invalidateCache(cache, CacheKeyPrefix.DIAGRAM, id);
+      await invalidateCache(cache, CacheKeyPrefix.DIAGRAM, 'list');
 
       logger?.info('Diagram deleted', {
         duration: timer.getDuration(),

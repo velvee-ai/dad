@@ -7,6 +7,12 @@ import type {
   ExportFormat,
 } from '@daad/shared-types';
 import type { Env } from '../types';
+import {
+  CacheManager,
+  CacheKeyPrefix,
+  CacheTTL,
+  getWithCache,
+} from '../storage/cache';
 
 /**
  * Generates a SHA-256 hash for the preview session using Web Crypto API
@@ -201,6 +207,10 @@ export async function analyzePreview(c: Context<{ Bindings: Env }>) {
           timestamp: timestamp.toString(),
         },
       });
+
+      // Cache the manifest
+      const cache = c.get('cache') as CacheManager;
+      await cache.set(CacheKeyPrefix.SESSION, sha, manifest, CacheTTL.SESSION);
     }
 
     // Create response
@@ -264,13 +274,27 @@ export async function getDiagram(c: Context<{ Bindings: Env }>) {
       );
     }
 
-    // Retrieve from R2
+    // Retrieve from cache or R2
+    const cache = c.get('cache') as CacheManager;
     const bucket = c.env.PREVIEW_DIAGRAMS;
-    if (bucket) {
-      const key = `${sha}/${fileId}.${format}`;
-      const object = await bucket.get(key);
 
-      if (!object) {
+    if (bucket) {
+      const cacheKey = `${sha}:${fileId}:${format}`;
+
+      const content = await getWithCache<string>(
+        cache,
+        CacheKeyPrefix.EXPORT,
+        cacheKey,
+        async () => {
+          const key = `${sha}/${fileId}.${format}`;
+          const object = await bucket.get(key);
+          if (!object) return null;
+          return await object.text();
+        },
+        CacheTTL.EXPORT
+      );
+
+      if (!content) {
         return c.json(
           {
             error: 'Diagram not found',
@@ -280,7 +304,6 @@ export async function getDiagram(c: Context<{ Bindings: Env }>) {
         );
       }
 
-      const content = await object.text();
       const contentType = format === 'json' ? 'application/json' : 'text/plain';
 
       return c.text(content, 200, {
@@ -325,13 +348,26 @@ export async function getManifest(c: Context<{ Bindings: Env }>) {
       );
     }
 
-    // Retrieve from R2
+    // Retrieve from cache or R2
+    const cache = c.get('cache') as CacheManager;
     const bucket = c.env.PREVIEW_DIAGRAMS;
-    if (bucket) {
-      const key = `${sha}/manifest.json`;
-      const object = await bucket.get(key);
 
-      if (!object) {
+    if (bucket) {
+      const manifest = await getWithCache<PreviewManifest>(
+        cache,
+        CacheKeyPrefix.SESSION,
+        sha,
+        async () => {
+          const key = `${sha}/manifest.json`;
+          const object = await bucket.get(key);
+          if (!object) return null;
+          const content = await object.text();
+          return JSON.parse(content);
+        },
+        CacheTTL.SESSION
+      );
+
+      if (!manifest) {
         return c.json(
           {
             error: 'Manifest not found',
@@ -340,9 +376,6 @@ export async function getManifest(c: Context<{ Bindings: Env }>) {
           404
         );
       }
-
-      const content = await object.text();
-      const manifest: PreviewManifest = JSON.parse(content);
 
       return c.json(manifest);
     }

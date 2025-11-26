@@ -2,6 +2,12 @@ name = "daad-workers"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
+# Bind a KV Namespace for caching
+[[kv_namespaces]]
+binding = "DAAD_CACHE"
+id = "daad_cache_namespace"
+preview_id = "daad_cache_preview"
+
 # Cloudflare Analytics Engine binding for metrics
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
@@ -25,6 +31,8 @@ preview_bucket_name = "daad-diagrams-preview"
 [vars]
 ENVIRONMENT = "development"
 CORS_ORIGINS = "*"
+CACHE_ENABLED = "true"
+CACHE_DEFAULT_TTL = "604800"
 LOG_LEVEL = "INFO"
 # Set to "true" to enable dry-run mode for cleanup (no actual deletions)
 DRY_RUN = "false"
@@ -39,6 +47,10 @@ crons = ["0 2 * * *"]
 # Environment-specific configurations
 [env.production]
 name = "daad-workers"
+[[env.production.kv_namespaces]]
+binding = "DAAD_CACHE"
+id = "daad_cache_namespace"
+
 [[env.production.r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
 bucket_name = "daad-preview-diagrams"
@@ -53,10 +65,16 @@ binding = "ANALYTICS"
 [env.production.vars]
 ENVIRONMENT = "production"
 DRY_RUN = "false"
+CACHE_ENABLED = "true"
+CACHE_DEFAULT_TTL = "604800"
 LOG_LEVEL = "INFO"
 
 [env.development]
 name = "daad-workers-dev"
+[[env.development.kv_namespaces]]
+binding = "DAAD_CACHE"
+preview_id = "daad_cache_preview"
+
 [[env.development.r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
 bucket_name = "daad-preview-diagrams-dev"
@@ -72,4 +90,6 @@ binding = "ANALYTICS"
 ENVIRONMENT = "development"
 CORS_ORIGINS = "*"
 DRY_RUN = "true"
+CACHE_ENABLED = "true"
+CACHE_DEFAULT_TTL = "604800"
 LOG_LEVEL = "DEBUG"

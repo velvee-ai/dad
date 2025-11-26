@@ -2,6 +2,9 @@
  * Cloudflare Workers environment bindings
  */
 export interface Env {
+  // KV namespace binding for caching
+  DAAD_CACHE: KVNamespace;
+
   // R2 bucket binding for preview diagram storage
   PREVIEW_DIAGRAMS: R2Bucket;
 
@@ -12,6 +15,8 @@ export interface Env {
   ENVIRONMENT?: string;
   CORS_ORIGINS?: string;
   DRY_RUN?: string; // For cleanup worker dry-run mode
+  CACHE_ENABLED?: string; // Enable/disable caching
+  CACHE_DEFAULT_TTL?: string; // Default TTL in seconds
 
   // API Keys (stored as secrets)
   OPENROUTER_API_KEY?: string;

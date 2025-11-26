@@ -1,6 +1,12 @@
 import { Context } from 'hono';
 import type { ExportRequest, ExportResponse } from '@daad/shared-types';
 import { toD2, toMermaid, toJSON } from '@daad/diagram-schema';
+import {
+  CacheManager,
+  CacheKeyPrefix,
+  CacheTTL,
+  getWithCache,
+} from '../storage/cache';
 import { getMetrics } from '../monitoring/metrics';
 import { PerformanceTimer } from '../monitoring/logger';
 
@@ -11,6 +17,8 @@ export async function exportHandler(c: Context) {
 
   try {
     const body: ExportRequest = await c.req.json();
+    const cache = c.get('cache') as CacheManager;
+
     timer.mark('parsed_request');
 
     logger?.info('Exporting diagram', {
@@ -20,26 +28,38 @@ export async function exportHandler(c: Context) {
 
     timer.mark('export_start');
 
-    let content: string;
-    switch (body.format) {
-      case 'd2':
-        content = toD2(body.diagram);
-        break;
-      case 'mermaid':
-        content = toMermaid(body.diagram);
-        break;
-      case 'json':
-        content = toJSON(body.diagram);
-        break;
-      default:
-        throw new Error(`Unsupported format: ${body.format}`);
-    }
+    const diagramHash = JSON.stringify(body.diagram);
+    const cacheKey = `${body.format}:${hashString(diagramHash)}`;
+
+    const cachedExport = await getWithCache<string>(
+      cache,
+      CacheKeyPrefix.EXPORT,
+      cacheKey,
+      async () => {
+        let content: string;
+        switch (body.format) {
+          case 'd2':
+            content = toD2(body.diagram);
+            break;
+          case 'mermaid':
+            content = toMermaid(body.diagram);
+            break;
+          case 'json':
+            content = toJSON(body.diagram);
+            break;
+          default:
+            throw new Error(`Unsupported format: ${body.format}`);
+        }
+        return content;
+      },
+      CacheTTL.EXPORT
+    );
 
     timer.mark('export_complete');
     const exportDuration = timer.getDurationBetween('export_start', 'export_complete');
 
     const response: ExportResponse = {
-      content,
+      content: cachedExport || '',
       format: body.format,
       success: true,
     };
@@ -48,7 +68,7 @@ export async function exportHandler(c: Context) {
       duration: timer.getDuration(),
       exportDuration,
       format: body.format,
-      contentLength: content.length,
+      contentLength: cachedExport?.length || 0,
     });
 
     return c.json(response);
@@ -68,4 +88,14 @@ export async function exportHandler(c: Context) {
       400
     );
   }
+}
+
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
 }
