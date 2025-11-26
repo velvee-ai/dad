@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
+import { batchAnalyzeHandler } from './handlers/batch-analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
 import { handleRenderSVG, handleGetFormats } from './handlers/render';
@@ -37,6 +38,7 @@ app.get('/api/test/r2', testR2Handler);
 
 // API routes
 app.post('/api/analyze', analyzeHandler);
+app.post('/api/batch/analyze', batchAnalyzeHandler);
 app.post('/api/export', exportHandler);
 app.get('/api/diagrams', diagramHandler.list);
 app.post('/api/diagrams', diagramHandler.save);

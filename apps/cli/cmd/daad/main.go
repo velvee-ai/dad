@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/velvee-ai/daad/apps/cli/internal/generator"
@@ -181,11 +183,49 @@ var exportCmd = &cobra.Command{
 	},
 }
 
+var batchCmd = &cobra.Command{
+	Use:   "batch",
+	Short: "Batch operations for processing multiple files",
+}
+
+var batchAnalyzeCmd = &cobra.Command{
+	Use:   "analyze <directory>",
+	Short: "Analyze multiple files in a directory",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		directory := args[0]
+		pattern, _ := cmd.Flags().GetString("pattern")
+		output, _ := cmd.Flags().GetString("output")
+		showProgress, _ := cmd.Flags().GetBool("progress")
+		timeout, _ := cmd.Flags().GetInt("timeout")
+
+		fmt.Printf("Batch analyzing directory: %s\n", directory)
+		fmt.Printf("Pattern: %s\n", pattern)
+		fmt.Printf("Output directory: %s\n", output)
+
+		ctx := context.Background()
+		if timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout)*time.Second)
+			defer cancel()
+		}
+
+		gen := generator.NewBatchGenerator(output, showProgress)
+		if err := gen.AnalyzeDirectory(ctx, directory, pattern); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(analyzeCmd)
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(exportCmd)
+	rootCmd.AddCommand(batchCmd)
+
+	batchCmd.AddCommand(batchAnalyzeCmd)
 
 	// Generate command flags
 	generateCmd.Flags().StringP("output", "o", ".daad/diagrams", "Output directory for diagrams")
@@ -200,6 +240,12 @@ func init() {
 	exportCmd.Flags().String("theme", "", "Theme for rendering (d2: default, dark, light, terminal; mermaid: default, dark, forest, neutral)")
 	exportCmd.Flags().String("layout", "dagre", "Layout algorithm (dagre or elk)")
 	exportCmd.Flags().Bool("optimize", false, "Optimize SVG output (requires svgo)")
+
+	// Batch command flags
+	batchAnalyzeCmd.Flags().StringP("pattern", "p", "*.go", "File pattern to match")
+	batchAnalyzeCmd.Flags().StringP("output", "o", "./diagrams", "Output directory for diagrams")
+	batchAnalyzeCmd.Flags().Bool("progress", true, "Show progress bar")
+	batchAnalyzeCmd.Flags().Int("timeout", 300, "Timeout in seconds (0 for no timeout)")
 }
 
 func main() {
