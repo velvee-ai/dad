@@ -8,12 +8,71 @@ binding = "DAAD_CACHE"
 id = "daad_cache_namespace"
 preview_id = "daad_cache_preview"
 
-# Bind an R2 Bucket
-# [[r2_buckets]]
-# binding = "DAAD_BUCKET"
-# bucket_name = "daad-diagrams"
+# R2 Buckets for preview diagram storage
+[[r2_buckets]]
+binding = "PREVIEW_DIAGRAMS"
+bucket_name = "daad-preview-diagrams"
+preview_bucket_name = "daad-preview-diagrams-dev"
 
-# Environment variables (use wrangler secret put for sensitive values)
+# R2 Bucket for general storage (cleanup worker target)
+[[r2_buckets]]
+binding = "DAAD_BUCKET"
+bucket_name = "daad-diagrams"
+preview_bucket_name = "daad-diagrams-preview"
+
+# Environment variables
+# Use `wrangler secret put OPENROUTER_API_KEY` for production
+# Use `wrangler secret put CLAUDE_API_KEY` for production
 [vars]
+ENVIRONMENT = "development"
+CORS_ORIGINS = "*"
+CACHE_ENABLED = "true"
+CACHE_DEFAULT_TTL = "604800"
+# Set to "true" to enable dry-run mode for cleanup (no actual deletions)
+DRY_RUN = "false"
+
+# Scheduled cleanup worker - runs daily at 2 AM UTC
+[triggers]
+crons = ["0 2 * * *"]
+
+# Environment-specific configurations
+[env.production]
+name = "daad-workers"
+[[env.production.kv_namespaces]]
+binding = "DAAD_CACHE"
+id = "daad_cache_namespace"
+
+[[env.production.r2_buckets]]
+binding = "PREVIEW_DIAGRAMS"
+bucket_name = "daad-preview-diagrams"
+
+[[env.production.r2_buckets]]
+binding = "DAAD_BUCKET"
+bucket_name = "daad-diagrams"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+DRY_RUN = "false"
+CACHE_ENABLED = "true"
+CACHE_DEFAULT_TTL = "604800"
+
+[env.development]
+name = "daad-workers-dev"
+[[env.development.kv_namespaces]]
+binding = "DAAD_CACHE"
+preview_id = "daad_cache_preview"
+
+[[env.development.r2_buckets]]
+binding = "PREVIEW_DIAGRAMS"
+bucket_name = "daad-preview-diagrams-dev"
+
+[[env.development.r2_buckets]]
+binding = "DAAD_BUCKET"
+bucket_name = "daad-diagrams-preview"
+
+[env.development.vars]
+ENVIRONMENT = "development"
+CORS_ORIGINS = "*"
+DRY_RUN = "true"
 CACHE_ENABLED = "true"
 CACHE_DEFAULT_TTL = "604800"

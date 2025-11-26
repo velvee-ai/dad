@@ -3,15 +3,13 @@ import { cors } from 'hono/cors';
 import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
+import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
+import { testR2Handler, healthCheckHandler } from './handlers/test';
+import cleanupWorker from './scheduled/cleanup';
 import { createCacheManager } from './storage/cache';
+import type { Env } from './types';
 
-type Bindings = {
-  DAAD_CACHE: KVNamespace;
-  CACHE_ENABLED?: string;
-  CACHE_DEFAULT_TTL?: string;
-};
-
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono<{ Bindings: Env }>();
 
 app.use('/*', cors());
 
@@ -22,14 +20,14 @@ app.use('/*', async (c, next) => {
   await next();
 });
 
-app.get('/', (c) => {
-  return c.json({
-    name: 'DAAD Workers API',
-    version: '0.0.1',
-    status: 'healthy',
-  });
-});
+// Health check
+app.get('/', healthCheckHandler);
+app.get('/health', healthCheckHandler);
 
+// Test routes
+app.get('/api/test/r2', testR2Handler);
+
+// Cache metrics endpoints
 app.get('/api/metrics/cache', (c) => {
   const cache = c.get('cache');
   const metrics = cache.getMetrics();
@@ -55,6 +53,7 @@ app.post('/api/metrics/cache/reset', (c) => {
   });
 });
 
+// API routes
 app.post('/api/analyze', analyzeHandler);
 app.post('/api/export', exportHandler);
 app.get('/api/diagrams', diagramHandler.list);
@@ -62,6 +61,12 @@ app.post('/api/diagrams', diagramHandler.save);
 app.get('/api/diagrams/:id', diagramHandler.get);
 app.delete('/api/diagrams/:id', diagramHandler.delete);
 
+// Preview API routes
+app.post('/api/preview/analyze', analyzePreview);
+app.get('/api/preview/:sha/manifest', getManifest);
+app.get('/api/preview/:sha/:fileId', getDiagram);
+
+// Error handling
 app.onError((err, c) => {
   console.error(err);
   return c.json(
@@ -83,4 +88,8 @@ app.notFound((c) => {
   );
 });
 
-export default app;
+// Export the main worker with both HTTP and scheduled handlers
+export default {
+  fetch: app.fetch,
+  scheduled: cleanupWorker.scheduled,
+};
