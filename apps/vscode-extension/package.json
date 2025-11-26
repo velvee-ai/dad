@@ -59,6 +59,11 @@
       {
         "command": "daad.loadChart",
         "title": "DAAD: Load Diagram"
+      },
+      {
+        "command": "daad.visualizeChanges",
+        "title": "DAAD: Visualize Changes",
+        "icon": "$(git-commit)"
       }
     ],
     "views": {
@@ -132,6 +137,12 @@
         "key": "ctrl+shift+v",
         "mac": "cmd+shift+v",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "daad.visualizeChanges",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g",
+        "when": "!inDebugMode"
       }
     ],
     "configuration": {
@@ -164,6 +175,11 @@
             "google/gemini-flash-1.5",
             "meta-llama/llama-3.1-70b-instruct"
           ]
+        },
+        "daad.workersApiUrl": {
+          "type": "string",
+          "default": "",
+          "description": "DAAD Workers API URL for preview generation (optional). Example: https://your-worker.workers.dev"
         }
       }
     }

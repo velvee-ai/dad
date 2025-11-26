@@ -7,6 +7,7 @@ import { SavedChartsProvider } from './extension/providers/SavedChartsProvider';
 import { CodeAnalyzer } from './extension/utils/codeAnalyzer';
 import { DexieCacheManager, CachedFlowChart } from './extension/storage/DexieCacheManager';
 import { FlowChartData } from './shared/types';
+import { VisualizeChangesCommand } from './extension/commands/visualizeChanges';
 
 let claudeClient: ClaudeClient | OpenRouterClient;
 let storage: FlowChartStorage;
@@ -763,6 +764,28 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // Register command to visualize uncommitted changes
+  const visualizeChangesCommand = vscode.commands.registerCommand(
+    'daad.visualizeChanges',
+    async () => {
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder open. This command requires a workspace.');
+        return;
+      }
+
+      // Get Workers API URL from configuration (optional)
+      const config = vscode.workspace.getConfiguration('daad');
+      const workersApiUrl = config.get<string>('workersApiUrl');
+
+      await VisualizeChangesCommand.execute({
+        workspacePath: workspaceFolder.uri.fsPath,
+        client: claudeClient,
+        extensionUri: context.extensionUri,
+        workersApiUrl,
+      });
+    }
+  );
+
   context.subscriptions.push(visualizeCommand);
   context.subscriptions.push(visualizeFileCommand);
   context.subscriptions.push(visualizeAllFunctionsCommand);
@@ -771,6 +794,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(listCommand);
   context.subscriptions.push(loadChartCommand);
   context.subscriptions.push(openFolderCommand);
+  context.subscriptions.push(visualizeChangesCommand);
   context.subscriptions.push({
     dispose: () => {
       claudeClient.dispose();
