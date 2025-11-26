@@ -6,10 +6,7 @@ import type {
   Diagram,
   ExportFormat,
 } from '@daad/shared-types';
-
-interface Env {
-  PREVIEW_BUCKET?: R2Bucket;
-}
+import type { Env } from '../types';
 
 /**
  * Generates a SHA-256 hash for the preview session using Web Crypto API
@@ -108,7 +105,7 @@ function convertDiagramToFormat(diagram: Diagram, format: ExportFormat): string 
  * POST /api/preview/analyze
  * Creates a preview session by analyzing code changes and storing diagrams in R2
  */
-export async function analyzePreview(c: Context) {
+export async function analyzePreview(c: Context<{ Bindings: Env }>) {
   try {
     const body: PreviewAnalyzeRequest = await c.req.json();
 
@@ -157,9 +154,9 @@ export async function analyzePreview(c: Context) {
       };
     });
 
-    // Store diagrams in R2 if available
-    const env = c.env as Env;
-    if (env.PREVIEW_BUCKET) {
+    // Store diagrams in R2
+    const bucket = c.env.PREVIEW_DIAGRAMS;
+    if (bucket) {
       // Store each diagram in multiple formats
       for (const { fileId, diagram } of diagrams) {
         const formats: ExportFormat[] = ['json', 'd2', 'mermaid'];
@@ -168,7 +165,7 @@ export async function analyzePreview(c: Context) {
           const content = convertDiagramToFormat(diagram, format);
           const key = `${sha}/${fileId}.${format}`;
 
-          await env.PREVIEW_BUCKET.put(key, content, {
+          await bucket.put(key, content, {
             httpMetadata: {
               contentType: format === 'json' ? 'application/json' : 'text/plain',
             },
@@ -194,7 +191,7 @@ export async function analyzePreview(c: Context) {
         })),
       };
 
-      await env.PREVIEW_BUCKET.put(`${sha}/manifest.json`, JSON.stringify(manifest, null, 2), {
+      await bucket.put(`${sha}/manifest.json`, JSON.stringify(manifest, null, 2), {
         httpMetadata: {
           contentType: 'application/json',
         },
@@ -241,7 +238,7 @@ export async function analyzePreview(c: Context) {
  * Retrieves a specific diagram from R2
  * Query params: format (json|d2|mermaid) - defaults to json
  */
-export async function getDiagram(c: Context) {
+export async function getDiagram(c: Context<{ Bindings: Env }>) {
   try {
     const sha = c.req.param('sha');
     const fileId = c.req.param('fileId');
@@ -267,11 +264,11 @@ export async function getDiagram(c: Context) {
       );
     }
 
-    // Retrieve from R2 if available
-    const env = c.env as Env;
-    if (env.PREVIEW_BUCKET) {
+    // Retrieve from R2
+    const bucket = c.env.PREVIEW_DIAGRAMS;
+    if (bucket) {
       const key = `${sha}/${fileId}.${format}`;
-      const object = await env.PREVIEW_BUCKET.get(key);
+      const object = await bucket.get(key);
 
       if (!object) {
         return c.json(
@@ -314,7 +311,7 @@ export async function getDiagram(c: Context) {
  * GET /api/preview/:sha/manifest
  * Retrieves the manifest for a preview session
  */
-export async function getManifest(c: Context) {
+export async function getManifest(c: Context<{ Bindings: Env }>) {
   try {
     const sha = c.req.param('sha');
 
@@ -328,11 +325,11 @@ export async function getManifest(c: Context) {
       );
     }
 
-    // Retrieve from R2 if available
-    const env = c.env as Env;
-    if (env.PREVIEW_BUCKET) {
+    // Retrieve from R2
+    const bucket = c.env.PREVIEW_DIAGRAMS;
+    if (bucket) {
       const key = `${sha}/manifest.json`;
-      const object = await env.PREVIEW_BUCKET.get(key);
+      const object = await bucket.get(key);
 
       if (!object) {
         return c.json(

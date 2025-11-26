@@ -4,20 +4,20 @@ import { analyzeHandler } from './handlers/analyze';
 import { exportHandler } from './handlers/export';
 import { diagramHandler } from './handlers/diagram';
 import { analyzePreview, getDiagram, getManifest } from './handlers/preview';
+import { testR2Handler, healthCheckHandler } from './handlers/test';
+import type { Env } from './types';
 
-const app = new Hono();
+const app = new Hono<{ Bindings: Env }>();
 
 // CORS middleware
 app.use('/*', cors());
 
 // Health check
-app.get('/', (c) => {
-  return c.json({
-    name: 'DAAD Workers API',
-    version: '0.0.1',
-    status: 'healthy',
-  });
-});
+app.get('/', healthCheckHandler);
+app.get('/health', healthCheckHandler);
+
+// Test routes
+app.get('/api/test/r2', testR2Handler);
 
 // API routes
 app.post('/api/analyze', analyzeHandler);
