@@ -108,3 +108,49 @@ export interface AIAnalyzeResponse {
   tokensUsed?: number;
   model?: string;
 }
+
+// Batch Processing Types
+export interface BatchAnalyzeRequest {
+  files: Array<{
+    id: string;
+    code: string;
+    language: string;
+    filename?: string;
+  }>;
+  options?: AnalyzeOptions;
+}
+
+export interface BatchItemResult {
+  id: string;
+  filename?: string;
+  diagram?: Diagram;
+  success: boolean;
+  error?: string;
+  attempts: number;
+}
+
+export interface BatchAnalyzeResponse {
+  results: BatchItemResult[];
+  manifestId: string;
+  totalItems: number;
+  successCount: number;
+  failureCount: number;
+  timestamp: number;
+}
+
+export interface BatchManifest {
+  id: string;
+  timestamp: number;
+  results: BatchItemResult[];
+  totalItems: number;
+  successCount: number;
+  failureCount: number;
+}
+
+export interface BatchProgress {
+  completed: number;
+  total: number;
+  percentage: number;
+  elapsed: number;
+  estimatedTimeRemaining: number | null;
+}
