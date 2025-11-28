@@ -16,7 +16,7 @@ Start with the **[Complete Setup Guide](./SETUP.md)** which covers:
 ### For Quick Install
 
 If you only need the VSCode extension, see:
-- **[Installation Guide](../../INSTALLATION.md)** - VSCode extension quick install
+- **[Installation Guide](../guides/INSTALLATION.md)** - VSCode extension quick install
 
 ## Setup Documents
 
@@ -112,7 +112,7 @@ pnpm deploy  # For production
 1. **Setup R2 Storage**: Follow [R2_SETUP.md](./R2_SETUP.md)
 2. **Setup KV Cache**: Follow [CACHING.md](./CACHING.md)
 3. **Configure Monitoring**: Follow [MONITORING.md](./MONITORING.md)
-4. **Deploy**: Follow [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)
+4. **Deploy**: Follow [DEPLOYMENT_CHECKLIST.md](../guides/DEPLOYMENT_CHECKLIST.md)
 
 ## Environment Configuration
 
@@ -184,7 +184,7 @@ cd apps/cli && make build-all
 
 ## Related Documentation
 
-- [Quick Start Guide](../../QUICK_START.md) - Common commands
+- [Quick Start Guide](../guides/QUICK_START.md) - Common commands
 - [Architecture Documentation](../architecture/) - System design
 - [Testing Guide](../guides/TESTING.md) - Testing strategies
 - [Main README](../../README.md) - Project overview
