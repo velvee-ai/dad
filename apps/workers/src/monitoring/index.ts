@@ -5,9 +5,8 @@
  */
 
 // Metrics
+export type { MetricsCollector, MetricsSummary } from './metrics';
 export {
-  MetricsCollector,
-  MetricsSummary,
   InMemoryMetricsCollector,
   CloudflareAnalyticsCollector,
   initializeMetrics,
@@ -15,10 +14,8 @@ export {
 } from './metrics';
 
 // Logging
+export type { LogLevel, LogContext, LogEntry } from './logger';
 export {
-  LogLevel,
-  LogContext,
-  LogEntry,
   StructuredLogger,
   createRequestLogger,
   logger,
@@ -27,11 +24,8 @@ export {
 } from './logger';
 
 // Alerting
+export type { AlertSeverity, Alert, AlertRule, AlertChannel } from './alerting';
 export {
-  AlertSeverity,
-  Alert,
-  AlertRule,
-  AlertChannel,
   ConsoleAlertChannel,
   WebhookAlertChannel,
   AlertManager,
@@ -40,7 +34,7 @@ export {
 } from './alerting';
 
 // Dashboard
-export {
+export type {
   DashboardData,
   OverviewMetrics,
   PerformanceMetrics,
@@ -52,6 +46,8 @@ export {
   RecentError,
   SLATargets,
   SLACompliance,
+} from './dashboard';
+export {
   DEFAULT_SLA_TARGETS,
   transformToDashboardData,
   getHealthBadge,

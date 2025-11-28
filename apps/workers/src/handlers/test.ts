@@ -1,10 +1,10 @@
 import { Context } from 'hono';
-import type { Env } from '../types';
+import type { Env, Variables } from '../types';
 
 /**
  * Test handler for R2 bucket connectivity
  */
-export async function testR2Handler(c: Context<{ Bindings: Env }>) {
+export async function testR2Handler(c: Context<{ Bindings: Env; Variables: Variables }>) {
   try {
     const bucket = c.env.PREVIEW_DIAGRAMS;
 
@@ -62,7 +62,7 @@ export async function testR2Handler(c: Context<{ Bindings: Env }>) {
 /**
  * Health check handler with R2 binding verification
  */
-export async function healthCheckHandler(c: Context<{ Bindings: Env }>) {
+export async function healthCheckHandler(c: Context<{ Bindings: Env; Variables: Variables }>) {
   const checks = {
     api: 'healthy',
     r2: 'unknown',

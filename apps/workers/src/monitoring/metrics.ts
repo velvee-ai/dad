@@ -95,11 +95,14 @@ export class InMemoryMetricsCollector implements MetricsCollector {
     cost?: number,
     success?: boolean
   ): void {
-    this.addDataPoint(this.aiCalls, duration, {
+    const tags: Record<string, string> = {
       provider,
       success: success !== undefined ? success.toString() : 'true',
-      cost: cost?.toString(),
-    });
+    };
+    if (cost !== undefined) {
+      tags.cost = cost.toString();
+    }
+    this.addDataPoint(this.aiCalls, duration, tags);
   }
 
   trackError(error: Error, context: string): void {

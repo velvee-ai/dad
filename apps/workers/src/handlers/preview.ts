@@ -6,7 +6,7 @@ import type {
   Diagram,
   ExportFormat,
 } from '@daad/shared-types';
-import type { Env } from '../types';
+import type { Env, Variables } from '../types';
 import {
   CacheManager,
   CacheKeyPrefix,
@@ -111,7 +111,7 @@ function convertDiagramToFormat(diagram: Diagram, format: ExportFormat): string 
  * POST /api/preview/analyze
  * Creates a preview session by analyzing code changes and storing diagrams in R2
  */
-export async function analyzePreview(c: Context<{ Bindings: Env }>) {
+export async function analyzePreview(c: Context<{ Bindings: Env; Variables: Variables }>) {
   try {
     const body: PreviewAnalyzeRequest = await c.req.json();
 
@@ -248,7 +248,7 @@ export async function analyzePreview(c: Context<{ Bindings: Env }>) {
  * Retrieves a specific diagram from R2
  * Query params: format (json|d2|mermaid) - defaults to json
  */
-export async function getDiagram(c: Context<{ Bindings: Env }>) {
+export async function getDiagram(c: Context<{ Bindings: Env; Variables: Variables }>) {
   try {
     const sha = c.req.param('sha');
     const fileId = c.req.param('fileId');
@@ -334,7 +334,7 @@ export async function getDiagram(c: Context<{ Bindings: Env }>) {
  * GET /api/preview/:sha/manifest
  * Retrieves the manifest for a preview session
  */
-export async function getManifest(c: Context<{ Bindings: Env }>) {
+export async function getManifest(c: Context<{ Bindings: Env; Variables: Variables }>) {
   try {
     const sha = c.req.param('sha');
 

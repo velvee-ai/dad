@@ -2,7 +2,6 @@ package batch
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"sync"
 	"time"

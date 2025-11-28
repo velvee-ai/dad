@@ -11,8 +11,10 @@ import {
   invalidateCache,
 } from '../storage/cache';
 
+import type { Variables } from '../types';
+
 export const diagramHandler = {
-  async list(c: Context<{ Bindings: Env }>) {
+  async list(c: Context<{ Bindings: Env; Variables: Variables }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');
@@ -74,7 +76,7 @@ export const diagramHandler = {
     }
   },
 
-  async save(c: Context<{ Bindings: Env }>) {
+  async save(c: Context<{ Bindings: Env; Variables: Variables }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');
@@ -134,7 +136,7 @@ export const diagramHandler = {
     }
   },
 
-  async get(c: Context<{ Bindings: Env }>) {
+  async get(c: Context<{ Bindings: Env; Variables: Variables }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');
@@ -202,7 +204,7 @@ export const diagramHandler = {
     }
   },
 
-  async delete(c: Context<{ Bindings: Env }>) {
+  async delete(c: Context<{ Bindings: Env; Variables: Variables }>) {
     const metrics = getMetrics();
     const timer = new PerformanceTimer();
     const logger = c.get('logger');

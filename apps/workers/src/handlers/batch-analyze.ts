@@ -115,16 +115,13 @@ export async function batchAnalyzeHandler(c: Context) {
           kvNamespace: env.DAAD_KV,
         });
 
-        await storage.r2?.saveManifest(manifest);
-
-        if (storage.kv) {
-          await storage.kv.saveManifestMetadata(manifestId, {
-            totalItems: manifest.totalItems,
-            successCount: manifest.successCount,
-            failureCount: manifest.failureCount,
-            timestamp: manifest.timestamp,
-          });
-        }
+        await storage.saveManifest(manifest);
+        await storage.saveManifestMetadata(manifestId, {
+          totalItems: manifest.totalItems,
+          successCount: manifest.successCount,
+          failureCount: manifest.failureCount,
+          timestamp: manifest.timestamp,
+        });
       } catch (storageError) {
         console.error('Failed to save manifest to storage:', storageError);
       }
