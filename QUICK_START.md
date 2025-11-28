@@ -394,10 +394,11 @@ git push origin v1.0.0
 
 ## Getting Help
 
+- **[Complete Setup Guide](./docs/setup/SETUP.md)** - Full system setup instructions
+- **[Architecture Documentation](./docs/architecture/)** - System architecture and design
+- **[Installation Guide](./INSTALLATION.md)** - VSCode extension installation
 - Check existing documentation in each app's README
-- Review MONOREPO_MIGRATION_PLAN.md for detailed architecture
 - Open an issue on GitHub
-- Ask in team chat
 
 ## Performance Tips
 

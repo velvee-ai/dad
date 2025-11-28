@@ -1,127 +1,161 @@
-# Installation Guide
+# DAAD Installation Guide
 
-## Installing the DAAD Extension
+> For complete system setup including CLI, Workers, and infrastructure, see [Complete Setup Guide](docs/setup/SETUP.md)
 
-### Option 1: Install from VSIX (Recommended for Testing)
+This guide covers quick installation of the DAAD VSCode extension. For full monorepo setup, infrastructure configuration, and deployment, refer to the comprehensive setup guide.
 
-The extension has been packaged as `claude-flow-visualizer-0.0.1.vsix`
+## Quick Install: VSCode Extension
 
-#### Via VS Code UI:
-1. Open VS Code
-2. Go to Extensions view (Cmd+Shift+X on Mac, Ctrl+Shift+X on Windows/Linux)
-3. Click the "..." menu at the top of the Extensions view
+### Prerequisites
+
+- VSCode 1.74.0 or higher
+- Node.js 18+ (for development only)
+
+### Option 1: Install from VSIX (Recommended)
+
+Download the latest `.vsix` file and install:
+
+#### Via VSCode UI:
+1. Open VSCode
+2. Go to Extensions view (`Cmd+Shift+X` / `Ctrl+Shift+X`)
+3. Click the "..." menu at the top
 4. Select "Install from VSIX..."
-5. Navigate to `/Users/sathish/git/daad/main/`
-6. Select `claude-flow-visualizer-0.0.1.vsix`
-7. Click Install
+5. Navigate to the downloaded `.vsix` file
+6. Click Install
+7. Reload VSCode
 
 #### Via Command Line:
 ```bash
-code --install-extension claude-flow-visualizer-0.0.1.vsix
+code --install-extension daad-0.0.1.vsix
 ```
 
 ### Option 2: Development Mode
 
-For development and debugging:
-
-1. Open the project in VS Code
-2. Press F5 to launch a new VS Code window with the extension loaded
-3. The extension will be available in the debug instance
-
-### Option 3: Build and Install Fresh
+For extension development:
 
 ```bash
-# Clean build
-npm run clean
-npm install
-npm run compile
+# Navigate to extension directory
+cd apps/vscode-extension
 
-# Package
-npx vsce package
+# Install dependencies
+pnpm install
+
+# Open in VSCode and press F5
+code .
+```
+
+Press `F5` to launch the Extension Development Host.
+
+### Option 3: Build from Source
+
+```bash
+# From monorepo root
+pnpm install
+pnpm build
+
+# Navigate to extension
+cd apps/vscode-extension
+
+# Package extension
+pnpm package
 
 # Install
-code --install-extension claude-flow-visualizer-0.0.1.vsix
+code --install-extension daad-0.0.1.vsix
 ```
 
 ## Verify Installation
 
-1. Open any JavaScript/TypeScript/Python file
-2. Select some code
-3. Right-click and look for "Visualize Code Flow"
-4. Or use Command Palette (Cmd+Shift+P) and search for "Claude Flow"
+1. Open any code file (JavaScript, TypeScript, Python, etc.)
+2. Select a function or code block
+3. Right-click → "Visualize Code Flow with Claude"
+4. Or use Command Palette (`Cmd+Shift+P`) → "Claude Flow: Visualize Selection"
+5. Interactive flow chart should appear
 
-## System Requirements
-
-- VS Code 1.80.0 or higher
-- Node.js 16+ (for development)
-- Claude CLI (for diagram generation)
-
-## Features Available After Installation
+## Available Features
 
 ### Commands
 - **Claude Flow: Visualize Selection** - Generate flow chart from selected code
-- **Claude Flow: Visualize File** - Generate flow chart for entire file
-- **Claude Flow: Visualize All Functions** - Analyze all functions separately
-- **Claude Flow: Smart Detection** - Auto-detect relevant code at cursor
+- **Claude Flow: Visualize Entire File** - Analyze complete file
+- **Claude Flow: Visualize All Functions** - List and visualize all functions
+- **Claude Flow: Smart Detection** - Auto-detect code at cursor
 
 ### Views
-- **Saved Charts** - Tree view in Explorer showing all saved diagrams
+- **Saved Flow Charts** - Explorer sidebar showing saved diagrams
+- Click any saved chart to reload it
 
 ### Context Menu
-- Right-click on selected code → "Visualize Code Flow"
+- Right-click selected code → "Visualize Code Flow"
+- Right-click in editor → "Visualize Entire File"
+- Right-click file in Explorer → "Visualize File"
 
-### Edit Mode Features
-- Toggle between View/Edit modes
-- Add/delete nodes
-- Create connections
-- Auto-layout
-- Save/reset changes
+## Storage
+
+The extension automatically creates a `.daad/` folder in your workspace root for saved diagrams.
 
 ## Troubleshooting
 
-### Extension Not Showing
-1. Check VS Code version (must be 1.80.0+)
-2. Reload VS Code window (Cmd+R / Ctrl+R)
-3. Check extension is enabled in Extensions view
+### Extension Not Appearing
 
-### Claude Not Found
-1. Ensure Claude CLI is installed
-2. Check PATH includes Claude
-3. Run `which claude` in terminal to verify
+1. Check VSCode version is 1.74.0+
+2. Reload VSCode window (`Cmd+R` / `Ctrl+R`)
+3. Verify extension is enabled in Extensions view
+4. Check Developer Tools for errors (`Help` → `Toggle Developer Tools`)
 
 ### Diagrams Not Generating
-1. Check Output panel → "Claude Flow Visualizer"
-2. Verify code selection is valid
-3. Try smaller code snippets first
+
+1. Check Output panel (`View` → `Output` → select "Claude Flow Visualizer")
+2. Ensure code selection is valid
+3. Try with smaller code snippets
+4. Verify you have an active internet connection (for AI features)
+
+### Performance Issues
+
+1. Large files: Use "Visualize All Functions" instead of entire file
+2. Clear saved diagrams: Delete `.daad/` folder
+3. Check Output panel for specific errors
 
 ## Uninstalling
 
-### Via VS Code:
-1. Go to Extensions view
-2. Find "Claude Flow Visualizer"
-3. Click Uninstall
+### Via VSCode:
+1. Extensions view → Find "DAAD" → Uninstall
 
 ### Via Command Line:
 ```bash
-code --uninstall-extension claude-flow-visualizer
+code --uninstall-extension daad
+```
+
+### Clean Up Files:
+```bash
+# Remove saved diagrams
+rm -rf .daad/
 ```
 
 ## Updates
 
-When a new version is available:
-1. Uninstall the old version
-2. Install the new VSIX file
-3. Reload VS Code
+Install new versions by:
+1. Uninstalling the current version
+2. Installing the new `.vsix` file
+3. Reloading VSCode
 
-## File Locations
+## Full System Setup
 
-After installation, the extension creates:
-- `.daad/` folder in workspace root (for saved diagrams)
-- `.daad/.gitignore` (to optionally exclude from git)
+For complete setup including:
+- CLI tool installation
+- Cloudflare Workers deployment
+- R2 storage configuration
+- KV cache setup
+- Development environment
+
+See the **[Complete Setup Guide](docs/setup/SETUP.md)**
+
+## Additional Resources
+
+- **[Quick Start Guide](QUICK_START.md)** - Common commands and workflows
+- **[VSCode Extension README](apps/vscode-extension/README.md)** - Detailed extension documentation
+- **[Main README](README.md)** - Project overview
 
 ## Support
 
-For issues or questions:
-- Check the Output panel (View → Output → Claude Flow Visualizer)
-- Review error messages in Developer Tools (Help → Toggle Developer Tools)
-- File issues with error logs and reproduction steps
+- **Output Panel**: `View` → `Output` → "Claude Flow Visualizer"
+- **Developer Tools**: `Help` → `Toggle Developer Tools`
+- **Issues**: File issues on GitHub with error logs and reproduction steps

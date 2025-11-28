@@ -74,15 +74,30 @@ pnpm format
 
 ## 📚 Documentation
 
-- **[QUICK_START.md](./QUICK_START.md)** - Detailed quick start guide
-- **[MONOREPO_MIGRATION_PLAN.md](./MONOREPO_MIGRATION_PLAN.md)** - Migration plan and architecture
-- **[MONOREPO_IMPLEMENTATION.md](./MONOREPO_IMPLEMENTATION.md)** - Implementation summary
+### Getting Started
 
-### Package-Specific Documentation
+- **[Complete Setup Guide](./docs/setup/SETUP.md)** - Full system setup (CLI, Workers, R2, KV)
+- **[Installation Guide](./INSTALLATION.md)** - Quick VSCode extension installation
+- **[Quick Start](./QUICK_START.md)** - Common commands and workflows
 
-- [VSCode Extension README](./apps/vscode-extension/README.md)
-- [CLI README](./apps/cli/README.md)
-- [Workers README](./apps/workers/README.md)
+### Application Documentation
+
+- **[VSCode Extension](./apps/vscode-extension/README.md)** - Interactive code visualization
+- **[CLI Tool](./apps/cli/README.md)** - Command-line diagram generation
+- **[Workers API](./apps/workers/README.md)** - Backend API documentation
+
+### Infrastructure & Deployment
+
+- **[R2 Storage Setup](./docs/setup/R2_SETUP.md)** - Cloudflare R2 configuration
+- **[Caching Layer](./docs/setup/CACHING.md)** - KV cache implementation
+- **[Monitoring](./docs/setup/MONITORING.md)** - Performance metrics and monitoring
+- **[Deployment Checklist](./docs/setup/DEPLOYMENT_CHECKLIST.md)** - Production deployment steps
+
+### Architecture & Guides
+
+- **[Architecture Overview](./docs/architecture/)** - System architecture and design
+- **[Testing Guide](./docs/guides/TESTING.md)** - Testing strategies and examples
+- **[Project Plan](./docs/guides/PROJECT_PLAN.md)** - Development roadmap
 
 ## 🏗️ Project Structure
 
