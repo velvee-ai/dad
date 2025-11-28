@@ -1,6 +1,6 @@
 {
   "mode": "incremental",
-  "timestamp": "2025-11-26T08:31:33+00:00",
-  "files_processed": 11,
-  "changed_files": ["apps/workers/src/handlers/analyze.ts","apps/workers/src/handlers/diagram.ts","apps/workers/src/handlers/export.ts","apps/workers/src/index.ts","apps/workers/src/middleware/analytics.ts","apps/workers/src/monitoring/alerting.ts","apps/workers/src/monitoring/dashboard.ts","apps/workers/src/monitoring/index.ts","apps/workers/src/monitoring/logger.ts","apps/workers/src/monitoring/metrics.ts","apps/workers/src/scheduled/cleanup.ts"]
+  "timestamp": "2025-11-28T05:43:58+00:00",
+  "files_processed": 13,
+  "changed_files": ["apps/cli/internal/batch/batch.go","apps/cli/internal/generator/batch.go","apps/vscode-extension/src/extension/commands/visualizeChanges.ts","apps/workers/src/handlers/batch-analyze.ts","apps/workers/src/handlers/diagram.ts","apps/workers/src/handlers/preview.ts","apps/workers/src/handlers/test.ts","apps/workers/src/index.ts","apps/workers/src/monitoring/alerting.ts","apps/workers/src/monitoring/index.ts","apps/workers/src/monitoring/metrics.ts","apps/workers/src/types.ts","apps/workers/src/utils/storage.ts"]
 }
