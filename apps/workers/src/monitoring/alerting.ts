@@ -46,17 +46,19 @@ export class ConsoleAlertChannel implements AlertChannel {
   }
 
   async send(alert: Alert): Promise<void> {
-    const logMethod = alert.severity === AlertSeverity.CRITICAL || alert.severity === AlertSeverity.ERROR
-      ? 'error'
-      : alert.severity === AlertSeverity.WARNING
-      ? 'warn'
-      : 'info';
-
-    this.logger[logMethod](`ALERT: ${alert.message}`, {
+    const meta = {
       alertId: alert.id,
       severity: alert.severity,
       ...alert.context,
-    });
+    };
+
+    if (alert.severity === AlertSeverity.CRITICAL || alert.severity === AlertSeverity.ERROR) {
+      this.logger.error(`ALERT: ${alert.message}`, undefined, meta);
+    } else if (alert.severity === AlertSeverity.WARNING) {
+      this.logger.warn(`ALERT: ${alert.message}`, meta);
+    } else {
+      this.logger.info(`ALERT: ${alert.message}`, meta);
+    }
   }
 }
 

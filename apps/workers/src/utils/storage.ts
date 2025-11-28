@@ -161,11 +161,11 @@ export class StorageManager {
       promises.push(this.r2.saveDiagram(id, diagram));
     }
 
-    if (this.kv && diagram.metadata) {
+    if (this.kv && diagram.diagram.metadata) {
       promises.push(
         this.kv.saveDiagramMetadata(id, {
           filename: diagram.filename,
-          language: diagram.metadata.language,
+          language: diagram.diagram.metadata.language,
           timestamp: diagram.timestamp,
         })
       );
@@ -261,6 +261,30 @@ export class StorageManager {
       return this.r2.getManifest(id);
     }
     return null;
+  }
+
+  async saveManifest(manifest: BatchManifest): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    if (this.r2) {
+      promises.push(this.r2.saveManifest(manifest));
+    }
+
+    await Promise.all(promises);
+  }
+
+  async saveManifestMetadata(
+    manifestId: string,
+    metadata: {
+      totalItems: number;
+      successCount: number;
+      failureCount: number;
+      timestamp: number;
+    }
+  ): Promise<void> {
+    if (this.kv) {
+      await this.kv.saveManifestMetadata(manifestId, metadata);
+    }
   }
 
   async listManifests(limit: number = 100): Promise<string[]> {

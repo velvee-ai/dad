@@ -11,9 +11,9 @@ import { analyticsMiddleware, metricsEndpoint, healthCheckWithMetrics } from './
 import { initializeMetrics } from './monitoring/metrics';
 import cleanupWorker from './scheduled/cleanup';
 import { createCacheManager } from './storage/cache';
-import type { Env } from './types';
+import type { Env, Variables } from './types';
 
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 // Initialize metrics on first request
 app.use('/*', async (c, next) => {

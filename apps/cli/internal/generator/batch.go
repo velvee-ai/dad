@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/yourorg/daad/apps/cli/internal/batch"
+	"github.com/velvee-ai/daad/apps/cli/internal/batch"
 )
 
 // FileAnalysis represents a file to be analyzed

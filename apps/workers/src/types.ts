@@ -1,3 +1,6 @@
+import type { CacheManager } from './storage/cache';
+import type { StructuredLogger } from './monitoring/logger';
+
 /**
  * Cloudflare Workers environment bindings
  */
@@ -21,6 +24,23 @@ export interface Env {
   // API Keys (stored as secrets)
   OPENROUTER_API_KEY?: string;
   CLAUDE_API_KEY?: string;
+
+  // Analytics binding (optional)
+  ANALYTICS?: AnalyticsEngineDataset;
+
+  // Allow additional properties for compatibility with Hono
+  [key: string]: any;
+}
+
+/**
+ * Hono context variables
+ */
+export interface Variables {
+  cache: CacheManager;
+  logger?: StructuredLogger;
+
+  // Allow additional properties for compatibility with Hono
+  [key: string]: any;
 }
 
 /**

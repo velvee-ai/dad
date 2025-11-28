@@ -202,7 +202,7 @@ export class VisualizeChangesCommand {
         );
       }
 
-      const result = await response.json();
+      const result = await response.json() as any;
       return result.diagram || result.flowChart;
     } catch (error) {
       console.error('Workers API call failed:', error);
