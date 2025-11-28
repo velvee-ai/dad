@@ -4,6 +4,8 @@
 
 A monorepo containing all DAAD tools for AI-powered code visualization and diagram generation.
 
+**[📋 View Complete Feature List](./FEATURES.md)** - Detailed implementation status of all features
+
 ## 🎯 Philosophy
 
 - **D**iagram **a**s **a** **D**elivery - Ship understanding, not just code
@@ -76,43 +78,61 @@ pnpm format
 
 ### Getting Started
 
-- **[Complete Setup Guide](./docs/setup/SETUP.md)** - Full system setup (CLI, Workers, R2, KV)
-- **[Installation Guide](./INSTALLATION.md)** - Quick VSCode extension installation
-- **[Quick Start](./QUICK_START.md)** - Common commands and workflows
+- **[Complete Setup Guide](./docs/setup/SETUP.md)** - Full system setup (CLI, Workers, R2, KV, Secrets)
+- **[Quick Start Guide](./docs/guides/QUICK_START.md)** - Get up and running quickly
+- **[Installation Guide](./docs/guides/INSTALLATION.md)** - VSCode extension installation
+- **[Deployment Checklist](./docs/guides/DEPLOYMENT_CHECKLIST.md)** - Production deployment guide
 
-### Application Documentation
+### Infrastructure & Setup
 
-- **[VSCode Extension](./apps/vscode-extension/README.md)** - Interactive code visualization
-- **[CLI Tool](./apps/cli/README.md)** - Command-line diagram generation
-- **[Workers API](./apps/workers/README.md)** - Backend API documentation
+- **[R2 Storage Setup](./docs/setup/R2_SETUP.md)** - Cloudflare R2 bucket configuration
+- **[KV Cache Setup](./docs/setup/CACHING.md)** - Cache layer configuration
+- **[Monitoring Setup](./docs/setup/MONITORING.md)** - Metrics and alerting setup
 
-### Infrastructure & Deployment
+### Architecture & Implementation
 
-- **[R2 Storage Setup](./docs/setup/R2_SETUP.md)** - Cloudflare R2 configuration
-- **[Caching Layer](./docs/setup/CACHING.md)** - KV cache implementation
-- **[Monitoring](./docs/setup/MONITORING.md)** - Performance metrics and monitoring
-- **[Deployment Checklist](./docs/setup/DEPLOYMENT_CHECKLIST.md)** - Production deployment steps
+- **[Batch Processing](./docs/BATCH_PROCESSING.md)** - Batch diagram generation architecture
+- **[SVG Rendering Implementation](./docs/architecture/SVG_RENDERING_IMPLEMENTATION.md)** - SVG export system
+- **[Monitoring Implementation](./docs/architecture/MONITORING_IMPLEMENTATION.md)** - Metrics and alerting
+- **[Caching Integration](./docs/architecture/CACHING_INTEGRATION.md)** - KV cache layer
+- **[Diagram Storage Architecture](./docs/architecture/DIAGRAM_STORAGE_ARCHITECTURE.md)** - R2 storage system
+- **[Cleanup Worker Implementation](./docs/architecture/CLEANUP_WORKER_IMPLEMENTATION.md)** - Scheduled cleanup
+- **[Preview Panel Implementation](./docs/architecture/PREVIEW_PANEL_IMPLEMENTATION.md)** - VSCode preview panel
 
-### Architecture & Guides
+### Development Guides
 
-- **[Architecture Overview](./docs/architecture/)** - System architecture and design
-- **[Testing Guide](./docs/guides/TESTING.md)** - Testing strategies and examples
-- **[Project Plan](./docs/guides/PROJECT_PLAN.md)** - Development roadmap
+- **[Testing Guide](./docs/guides/TESTING.md)** - How to test the applications
+- **[Editing Guide](./docs/guides/EDITING_GUIDE.md)** - Code contribution guidelines
+
+### Package-Specific Documentation
+
+- [VSCode Extension README](./apps/vscode-extension/README.md)
+- [CLI README](./apps/cli/README.md)
+- [Workers README](./apps/workers/README.md)
+
+### Historical Documentation
+
+Archived planning and migration documents can be found in [docs/archive](./docs/archive/)
 
 ## 🏗️ Project Structure
 
 ```
 daad-monorepo/
 ├── apps/
-│   ├── vscode-extension/    # VSCode plugin (TypeScript + React)
-│   ├── cli/                  # CLI tool (Go + D2)
-│   └── workers/              # Backend API (TypeScript + Cloudflare)
+│   ├── vscode-extension/    # VSCode plugin (TypeScript + React) - PRODUCTION READY ✅
+│   ├── cli/                  # CLI tool (Go + D2) - PARTIAL (SVG export works)
+│   └── workers/              # Backend API (TypeScript + Cloudflare) - PRODUCTION READY ✅
 ├── packages/
 │   ├── shared-types/        # Shared TypeScript types
-│   ├── diagram-schema/      # Diagram validation & schemas
-│   └── config/              # Shared configs (ESLint, etc.)
-├── turbo.json               # Build pipeline config
-├── pnpm-workspace.yaml     # Workspace configuration
+│   ├── diagram-schema/      # Schema validation & format conversion
+│   └── config/              # Shared ESLint and TypeScript configs
+├── docs/
+│   ├── guides/              # User guides and tutorials
+│   ├── architecture/        # Implementation and architecture docs
+│   └── archive/             # Historical planning documents
+├── examples/                # Example code and usage patterns
+├── turbo.json               # Turborepo build pipeline config
+├── pnpm-workspace.yaml      # PNPM workspace configuration
 └── package.json             # Root package.json
 ```
 
