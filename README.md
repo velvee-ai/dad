@@ -78,11 +78,16 @@ pnpm format
 
 ### Getting Started
 
+- **[Complete Setup Guide](./docs/setup/SETUP.md)** - Full system setup (CLI, Workers, R2, KV, Secrets)
 - **[Quick Start Guide](./docs/guides/QUICK_START.md)** - Get up and running quickly
-- **[Installation Guide](./docs/guides/INSTALLATION.md)** - Detailed installation instructions
+- **[Installation Guide](./docs/guides/INSTALLATION.md)** - VSCode extension installation
 - **[Deployment Checklist](./docs/guides/DEPLOYMENT_CHECKLIST.md)** - Production deployment guide
-- **[Testing Guide](./docs/guides/TESTING.md)** - How to test the applications
-- **[Editing Guide](./docs/guides/EDITING_GUIDE.md)** - Code contribution guidelines
+
+### Infrastructure & Setup
+
+- **[R2 Storage Setup](./docs/setup/R2_SETUP.md)** - Cloudflare R2 bucket configuration
+- **[KV Cache Setup](./docs/setup/CACHING.md)** - Cache layer configuration
+- **[Monitoring Setup](./docs/setup/MONITORING.md)** - Metrics and alerting setup
 
 ### Architecture & Implementation
 
@@ -93,6 +98,11 @@ pnpm format
 - **[Diagram Storage Architecture](./docs/architecture/DIAGRAM_STORAGE_ARCHITECTURE.md)** - R2 storage system
 - **[Cleanup Worker Implementation](./docs/architecture/CLEANUP_WORKER_IMPLEMENTATION.md)** - Scheduled cleanup
 - **[Preview Panel Implementation](./docs/architecture/PREVIEW_PANEL_IMPLEMENTATION.md)** - VSCode preview panel
+
+### Development Guides
+
+- **[Testing Guide](./docs/guides/TESTING.md)** - How to test the applications
+- **[Editing Guide](./docs/guides/EDITING_GUIDE.md)** - Code contribution guidelines
 
 ### Package-Specific Documentation
 

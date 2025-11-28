@@ -138,7 +138,16 @@ Automatically cleans up expired preview sessions from R2 storage.
 
 See `src/scheduled/README.md` for detailed documentation.
 
-## R2 Bucket Setup
+## Setup and Configuration
+
+For complete setup instructions, see:
+
+- **[Complete Setup Guide](../../docs/setup/SETUP.md)** - Full system setup including Workers
+- **[R2 Storage Setup](../../docs/setup/R2_SETUP.md)** - Detailed R2 configuration
+- **[Caching Setup](../../docs/setup/CACHING.md)** - KV cache configuration
+- **[Monitoring Setup](../../docs/setup/MONITORING.md)** - Metrics and monitoring
+
+### Quick R2 Setup
 
 The worker requires an R2 bucket for preview sessions:
 
@@ -152,12 +161,22 @@ wrangler r2 bucket create daad-diagrams-preview
 
 Update `wrangler.toml` with your bucket names.
 
+See [R2 Setup Guide](../../docs/setup/R2_SETUP.md) for CORS configuration and advanced setup.
+
+## Additional Documentation
+
+- **[Deployment Checklist](../../docs/setup/DEPLOYMENT_CHECKLIST.md)** - Production deployment
+- **[API Specification](../../docs/architecture/PREVIEW_API_SPEC.md)** - Detailed API docs
+- **[Architecture](../../docs/architecture/)** - System architecture
+
 ## TODO
 
 - [ ] Implement actual AI code analysis
 - [x] Set up R2 bucket for diagram storage
-- [ ] Set up KV for metadata
+- [x] Set up KV for caching
 - [ ] Add authentication
 - [ ] Add rate limiting
 - [ ] Add tests
 - [x] Implement scheduled cleanup worker
+- [x] Implement caching layer
+- [x] Add monitoring and metrics
