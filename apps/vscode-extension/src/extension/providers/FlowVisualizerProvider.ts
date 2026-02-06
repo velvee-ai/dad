@@ -8,6 +8,8 @@ export class FlowVisualizerProvider {
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
   private _onSaveDiagram?: (data: FlowChartData) => void;
+  private _isReady = false;
+  private _pendingMessages: any[] = [];
 
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.ViewColumn.Beside;
@@ -47,7 +49,12 @@ export class FlowVisualizerProvider {
       async (message) => {
         switch (message.command) {
           case 'ready':
-            vscode.window.showInformationMessage('Flow visualizer is ready');
+            this._isReady = true;
+            // Flush any messages that were queued before webview was ready
+            for (const msg of this._pendingMessages) {
+              this._panel.webview.postMessage(msg);
+            }
+            this._pendingMessages = [];
             break;
           case 'error':
             vscode.window.showErrorMessage(`Flow visualizer error: ${message.text}`);
@@ -57,6 +64,15 @@ export class FlowVisualizerProvider {
               this._onSaveDiagram(message.data);
             }
             break;
+          case 'openSourceFile':
+            if (message.filePath) {
+              const workspaceFolders = vscode.workspace.workspaceFolders;
+              if (workspaceFolders) {
+                const fullPath = vscode.Uri.joinPath(workspaceFolders[0].uri, message.filePath);
+                vscode.window.showTextDocument(fullPath);
+              }
+            }
+            break;
         }
       },
       null,
@@ -64,31 +80,35 @@ export class FlowVisualizerProvider {
     );
   }
 
+  /**
+   * Send a message to the webview, buffering if it hasn't signaled 'ready' yet.
+   */
+  private _postMessage(message: any) {
+    if (this._isReady) {
+      this._panel.webview.postMessage(message);
+    } else {
+      this._pendingMessages.push(message);
+    }
+  }
+
   public updateFlowChart(data: FlowChartData) {
-    this._panel.webview.postMessage({
-      command: 'updateFlow',
-      data: data
-    });
+    this._postMessage({ command: 'updateFlow', data });
   }
 
   public updateHierarchicalFlowChart(data: any) {
-    this._panel.webview.postMessage({
-      command: 'updateHierarchicalFlow',
-      data: data
-    });
+    this._postMessage({ command: 'updateHierarchicalFlow', data });
+  }
+
+  public updateC4View(data: any) {
+    this._postMessage({ command: 'updateC4View', data });
   }
 
   public showError(error: string) {
-    this._panel.webview.postMessage({
-      command: 'showError',
-      error: error
-    });
+    this._postMessage({ command: 'showError', error });
   }
 
   public showLoading() {
-    this._panel.webview.postMessage({
-      command: 'showLoading'
-    });
+    this._postMessage({ command: 'showLoading' });
   }
 
   public setSaveHandler(handler: (data: FlowChartData) => void) {

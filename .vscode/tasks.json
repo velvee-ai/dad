@@ -2,24 +2,24 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "watch",
-      "problemMatcher": "$tsc-watch",
-      "isBackground": true,
-      "presentation": {
-        "reveal": "never"
-      },
+      "label": "build-extension",
+      "type": "shell",
+      "command": "pnpm --filter @daad/vscode-extension build",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "label": "npm: watch"
+      "problemMatcher": []
     },
     {
-      "type": "npm",
-      "script": "compile",
-      "group": "build",
-      "label": "npm: compile"
+      "label": "watch-extension",
+      "type": "shell",
+      "command": "pnpm --filter @daad/vscode-extension watch",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      }
     }
   ]
 }

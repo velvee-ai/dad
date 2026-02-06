@@ -224,4 +224,81 @@ export class ZoomManager {
 
     return { shouldCollapse: false };
   }
+
+  // --- C4 Architecture View Support ---
+
+  static readonly C4_ZOOM_LEVELS = [
+    { level: 0, name: 'Landscape',      c4Level: 'landscape',  minZoom: 0,    maxZoom: 0.25 },
+    { level: 1, name: 'System Context', c4Level: 'context',    minZoom: 0.25, maxZoom: 0.5  },
+    { level: 2, name: 'Containers',     c4Level: 'container',  minZoom: 0.5,  maxZoom: 1.0  },
+    { level: 3, name: 'Components',     c4Level: 'component',  minZoom: 1.0,  maxZoom: 2.0  },
+    { level: 4, name: 'Code',           c4Level: 'code',       minZoom: 2.0,  maxZoom: Infinity },
+  ] as const;
+
+  static getC4Level(zoom: number): typeof ZoomManager.C4_ZOOM_LEVELS[number] {
+    for (const level of ZoomManager.C4_ZOOM_LEVELS) {
+      if (zoom >= level.minZoom && zoom < level.maxZoom) {
+        return level;
+      }
+    }
+    return ZoomManager.C4_ZOOM_LEVELS[ZoomManager.C4_ZOOM_LEVELS.length - 1];
+  }
+
+  static getC4LevelName(zoom: number): string {
+    return this.getC4Level(zoom).name;
+  }
+
+  static getC4ZoomForDrillDown(c4Level: string): number {
+    switch (c4Level) {
+      case 'landscape': return 0.35;
+      case 'context':   return 0.7;
+      case 'container': return 1.5;
+      case 'component': return 2.5;
+      default:          return 1.0;
+    }
+  }
+
+  static getC4ZoomForDrillUp(c4Level: string): number {
+    switch (c4Level) {
+      case 'code':      return 1.5;
+      case 'component': return 0.7;
+      case 'container': return 0.35;
+      case 'context':   return 0.15;
+      default:          return 0.15;
+    }
+  }
+
+  /**
+   * Apply C4-aware Level of Detail.
+   * Shows nodes up to the appropriate C4 level based on zoom.
+   */
+  static applyC4LOD(
+    nodes: Node[],
+    edges: Edge[],
+    zoom: number
+  ): { nodes: Node[]; edges: Edge[] } {
+    const c4Level = this.getC4Level(zoom);
+    const c4LevelOrder: Record<string, number> = {
+      landscape: 0, context: 1, container: 2, component: 3, code: 4,
+    };
+    const maxVisible = c4Level.level;
+
+    const updatedNodes = nodes.map(node => {
+      const nodeC4Level = node.data?.c4Level;
+      if (!nodeC4Level) return node;
+
+      const nodeOrder = c4LevelOrder[nodeC4Level] ?? 0;
+      const shouldHide = nodeOrder > maxVisible;
+
+      return { ...node, hidden: shouldHide };
+    });
+
+    const hiddenIds = new Set(updatedNodes.filter(n => n.hidden).map(n => n.id));
+    const updatedEdges = edges.map(edge => ({
+      ...edge,
+      hidden: hiddenIds.has(edge.source) || hiddenIds.has(edge.target),
+    }));
+
+    return { nodes: updatedNodes, edges: updatedEdges };
+  }
 }

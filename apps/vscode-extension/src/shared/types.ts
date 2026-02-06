@@ -1,6 +1,6 @@
 export interface FlowNode {
   id: string;
-  type: 'start' | 'process' | 'decision' | 'loop' | 'call' | 'return' | 'end' | 'file' | 'function' | 'code';
+  type: 'start' | 'process' | 'decision' | 'loop' | 'call' | 'return' | 'end' | 'file' | 'function' | 'code' | 'c4Node';
   data: {
     label: string;
     description?: string;
@@ -9,7 +9,15 @@ export interface FlowNode {
     collapsed?: boolean;
     childCount?: number;
     onToggleCollapse?: () => void;
-    nodeType?: 'start' | 'process' | 'decision' | 'loop' | 'call' | 'return' | 'end' | 'file' | 'function' | 'code';
+    nodeType?: string;
+    // C4 node data
+    c4Level?: 'landscape' | 'context' | 'container' | 'component' | 'code';
+    c4Type?: string;
+    technology?: string;
+    designSpec?: string;
+    documentation?: string;
+    sourceFilePath?: string;
+    onNodeClick?: () => void;
   };
   position: { x: number; y: number };
   parentId?: string;

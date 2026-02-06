@@ -786,6 +786,87 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // --- C4 Architecture Commands ---
+
+  const generateC4Command = vscode.commands.registerCommand(
+    'daad.generateC4',
+    async () => {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder open. Open a project folder first.');
+        return;
+      }
+
+      const panel = FlowVisualizerProvider.createOrShow(context.extensionUri);
+      panel.showLoading();
+
+      try {
+        const { C4Generator } = await import('./extension/c4/C4Generator');
+        const generator = new C4Generator();
+
+        const dadFile = await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: 'DAD: Generating Architecture Diagram',
+            cancellable: false,
+          },
+          async (progress) => {
+            return generator.generate(workspaceFolder.uri.fsPath, progress);
+          }
+        );
+
+        panel.updateC4View(dadFile);
+        vscode.window.showInformationMessage(
+          `DAD: Architecture diagram generated (${dadFile.nodes.length} nodes, ${dadFile.edges.length} edges)`
+        );
+
+        generator.dispose();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        panel.showError(`Architecture generation failed: ${msg}`);
+        vscode.window.showErrorMessage(`DAD generation error: ${msg}`);
+      }
+    }
+  );
+
+  const openC4Command = vscode.commands.registerCommand(
+    'daad.openC4',
+    async () => {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder open.');
+        return;
+      }
+
+      const { DadStorage } = await import('./extension/storage/DadStorage');
+      const dadStorage = new DadStorage(workspaceFolder.uri.fsPath);
+
+      if (!dadStorage.exists()) {
+        const generate = await vscode.window.showInformationMessage(
+          'No .dad file found. Generate architecture diagram first?',
+          'Generate',
+          'Cancel'
+        );
+        if (generate === 'Generate') {
+          vscode.commands.executeCommand('daad.generateC4');
+        }
+        return;
+      }
+
+      const dadFile = dadStorage.load();
+      if (!dadFile) {
+        vscode.window.showErrorMessage('Failed to load .dad file. It may be corrupted.');
+        return;
+      }
+
+      const panel = FlowVisualizerProvider.createOrShow(context.extensionUri);
+      panel.updateC4View(dadFile);
+      vscode.window.showInformationMessage(
+        `DAD: Loaded architecture diagram (${dadFile.nodes.length} nodes)`
+      );
+    }
+  );
+
   context.subscriptions.push(visualizeCommand);
   context.subscriptions.push(visualizeFileCommand);
   context.subscriptions.push(visualizeAllFunctionsCommand);
@@ -795,6 +876,8 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(loadChartCommand);
   context.subscriptions.push(openFolderCommand);
   context.subscriptions.push(visualizeChangesCommand);
+  context.subscriptions.push(generateC4Command);
+  context.subscriptions.push(openC4Command);
   context.subscriptions.push({
     dispose: () => {
       claudeClient.dispose();

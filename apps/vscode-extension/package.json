@@ -64,6 +64,16 @@
         "command": "daad.visualizeChanges",
         "title": "DAAD: Visualize Changes",
         "icon": "$(git-commit)"
+      },
+      {
+        "command": "daad.generateC4",
+        "title": "DAD: Generate Architecture Diagram",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "daad.openC4",
+        "title": "DAD: Open Architecture View",
+        "icon": "$(type-hierarchy-sub)"
       }
     ],
     "views": {
@@ -143,6 +153,11 @@
         "key": "ctrl+shift+g",
         "mac": "cmd+shift+g",
         "when": "!inDebugMode"
+      },
+      {
+        "command": "daad.generateC4",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a"
       }
     ],
     "configuration": {
@@ -213,6 +228,8 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@daad/shared-types": "workspace:*",
+    "@daad/diagram-schema": "workspace:*",
     "@integratorivan/react-flow-smart-edge": "^1.0.1",
     "dagre": "^0.8.5",
     "dexie": "^4.2.1",
