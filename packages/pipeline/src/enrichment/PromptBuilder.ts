@@ -73,6 +73,60 @@ Return ONLY the YAML, no explanation.`;
   }
 
   /**
+   * Build a prompt to generate a description for a component node.
+   * Uses sibling components for architectural context.
+   */
+  componentDescription(node: DadNode, siblings: DadNode[]): string {
+    const siblingList = siblings
+      .filter(s => s.id !== node.id)
+      .map(s => `- ${s.name} (${s.tags?.join(', ') || 'unknown role'})`)
+      .join('\n');
+
+    return `You are a software architect documenting a C4 model.
+
+Generate a concise Markdown description for this component:
+- Name: ${node.name}
+- Role: ${node.tags?.join(', ') || 'unknown'}
+- Technology: ${node.technology || 'Unknown'}
+- Parent container: ${node.parentId || 'unknown'}
+
+Sibling components in the same container:
+${siblingList || '(none)'}
+
+The description should include:
+1. A brief paragraph explaining the component's purpose
+2. Its key responsibilities (2-3 bullet points)
+
+Keep it concise (under 100 words). Use Markdown formatting.`;
+  }
+
+  /**
+   * Build a prompt to generate a description for a code unit node.
+   * Uses parent component context.
+   */
+  codeUnitDescription(node: DadNode, parentComponent?: DadNode): string {
+    const parentInfo = parentComponent
+      ? `- Parent component: ${parentComponent.name} (${parentComponent.tags?.join(', ') || 'unknown role'})`
+      : '- Parent component: unknown';
+
+    return `You are a software architect documenting a C4 model.
+
+Generate a concise Markdown description for this code unit:
+- Name: ${node.name}
+- Kind: ${node.codeUnitKind || 'unknown'}
+- Technology: ${node.technology || 'Unknown'}
+${parentInfo}
+${node.sourceMapping ? `- File: ${node.sourceMapping.filePath} (lines ${node.sourceMapping.startLine}-${node.sourceMapping.endLine})` : ''}
+
+The description should include:
+1. A brief sentence explaining what this code unit does
+2. Its signature or interface (if applicable)
+3. Any notable behavior or side effects
+
+Keep it concise (under 80 words). Use Markdown formatting.`;
+  }
+
+  /**
    * Build a prompt to detect actors who interact with the system.
    */
   detectActors(scanResult: ScanResult): string {

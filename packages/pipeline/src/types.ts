@@ -70,11 +70,39 @@ export interface DadFileMetadata {
   totalEdges: number;
 }
 
+// ============================================================
+// Views & Styles Types
+// ============================================================
+
+export interface ViewConfig {
+  key: string;
+  title: string;
+  scopeId: string;
+  include: string[];
+  autoLayout: { direction: 'tb' | 'lr'; rankSeparation?: number; nodeSeparation?: number };
+}
+
+export interface DadViews {
+  systemLandscape?: ViewConfig;
+  systemContext?: ViewConfig[];
+  container?: ViewConfig[];
+  component?: ViewConfig[];
+}
+
+export interface StyleRule { tag: string; [key: string]: unknown; }
+
+export interface DadStyles {
+  elements: StyleRule[];
+  relationships: StyleRule[];
+}
+
 export interface DadFile {
   version: '1.0';
   metadata: DadFileMetadata;
   nodes: DadNode[];
   edges: DadEdge[];
+  views?: DadViews;
+  styles?: DadStyles;
 }
 
 export type DetectedBy = 'filesystem' | 'package-json' | 'dockerfile' | 'docker-compose' | 'directory-pattern' | 'source-file';

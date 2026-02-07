@@ -9,6 +9,7 @@ export { ExternalServiceRegistry } from './scanner/ExternalServiceRegistry';
 
 // Analyzer (Stage 2)
 export { CodeAnalyzer } from './analyzer/CodeAnalyzer';
+export { LightweightSymbolExtractor } from './analyzer/LightweightSymbolExtractor';
 export { MockLanguageServiceAdapter } from './analyzer/LanguageServiceAdapter';
 
 // Grouper (Stage 3)
@@ -17,6 +18,8 @@ export { ComponentGrouper } from './grouper/ComponentGrouper';
 // Assembler (Stage 4)
 export { DadFileAssembler } from './assembler/DadFileAssembler';
 export { EdgeInference } from './assembler/EdgeInference';
+export { PersonDetector } from './assembler/PersonDetector';
+export { ViewsStylesGenerator } from './assembler/ViewsStylesGenerator';
 export * from './assembler/IdGenerator';
 
 // Enrichment (Stage 5)
@@ -49,4 +52,8 @@ export type {
   LLMProvider,
   EnrichmentResult,
   PipelineConfig,
+  ViewConfig,
+  DadViews,
+  DadStyles,
+  StyleRule,
 } from './types';

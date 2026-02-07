@@ -42,7 +42,13 @@ export class LLMEnricher {
       await this.enrichDesignSpec(node);
     }
 
-    // Detect and add persons
+    // Enrich component nodes
+    await this.enrichComponents(combined.nodes);
+
+    // Enrich code unit nodes
+    await this.enrichCodeUnits(combined.nodes);
+
+    // Detect and add persons (only if not already present from heuristic detection)
     await this.detectAndAddPersons(dadFileSet, scanResult);
 
     // Update per-level files from combined
@@ -81,6 +87,61 @@ export class LLMEnricher {
     }
   }
 
+  /**
+   * Enrich component nodes with documentation and designSpec.
+   * Groups components by container for context.
+   */
+  private async enrichComponents(nodes: DadNode[]): Promise<void> {
+    const componentNodes = nodes.filter(n => n.type === 'component');
+    if (componentNodes.length === 0) return;
+
+    // Group by parent container for contextual enrichment
+    const byContainer = new Map<string, DadNode[]>();
+    for (const comp of componentNodes) {
+      const key = comp.parentId || 'unknown';
+      const list = byContainer.get(key) || [];
+      list.push(comp);
+      byContainer.set(key, list);
+    }
+
+    for (const [containerId, siblings] of byContainer) {
+      for (const comp of siblings) {
+        const prompt = this.promptBuilder.componentDescription(comp, siblings);
+        try {
+          const documentation = await this.provider.analyze(prompt);
+          comp.documentation = documentation;
+        } catch {
+          // Keep existing documentation
+        }
+
+        await this.enrichDesignSpec(comp);
+      }
+    }
+  }
+
+  /**
+   * Enrich code unit nodes with documentation and designSpec.
+   */
+  private async enrichCodeUnits(nodes: DadNode[]): Promise<void> {
+    const codeNodes = nodes.filter(n => n.type === 'codeUnit');
+    if (codeNodes.length === 0) return;
+
+    for (const codeNode of codeNodes) {
+      // Find parent component for context
+      const parentComponent = nodes.find(n => n.id === codeNode.parentId);
+      const prompt = this.promptBuilder.codeUnitDescription(codeNode, parentComponent);
+
+      try {
+        const documentation = await this.provider.analyze(prompt);
+        codeNode.documentation = documentation;
+      } catch {
+        // Keep existing documentation
+      }
+
+      await this.enrichDesignSpec(codeNode);
+    }
+  }
+
   private async detectAndAddPersons(
     dadFileSet: DadFileSet,
     scanResult: ScanResult
@@ -99,7 +160,7 @@ export class LLMEnricher {
       for (const person of persons) {
         const id = personId(person.name);
 
-        // Skip if already exists
+        // Skip if already exists (e.g. from heuristic detection)
         if (dadFileSet.combined.nodes.some(n => n.id === id)) continue;
 
         const personNode: DadNode = {

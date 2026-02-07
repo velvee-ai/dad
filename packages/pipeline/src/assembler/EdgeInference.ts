@@ -203,6 +203,99 @@ export class EdgeInference {
   }
 
   /**
+   * Heuristic fallback: infer component-level edges from role conventions
+   * when no LSP-based import analysis is available.
+   *
+   * Rules (within same container):
+   *   controller → service
+   *   route → middleware (for API gateways)
+   *   handler → service
+   *   service → repository
+   *   service → model
+   *
+   * Also propagates container-level external edges down to matching components.
+   */
+  inferComponentEdgesFromRoles(
+    components: ComponentGroup[],
+    containerEdges: DadEdge[]
+  ): DadEdge[] {
+    const edges: DadEdge[] = [];
+    const seen = new Set<string>();
+
+    // Group components by container
+    const byContainer = new Map<string, ComponentGroup[]>();
+    for (const comp of components) {
+      const list = byContainer.get(comp.containerId) || [];
+      list.push(comp);
+      byContainer.set(comp.containerId, list);
+    }
+
+    const roleEdgeRules: Array<{ from: string; to: string; label: string }> = [
+      { from: 'controller', to: 'service', label: 'Delegates business logic to' },
+      { from: 'route', to: 'middleware', label: 'Uses for request processing' },
+      { from: 'handler', to: 'service', label: 'Delegates processing to' },
+      { from: 'service', to: 'repository', label: 'Reads/writes data via' },
+      { from: 'service', to: 'model', label: 'Uses model types from' },
+    ];
+
+    for (const [, containerComps] of byContainer) {
+      for (const rule of roleEdgeRules) {
+        const sources = containerComps.filter(c => c.role === rule.from);
+        const targets = containerComps.filter(c => c.role === rule.to);
+
+        for (const source of sources) {
+          for (const target of targets) {
+            const edgeKey = `${source.id}->${target.id}`;
+            if (!seen.has(edgeKey)) {
+              seen.add(edgeKey);
+              edges.push({
+                id: `edge:${this.slug(source.id)}-to-${this.slug(target.id)}`,
+                source: source.id,
+                target: target.id,
+                label: rule.label,
+                technology: 'Internal call',
+                c4Level: 'component',
+                tags: ['internal'],
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // Propagate container→external edges down to service/handler components
+    for (const containerEdge of containerEdges) {
+      if (!containerEdge.tags?.includes('external')) continue;
+
+      const containerId = containerEdge.source;
+      const containerComps = byContainer.get(containerId);
+      if (!containerComps) continue;
+
+      // Find service or handler components that would use the external service
+      const relevantComps = containerComps.filter(
+        c => c.role === 'service' || c.role === 'handler'
+      );
+      for (const comp of relevantComps) {
+        const edgeKey = `${comp.id}->${containerEdge.target}`;
+        if (!seen.has(edgeKey)) {
+          seen.add(edgeKey);
+          edges.push({
+            id: `edge:${this.slug(comp.id)}-to-${this.slug(containerEdge.target)}`,
+            source: comp.id,
+            target: containerEdge.target,
+            label: containerEdge.label,
+            technology: containerEdge.technology,
+            c4Level: 'component',
+            tags: ['external'],
+          });
+        }
+      }
+    }
+
+    return edges;
+  }
+
+  /**
    * Infer context-level edges (between systems and external services).
    */
   inferContextEdges(scanResult: ScanResult): DadEdge[] {

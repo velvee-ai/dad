@@ -1,3 +1,4 @@
+import Anthropic from '@anthropic-ai/sdk';
 import type { LLMProvider } from '../types';
 
 /**
@@ -25,32 +26,61 @@ export class MockLLMProvider implements LLMProvider {
 }
 
 /**
- * Claude API provider (placeholder — requires API key configuration).
+ * Claude API provider using the Anthropic SDK.
  */
 export class ClaudeProvider implements LLMProvider {
-  constructor(private apiKey: string, private model: string = 'claude-sonnet-4-5-20250929') {}
+  private client: Anthropic;
+
+  constructor(
+    private apiKey: string = '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',
+    private model: string = 'claude-sonnet-4-5-20250929',
+    private maxTokens: number = 1024
+  ) {
+    this.client = new Anthropic({ apiKey: this.apiKey });
+  }
 
   async analyze(prompt: string): Promise<string> {
-    // This would make an actual API call to Claude
-    // For now, throw to indicate it needs real implementation
-    throw new Error(
-      'ClaudeProvider requires API integration. Use MockLLMProvider for testing.'
+    const message = await this.client.messages.create({
+      model: this.model,
+      max_tokens: this.maxTokens,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const textBlocks = message.content.filter(
+      (block) => block.type === 'text'
     );
+    return textBlocks.map((block) => block.type === 'text' ? block.text : '').join('\n');
   }
 }
 
 /**
- * OpenRouter provider (placeholder — requires API key configuration).
+ * OpenRouter provider — routes to Claude or other models via OpenRouter.
+ * Uses the Anthropic SDK with a base URL override.
  */
 export class OpenRouterProvider implements LLMProvider {
+  private client: Anthropic;
+
   constructor(
     private apiKey: string,
-    private model: string = 'anthropic/claude-sonnet-4-5-20250929'
-  ) {}
+    private model: string = 'anthropic/claude-sonnet-4-5-20250929',
+    private maxTokens: number = 1024
+  ) {
+    this.client = new Anthropic({
+      apiKey: this.apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
+    });
+  }
 
   async analyze(prompt: string): Promise<string> {
-    throw new Error(
-      'OpenRouterProvider requires API integration. Use MockLLMProvider for testing.'
+    const message = await this.client.messages.create({
+      model: this.model,
+      max_tokens: this.maxTokens,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const textBlocks = message.content.filter(
+      (block) => block.type === 'text'
     );
+    return textBlocks.map((block) => block.type === 'text' ? block.text : '').join('\n');
   }
 }

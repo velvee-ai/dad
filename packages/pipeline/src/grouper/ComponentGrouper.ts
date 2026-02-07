@@ -1,7 +1,6 @@
 import * as path from 'path';
 import type { AnalyzedFile, AnalyzedSymbol, ComponentGroup, ComponentRole } from '../types';
-import { componentId, slugify } from '../assembler/IdGenerator';
-import { codeUnitId } from '../assembler/IdGenerator';
+import { componentId, codeUnitId } from '../assembler/IdGenerator';
 
 /** Directory patterns → component roles */
 const DIRECTORY_ROLE_MAP: Array<{ pattern: RegExp; role: ComponentRole }> = [
@@ -32,24 +31,15 @@ export class ComponentGrouper {
     const groups: ComponentGroup[] = [];
     const groupedFiles = new Set<string>();
 
-    // Rule 1: Directory-based grouping
+    // Rule 1: Directory-based grouping — one component per file
     for (const file of files) {
       if (groupedFiles.has(file.filePath)) continue;
 
       const dirRole = this.detectRoleFromPath(file.filePath);
       if (dirRole) {
-        const existing = groups.find(
-          g => g.containerId === containerId && g.role === dirRole && this.sameDirGroup(g, file)
-        );
-
-        if (existing) {
-          this.addFileToGroup(existing, file);
-          groupedFiles.add(file.filePath);
-        } else {
-          const group = this.createGroupFromFile(file, containerId, dirRole, containerTechnology);
-          groups.push(group);
-          groupedFiles.add(file.filePath);
-        }
+        const group = this.createGroupFromFile(file, containerId, dirRole, containerTechnology);
+        groups.push(group);
+        groupedFiles.add(file.filePath);
       }
     }
 
@@ -117,26 +107,30 @@ export class ComponentGrouper {
     const groupedFiles = new Set<string>();
 
     // Group by parent directory role
+    // Normalise to forward slashes — fast-glob always returns '/' but path.dirname
+    // on Windows may return '\\'
     const dirGroups = new Map<string, string[]>();
     for (const file of sourceFiles) {
+      const normalised = file.replace(/\\/g, '/');
       // Skip index/entry files at root
-      const dir = path.dirname(file);
+      const dir = normalised.substring(0, normalised.lastIndexOf('/')) || '.';
       if (dir === '.' || dir === 'src') {
         continue;
       }
 
-      const key = dir;
-      if (!dirGroups.has(key)) {
-        dirGroups.set(key, []);
+      if (!dirGroups.has(dir)) {
+        dirGroups.set(dir, []);
       }
-      dirGroups.get(key)!.push(file);
+      dirGroups.get(dir)!.push(normalised);
     }
 
     for (const [dir, files] of dirGroups) {
       const role = this.detectRoleFromPath(dir + '/dummy');
       if (role) {
         for (const file of files) {
-          const fileName = path.basename(file, path.extname(file));
+          const baseName = file.substring(file.lastIndexOf('/') + 1);
+          const extIdx = baseName.lastIndexOf('.');
+          const fileName = extIdx > 0 ? baseName.substring(0, extIdx) : baseName;
           const name = this.formatFileName(fileName);
 
           groups.push({
@@ -150,6 +144,31 @@ export class ComponentGrouper {
           });
           groupedFiles.add(file);
         }
+      }
+    }
+
+    // Rule 2: For ungrouped files, try to infer role from file name
+    for (const file of sourceFiles) {
+      const normalised = file.replace(/\\/g, '/');
+      if (groupedFiles.has(normalised)) continue;
+      const dir = normalised.substring(0, normalised.lastIndexOf('/')) || '.';
+      if (dir === '.' || dir === 'src') continue;
+
+      const baseName = normalised.substring(normalised.lastIndexOf('/') + 1);
+      const extIdx = baseName.lastIndexOf('.');
+      const fileName = extIdx > 0 ? baseName.substring(0, extIdx) : baseName;
+      const role = this.inferRoleFromName(fileName);
+      if (role !== 'service') {
+        // Only create a component if we can infer a meaningful role
+        groups.push({
+          id: componentId(fileName),
+          name: this.formatFileName(fileName),
+          containerId,
+          codeUnitIds: [],
+          sourceFiles: [normalised],
+          technology: containerTechnology,
+          role,
+        });
       }
     }
 
@@ -179,13 +198,6 @@ export class ComponentGrouper {
     return 'service';
   }
 
-  private sameDirGroup(group: ComponentGroup, file: AnalyzedFile): boolean {
-    if (group.sourceFiles.length === 0) return false;
-    const existingDir = path.dirname(group.sourceFiles[0]);
-    const newDir = path.dirname(file.filePath);
-    return existingDir === newDir;
-  }
-
   private createGroupFromFile(
     file: AnalyzedFile,
     containerId: string,
@@ -202,13 +214,6 @@ export class ComponentGrouper {
       technology,
       role,
     };
-  }
-
-  private addFileToGroup(group: ComponentGroup, file: AnalyzedFile): void {
-    group.sourceFiles.push(file.filePath);
-    for (const sym of file.symbols) {
-      group.codeUnitIds.push(codeUnitId(sym.name));
-    }
   }
 
   private getCodeUnitIds(symbol: AnalyzedSymbol): string[] {
