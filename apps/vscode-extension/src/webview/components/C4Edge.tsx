@@ -1,8 +1,9 @@
 /**
- * C4Edge — Icicle-themed edge renderer with flow animation
+ * C4Edge — Icicle v2 Edge Renderer
  *
- * Reads all visual properties from data.style (resolved by the adapter).
- * Supports animated dash offset for async/streaming edges.
+ * Sync edges: solid gray, quiet.
+ * Async edges: dashed cyan, animated.
+ * Hover: subtle glow + expanded label.
  */
 import React, { memo, useState } from 'react';
 import {
@@ -35,15 +36,12 @@ const C4Edge: React.FC<EdgeProps<VisualEdgeData>> = ({
   const displayLabel = label || data?.label || '';
   const techLabel = data?.technology ? ` [${data.technology}]` : '';
 
-  // Fallback styling if adapter data missing
-  const strokeColor = style?.strokeColor || 'rgba(255,255,255,0.35)';
-  const strokeWidth = style?.strokeWidth || 1.5;
+  // Fallback styling
+  const strokeColor = style?.strokeColor || 'rgba(255,255,255,0.28)';
+  const strokeWidth = style?.strokeWidth || 1.2;
   const strokeDasharray = style?.strokeDasharray === 'none' ? undefined : style?.strokeDasharray;
   const animated = style?.animated || false;
-  const hoverStrokeWidth = style?.hoverStrokeWidth || strokeWidth + 1;
-  const labelBg = style?.labelBackground || 'rgba(10,16,26,0.62)';
-  const labelBorder = style?.labelBorderColor || 'rgba(255,255,255,0.16)';
-  const labelText = style?.labelTextColor || 'rgba(255,255,255,0.92)';
+  const hoverStrokeWidth = style?.hoverStrokeWidth || strokeWidth + 0.8;
   const glowColor = style?.glowColor || 'transparent';
 
   return (
@@ -66,27 +64,27 @@ const C4Edge: React.FC<EdgeProps<VisualEdgeData>> = ({
         stroke={strokeColor}
         strokeWidth={hovered ? hoverStrokeWidth : strokeWidth}
         strokeDasharray={strokeDasharray}
-        strokeOpacity={hovered ? 1 : 0.7}
+        strokeOpacity={hovered ? 0.9 : 0.6}
         markerEnd={markerEnd}
         style={{
-          transition: 'all 200ms ease-out',
+          transition: 'all 180ms ease-out',
           ...(animated ? {
-            animation: `c4EdgeFlow ${style?.animationDuration || '1.8s'} linear infinite`,
+            animation: `c4EdgeFlow ${style?.animationDuration || '2s'} linear infinite`,
           } : {}),
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       />
 
-      {/* Hover glow effect */}
+      {/* Hover glow effect — subtle */}
       {hovered && (
         <path
           d={edgePath}
           fill="none"
           stroke={glowColor}
-          strokeWidth={strokeWidth + 4}
+          strokeWidth={strokeWidth + 3}
           strokeDasharray={strokeDasharray}
-          strokeOpacity={0.3}
+          strokeOpacity={0.2}
           style={{ pointerEvents: 'none' }}
         />
       )}
@@ -101,18 +99,17 @@ const C4Edge: React.FC<EdgeProps<VisualEdgeData>> = ({
               pointerEvents: 'all',
               fontSize: hovered ? '11px' : '10px',
               fontFamily: 'Inter, system-ui, sans-serif',
-              background: labelBg,
-              color: labelText,
+              background: 'rgba(7,11,16,0.75)',
+              color: 'rgba(255,255,255,0.70)',
               padding: '2px 8px',
               borderRadius: '8px',
-              border: `1px solid ${labelBorder}`,
+              border: '1px solid rgba(255,255,255,0.08)',
               whiteSpace: 'nowrap',
-              opacity: hovered ? 1 : 0.75,
+              opacity: hovered ? 1 : 0.6,
               maxWidth: hovered ? '300px' : '180px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              transition: 'all 200ms ease-out',
-              boxShadow: hovered ? `0 2px 8px ${glowColor}` : 'none',
+              transition: 'all 180ms ease-out',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
             }}
@@ -121,7 +118,7 @@ const C4Edge: React.FC<EdgeProps<VisualEdgeData>> = ({
           >
             {displayLabel}
             {hovered && techLabel && (
-              <span style={{ opacity: 0.6, fontSize: '9px' }}>{techLabel}</span>
+              <span style={{ opacity: 0.5, fontSize: '9px' }}>{techLabel}</span>
             )}
           </div>
         </EdgeLabelRenderer>

@@ -84,20 +84,23 @@ function resolveNodeStyle(
   fontFamily: string
 ): VisualNodeStyle {
   const accent = variant.accentColor;
-  const glowColor = hexToRgba(accent, 0.2);
+
+  // External systems use their accent for the border; others get neutral
+  const isExternal = variant.borderStyle === 'dashed';
+  const borderColor = isExternal ? hexToRgba(accent, 0.35) : theme.glass.stroke;
 
   return {
-    // Glass surface
+    // Glass surface — neutral for all cards
     background: theme.glass.surface,
     backdropFilter: theme.glass.backdropBlur,
-    borderColor: theme.glass.stroke,
+    borderColor,
     borderStyle: variant.borderStyle,
     borderWidth: 1,
     borderRadius: '18px',
 
-    // Accent
+    // Accent — used for icon/badge text color only (not fills)
     accentColor: accent,
-    glowColor,
+    glowColor: 'transparent',   // no glow in default state
 
     // Text
     textColor: theme.text.primary,
@@ -121,12 +124,12 @@ function resolveNodeStyle(
     contentPadding: variant.contentPadding,
     textAlign: variant.textAlign,
 
-    // States
+    // States — neutral glass → subtle brighten → gradient glow
     shadow: theme.shadows.ambient,
-    hoverShadow: `0 4px 20px rgba(0,0,0,0.4), 0 0 15px ${glowColor}`,
-    selectedRing: `0 0 0 2px ${hexToRgba(accent, 0.5)}, 0 4px 20px ${glowColor}`,
+    hoverShadow: theme.shadows.hover,
+    selectedRing: theme.shadows.selected,
     hoverBorderColor: theme.glass.strokeStrong,
-    hoverScale: 1.02,
+    hoverScale: 1,   // no scale — use translateY(-1px) in component instead
 
     // Animation
     transitionDuration: theme.animations.hoverDuration,
@@ -146,11 +149,11 @@ function translateEdge(edge: any, theme: C4Theme): Edge<VisualEdgeData> {
     strokeDasharray: variant.strokeDasharray,
     animated: variant.animated,
     animationDuration: variant.animationDuration,
-    labelBackground: 'rgba(10,16,26,0.62)',
-    labelBorderColor: 'rgba(255,255,255,0.16)',
-    labelTextColor: theme.text.primary,
-    hoverStrokeWidth: variant.strokeWidth + 1,
-    glowColor: hexToRgba(variant.strokeColor, 0.3),
+    labelBackground: 'rgba(7,11,16,0.75)',
+    labelBorderColor: 'rgba(255,255,255,0.08)',
+    labelTextColor: 'rgba(255,255,255,0.70)',
+    hoverStrokeWidth: variant.strokeWidth + 0.8,
+    glowColor: hexToRgba(variant.strokeColor, 0.2),
   };
 
   const data: VisualEdgeData = {

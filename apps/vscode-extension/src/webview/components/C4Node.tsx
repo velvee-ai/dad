@@ -1,9 +1,9 @@
 /**
- * C4Node — Generic Glassmorphic Card Renderer
+ * C4Node — Dark Glass Card Renderer (Icicle v2)
  *
- * Reads all visual properties from data.style (resolved by the adapter).
- * Zero type-specific branches — shape, badge, icon, and accent are
- * fully determined upstream by the theme + adapter.
+ * Neutral glass by default. Color lives in borders, icons, and motion only.
+ * Gradient glow reserved for the selected/focused node.
+ * Hover state: subtle border brighten + slight lift.
  */
 import React, { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
@@ -15,6 +15,20 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
   const s = data.style;
   const hasChildren = data.childCount > 0;
 
+  // Border: neutral default → brighten on hover → cyan icicle on selected
+  const borderColor = selected
+    ? '#4FE9FF'
+    : hovered
+      ? s.hoverBorderColor
+      : s.borderColor;
+
+  // Shadow: minimal default → subtle lift on hover → gradient glow on selected
+  const boxShadow = selected
+    ? s.selectedRing
+    : hovered
+      ? s.hoverShadow
+      : s.shadow;
+
   return (
     <div
       style={{
@@ -23,12 +37,12 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
         background: s.background,
         backdropFilter: s.backdropFilter,
         WebkitBackdropFilter: s.backdropFilter,
-        border: `${s.borderWidth}px ${s.borderStyle} ${hovered ? s.hoverBorderColor : s.borderColor}`,
+        border: `${s.borderWidth}px ${s.borderStyle} ${borderColor}`,
         borderRadius: s.borderRadius,
         color: s.textColor,
         fontFamily: s.fontFamily,
-        boxShadow: selected ? s.selectedRing : hovered ? s.hoverShadow : s.shadow,
-        transform: hovered ? `scale(${s.hoverScale})` : 'scale(1)',
+        boxShadow,
+        transform: hovered && !selected ? 'translateY(-1px)' : 'none',
         transition: `all ${s.transitionDuration}ms ${s.transitionEasing}`,
         position: 'relative',
         overflow: 'hidden',
@@ -41,39 +55,41 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
     >
       {/* Handles */}
       <Handle type="target" position={Position.Top}
-        style={{ background: s.accentColor, width: 6, height: 6, border: 'none', opacity: 0.7 }} />
+        style={{ background: 'rgba(255,255,255,0.25)', width: 5, height: 5, border: 'none', opacity: 0.6 }} />
       <Handle type="source" position={Position.Bottom}
-        style={{ background: s.accentColor, width: 6, height: 6, border: 'none', opacity: 0.7 }} />
+        style={{ background: 'rgba(255,255,255,0.25)', width: 5, height: 5, border: 'none', opacity: 0.6 }} />
       <Handle type="target" position={Position.Left} id="left-target"
-        style={{ background: s.accentColor, width: 5, height: 5, border: 'none', opacity: 0.5 }} />
+        style={{ background: 'rgba(255,255,255,0.20)', width: 4, height: 4, border: 'none', opacity: 0.4 }} />
       <Handle type="source" position={Position.Right} id="right-source"
-        style={{ background: s.accentColor, width: 5, height: 5, border: 'none', opacity: 0.5 }} />
+        style={{ background: 'rgba(255,255,255,0.20)', width: 4, height: 4, border: 'none', opacity: 0.4 }} />
 
       {/* Store card: cylinder top cap */}
       {s.shapeConfig.topCap && (
         <div style={{
-          height: '14px',
-          background: `${s.accentColor}22`,
+          height: '12px',
+          background: `${s.accentColor}18`,
           borderRadius: '50%',
           marginTop: '-1px',
           marginLeft: '-1px',
           marginRight: '-1px',
-          border: `1px solid ${s.accentColor}44`,
+          border: `1px solid ${s.accentColor}30`,
           flexShrink: 0,
         }} />
       )}
 
-      {/* Top-edge accent glow */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '60px',
-        background: `radial-gradient(60% 60% at 50% 0%, ${s.glowColor}, transparent)`,
-        pointerEvents: 'none',
-        zIndex: 0,
-      }} />
+      {/* Selected: cyan/blue icicle gradient glow */}
+      {selected && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '60px',
+          background: 'radial-gradient(80% 120% at 50% 0%, rgba(79,233,255,0.22), rgba(47,247,199,0.08), transparent)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }} />
+      )}
 
       {/* Main content */}
       <div style={{ padding: s.contentPadding, position: 'relative', zIndex: 1, flex: 1 }}>
@@ -84,15 +100,15 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          {/* Badge chip */}
+          {/* Badge chip — neutral glass, accent color for text only */}
           {s.badgeConfig.show && (
             <span style={{
               fontSize: `${s.fontSizes.chip}px`,
               fontWeight: 600,
               padding: '2px 8px',
               borderRadius: '6px',
-              background: `${s.accentColor}22`,
-              border: `1px solid ${s.accentColor}44`,
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.10)',
               color: s.accentColor,
               display: 'inline-flex',
               alignItems: 'center',
@@ -107,7 +123,7 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
 
           {/* Tech icon (top-right) */}
           {s.iconConfig.techIcon.position === 'header-right' && data.technology && !data.collapsed && (
-            <span style={{ flexShrink: 0, opacity: 0.9 }}>
+            <span style={{ flexShrink: 0, opacity: 0.7 }}>
               {getTechBadgeIcon(data.technology, s.iconConfig.techIcon.size)}
             </span>
           )}
@@ -116,7 +132,7 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
         {/* Row 2: Title */}
         <div style={{
           fontSize: `${s.fontSizes.title}px`,
-          fontWeight: 650,
+          fontWeight: 600,
           marginTop: '10px',
           lineHeight: 1.2,
           letterSpacing: '-0.01em',
@@ -173,7 +189,7 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
           </div>
         )}
 
-        {/* Row 5: Drill-down button */}
+        {/* Row 5: Drill-down button — mint green for focus */}
         {hasChildren && !data.collapsed && (
           <button
             onClick={(e) => {
@@ -189,35 +205,22 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
               marginTop: '10px',
               padding: '4px 10px',
               fontSize: `${s.fontSizes.meta}px`,
-              color: s.accentColor,
-              background: `${s.accentColor}15`,
-              border: `1px solid ${s.accentColor}33`,
+              color: hovered ? 'rgba(47,247,199,0.95)' : 'rgba(47,247,199,0.75)',
+              background: hovered ? 'rgba(47,247,199,0.10)' : 'rgba(47,247,199,0.06)',
+              border: `1px solid ${hovered ? 'rgba(47,247,199,0.30)' : 'rgba(47,247,199,0.18)'}`,
               borderRadius: '8px',
               cursor: 'pointer',
-              opacity: hovered ? 1 : 0.6,
               transition: `all ${s.transitionDuration}ms`,
               fontFamily: 'inherit',
             }}
           >
-            <DrillDownIcon size={14} color={s.accentColor} />
+            <DrillDownIcon size={14} color={hovered ? 'rgba(47,247,199,0.95)' : 'rgba(47,247,199,0.75)'} />
             <span>
               Explore {data.childCount} {data.childCount === 1 ? 'item' : 'items'}
             </span>
           </button>
         )}
       </div>
-
-      {/* Hover border glow */}
-      {hovered && (
-        <div style={{
-          position: 'absolute',
-          inset: -1,
-          borderRadius: s.borderRadius,
-          border: `1px solid ${s.accentColor}66`,
-          pointerEvents: 'none',
-          zIndex: 2,
-        }} />
-      )}
     </div>
   );
 };
