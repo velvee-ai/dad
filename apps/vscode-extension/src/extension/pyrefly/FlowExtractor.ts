@@ -19,7 +19,7 @@ import {
   LocationLink,
   Hover,
 } from 'vscode-languageserver-protocol';
-import { FlowChartData, FlowNode, FlowEdge } from '../../shared/types';
+import { FlowChartData, FlowNode, FlowEdge } from '@dad/shared-types';
 
 export interface CallGraphNode {
   name: string;
