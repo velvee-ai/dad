@@ -79,6 +79,63 @@ export interface DadFileMetadata {
   totalEdges: number;
 }
 
+// --- Views ---
+
+export interface DadView {
+  key: string;                // Unique view key
+  title: string;
+  description?: string;
+  scopeId: string;            // Node ID this view is scoped to
+  include: string[];          // Node IDs or "*" for all children
+  exclude?: string[];         // Node IDs to hide
+  autoLayout: {
+    direction: 'tb' | 'lr' | 'bt' | 'rl';
+    rankSeparation?: number;
+    nodeSeparation?: number;
+  };
+}
+
+export interface DadViews {
+  systemLandscape: DadView;
+  systemContext: DadView[];   // One per softwareSystem
+  container: DadView[];       // One per softwareSystem
+  component: DadView[];       // One per container
+}
+
+// --- Styles ---
+
+export type DadElementShape =
+  | 'Box' | 'RoundedBox' | 'Person' | 'Cylinder'
+  | 'Pipe' | 'WebBrowser' | 'Hexagon' | 'Component' | 'Folder';
+
+export interface DadElementStyle {
+  tag: string;                // Matches node type or tag
+  shape?: DadElementShape;
+  background?: string;        // Hex color
+  color?: string;             // Text color
+  stroke?: string;            // Border color
+  strokeWidth?: number;
+  border?: 'solid' | 'dashed' | 'dotted';
+  fontSize?: number;
+  opacity?: number;           // 0-100
+  icon?: string;              // Technology icon filename
+  width?: number;
+  height?: number;
+}
+
+export interface DadRelationshipStyle {
+  tag: string;                // "sync", "async", "data", "external"
+  color?: string;
+  dashed?: boolean;
+  strokeWidth?: number;
+  opacity?: number;
+}
+
+export interface DadStyles {
+  elements: DadElementStyle[];
+  relationships: DadRelationshipStyle[];
+}
+
 // --- Top-Level File ---
 
 export interface DadFile {
@@ -86,6 +143,8 @@ export interface DadFile {
   metadata: DadFileMetadata;
   nodes: DadNode[];
   edges: DadEdge[];
+  views?: DadViews;
+  styles?: DadStyles;
 }
 
 // --- Helper Types ---

@@ -1,10 +1,8 @@
 /**
- * C4 Architecture Edge — Technology-aware styling
+ * C4Edge — Icicle-themed edge renderer with flow animation
  *
- * Sync (REST/gRPC): Solid grey line
- * Async (Kafka/events): Dashed orange line
- * Data (PostgreSQL/Redis): Solid blue line
- * External: Dashed grey line
+ * Reads all visual properties from data.style (resolved by the adapter).
+ * Supports animated dash offset for async/streaming edges.
  */
 import React, { memo, useState } from 'react';
 import {
@@ -12,9 +10,9 @@ import {
   getBezierPath,
   EdgeLabelRenderer,
 } from 'reactflow';
-import { getEdgeStyle, C4_ANIMATIONS } from '../designTokens';
+import type { VisualEdgeData } from '../adapter/c4VisualModel';
 
-const C4Edge: React.FC<EdgeProps> = ({
+const C4Edge: React.FC<EdgeProps<VisualEdgeData>> = ({
   id,
   sourceX, sourceY,
   targetX, targetY,
@@ -26,7 +24,7 @@ const C4Edge: React.FC<EdgeProps> = ({
 }) => {
   const [hovered, setHovered] = useState(false);
 
-  const style = getEdgeStyle(data?.technology, data?.tags);
+  const style = data?.style;
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX, sourceY,
     targetX, targetY,
@@ -36,6 +34,17 @@ const C4Edge: React.FC<EdgeProps> = ({
 
   const displayLabel = label || data?.label || '';
   const techLabel = data?.technology ? ` [${data.technology}]` : '';
+
+  // Fallback styling if adapter data missing
+  const strokeColor = style?.strokeColor || 'rgba(255,255,255,0.35)';
+  const strokeWidth = style?.strokeWidth || 1.5;
+  const strokeDasharray = style?.strokeDasharray === 'none' ? undefined : style?.strokeDasharray;
+  const animated = style?.animated || false;
+  const hoverStrokeWidth = style?.hoverStrokeWidth || strokeWidth + 1;
+  const labelBg = style?.labelBackground || 'rgba(10,16,26,0.62)';
+  const labelBorder = style?.labelBorderColor || 'rgba(255,255,255,0.16)';
+  const labelText = style?.labelTextColor || 'rgba(255,255,255,0.92)';
+  const glowColor = style?.glowColor || 'transparent';
 
   return (
     <>
@@ -54,17 +63,33 @@ const C4Edge: React.FC<EdgeProps> = ({
         id={id}
         d={edgePath}
         fill="none"
-        stroke={hovered ? style.color : style.color}
-        strokeWidth={hovered ? style.strokeWidth + 1 : style.strokeWidth}
-        strokeDasharray={style.strokeDasharray === 'none' ? undefined : style.strokeDasharray}
+        stroke={strokeColor}
+        strokeWidth={hovered ? hoverStrokeWidth : strokeWidth}
+        strokeDasharray={strokeDasharray}
         strokeOpacity={hovered ? 1 : 0.7}
         markerEnd={markerEnd}
         style={{
-          transition: `all ${C4_ANIMATIONS.nodeHover.duration}ms`,
+          transition: 'all 200ms ease-out',
+          ...(animated ? {
+            animation: `c4EdgeFlow ${style?.animationDuration || '1.8s'} linear infinite`,
+          } : {}),
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       />
+
+      {/* Hover glow effect */}
+      {hovered && (
+        <path
+          d={edgePath}
+          fill="none"
+          stroke={glowColor}
+          strokeWidth={strokeWidth + 4}
+          strokeDasharray={strokeDasharray}
+          strokeOpacity={0.3}
+          style={{ pointerEvents: 'none' }}
+        />
+      )}
 
       {/* Edge label */}
       {displayLabel && (
@@ -75,19 +100,21 @@ const C4Edge: React.FC<EdgeProps> = ({
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: 'all',
               fontSize: hovered ? '11px' : '10px',
-              fontFamily: 'var(--vscode-font-family, sans-serif)',
-              background: 'var(--vscode-editor-background, #1e1e1e)',
-              color: 'var(--vscode-foreground, #cccccc)',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              background: labelBg,
+              color: labelText,
               padding: '2px 8px',
               borderRadius: '8px',
-              border: `1px solid ${style.color}44`,
+              border: `1px solid ${labelBorder}`,
               whiteSpace: 'nowrap',
               opacity: hovered ? 1 : 0.75,
               maxWidth: hovered ? '300px' : '180px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              transition: `all ${C4_ANIMATIONS.nodeHover.duration}ms`,
-              boxShadow: hovered ? `0 2px 8px ${style.color}33` : 'none',
+              transition: 'all 200ms ease-out',
+              boxShadow: hovered ? `0 2px 8px ${glowColor}` : 'none',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}

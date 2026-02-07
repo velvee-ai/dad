@@ -14,6 +14,15 @@ interface C4BreadcrumbsProps {
   scopeLabel?: string;
 }
 
+const GLASS = {
+  bg: 'rgba(255,255,255,0.06)',
+  border: 'rgba(255,255,255,0.14)',
+  text: 'rgba(255,255,255,0.92)',
+  textDim: 'rgba(255,255,255,0.52)',
+  accent: '#4FE9FF',
+  hover: 'rgba(255,255,255,0.10)',
+};
+
 const C4Breadcrumbs: React.FC<C4BreadcrumbsProps> = ({
   breadcrumbs, onNavigate, onDrillUp, scopeLabel,
 }) => {
@@ -21,16 +30,18 @@ const C4Breadcrumbs: React.FC<C4BreadcrumbsProps> = ({
 
   return (
     <div style={{
-      background: 'var(--vscode-editor-background, #1e1e1e)',
+      background: GLASS.bg,
+      backdropFilter: 'blur(14px)',
+      WebkitBackdropFilter: 'blur(14px)',
       padding: '8px 14px',
-      border: '1px solid var(--vscode-panel-border, #333)',
-      borderRadius: '8px',
-      fontFamily: 'var(--vscode-font-family, -apple-system, sans-serif)',
-      color: 'var(--vscode-foreground, #cccccc)',
+      border: `1px solid ${GLASS.border}`,
+      borderRadius: '12px',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      color: GLASS.text,
       display: 'flex',
       flexDirection: 'column',
       gap: '6px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
       minWidth: '200px',
     }}>
       {/* Breadcrumb trail */}
@@ -45,19 +56,26 @@ const C4Breadcrumbs: React.FC<C4BreadcrumbsProps> = ({
           <button
             onClick={onDrillUp}
             style={{
-              background: 'var(--vscode-button-secondaryBackground, #333)',
-              border: 'none',
-              borderRadius: '4px',
+              background: 'rgba(255,255,255,0.08)',
+              border: `1px solid ${GLASS.border}`,
+              borderRadius: '6px',
               cursor: 'pointer',
               padding: '3px 5px',
               display: 'flex',
               alignItems: 'center',
               marginRight: '6px',
-              color: 'var(--vscode-foreground, #ccc)',
+              color: GLASS.text,
+              transition: 'all 150ms',
             }}
             title="Go back"
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = GLASS.hover;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
+            }}
           >
-            <BackArrowIcon size={14} color="var(--vscode-foreground, #ccc)" />
+            <BackArrowIcon size={14} color={GLASS.text} />
           </button>
         )}
 
@@ -66,7 +84,7 @@ const C4Breadcrumbs: React.FC<C4BreadcrumbsProps> = ({
           <React.Fragment key={b.id}>
             {i > 0 && (
               <span style={{ opacity: 0.35, margin: '0 2px', display: 'flex' }}>
-                <ChevronIcon size={10} color="var(--vscode-foreground, #ccc)" />
+                <ChevronIcon size={10} color={GLASS.textDim} />
               </span>
             )}
             <span
@@ -74,16 +92,17 @@ const C4Breadcrumbs: React.FC<C4BreadcrumbsProps> = ({
                 cursor: i < breadcrumbs.length - 1 ? 'pointer' : 'default',
                 opacity: i < breadcrumbs.length - 1 ? 0.65 : 1,
                 fontWeight: i === breadcrumbs.length - 1 ? 600 : 400,
-                padding: '1px 4px',
-                borderRadius: '3px',
-                transition: 'background 150ms',
+                color: i === breadcrumbs.length - 1 ? GLASS.accent : GLASS.text,
+                padding: '1px 6px',
+                borderRadius: '4px',
+                transition: 'all 150ms',
               }}
               onClick={() => {
                 if (i < breadcrumbs.length - 1) onNavigate(b.id);
               }}
               onMouseEnter={(e) => {
                 if (i < breadcrumbs.length - 1) {
-                  (e.target as HTMLElement).style.background = 'var(--vscode-list-hoverBackground, #2a2d2e)';
+                  (e.target as HTMLElement).style.background = GLASS.hover;
                 }
               }}
               onMouseLeave={(e) => {
@@ -100,7 +119,7 @@ const C4Breadcrumbs: React.FC<C4BreadcrumbsProps> = ({
       {scopeLabel && (
         <div style={{
           fontSize: '10px',
-          opacity: 0.5,
+          color: GLASS.textDim,
           paddingLeft: canGoBack ? '30px' : '0',
         }}>
           {scopeLabel}

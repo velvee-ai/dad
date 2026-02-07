@@ -87,6 +87,66 @@ export const DadFileMetadataSchema = z.object({
   totalEdges: z.number().int().nonnegative(),
 });
 
+// --- Views ---
+
+export const DadAutoLayoutSchema = z.object({
+  direction: z.enum(['tb', 'lr', 'bt', 'rl']),
+  rankSeparation: z.number().optional(),
+  nodeSeparation: z.number().optional(),
+});
+
+export const DadViewSchema = z.object({
+  key: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().optional(),
+  scopeId: z.string().min(1),
+  include: z.array(z.string()),
+  exclude: z.array(z.string()).optional(),
+  autoLayout: DadAutoLayoutSchema,
+});
+
+export const DadViewsSchema = z.object({
+  systemLandscape: DadViewSchema,
+  systemContext: z.array(DadViewSchema),
+  container: z.array(DadViewSchema),
+  component: z.array(DadViewSchema),
+});
+
+// --- Styles ---
+
+export const DadElementShapeSchema = z.enum([
+  'Box', 'RoundedBox', 'Person', 'Cylinder',
+  'Pipe', 'WebBrowser', 'Hexagon', 'Component', 'Folder',
+]);
+
+export const DadElementStyleSchema = z.object({
+  tag: z.string().min(1),
+  shape: DadElementShapeSchema.optional(),
+  background: z.string().optional(),
+  color: z.string().optional(),
+  stroke: z.string().optional(),
+  strokeWidth: z.number().optional(),
+  border: z.enum(['solid', 'dashed', 'dotted']).optional(),
+  fontSize: z.number().optional(),
+  opacity: z.number().min(0).max(100).optional(),
+  icon: z.string().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+});
+
+export const DadRelationshipStyleSchema = z.object({
+  tag: z.string().min(1),
+  color: z.string().optional(),
+  dashed: z.boolean().optional(),
+  strokeWidth: z.number().optional(),
+  opacity: z.number().optional(),
+});
+
+export const DadStylesSchema = z.object({
+  elements: z.array(DadElementStyleSchema),
+  relationships: z.array(DadRelationshipStyleSchema),
+});
+
 // --- Top-Level File ---
 
 export const DadFileSchema = z.object({
@@ -94,6 +154,8 @@ export const DadFileSchema = z.object({
   metadata: DadFileMetadataSchema,
   nodes: z.array(DadNodeSchema),
   edges: z.array(DadEdgeSchema),
+  views: DadViewsSchema.optional(),
+  styles: DadStylesSchema.optional(),
 });
 
 // --- Inferred Types (for use without importing shared-types) ---

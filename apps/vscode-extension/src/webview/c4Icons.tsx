@@ -101,96 +101,6 @@ export const ChevronIcon: React.FC<IconProps> = ({ size = 12, color = 'currentCo
   </svg>
 );
 
-// ── Technology Badge Icons (16x16) ──
-
-export const TypeScriptBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#3178C6" />
-    <text x="3" y="12" fill="white" fontSize="9" fontWeight="bold" fontFamily="monospace">TS</text>
-  </svg>
-);
-
-export const PythonBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#3776AB" />
-    <text x="3" y="12" fill="#FFD43B" fontSize="9" fontWeight="bold" fontFamily="monospace">Py</text>
-  </svg>
-);
-
-export const PostgreSQLBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#336791" />
-    <text x="2" y="12" fill="white" fontSize="8" fontWeight="bold" fontFamily="monospace">PG</text>
-  </svg>
-);
-
-export const RedisBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#DC382D" />
-    <path d="M4 8l4-3 4 3-4 3z" fill="white" opacity={0.9} />
-  </svg>
-);
-
-export const KafkaBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#231F20" />
-    <text x="3" y="11" fill="white" fontSize="7" fontWeight="bold" fontFamily="monospace">KF</text>
-  </svg>
-);
-
-export const ExpressBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#333333" />
-    <text x="4" y="12" fill="white" fontSize="10" fontWeight="bold" fontFamily="monospace">E</text>
-  </svg>
-);
-
-export const ReactBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#20232A" />
-    <circle cx="8" cy="8" r="2" fill="#61DAFB" />
-    <ellipse cx="8" cy="8" rx="6" ry="2.5" stroke="#61DAFB" strokeWidth="0.8" fill="none" />
-    <ellipse cx="8" cy="8" rx="6" ry="2.5" stroke="#61DAFB" strokeWidth="0.8" fill="none"
-      transform="rotate(60 8 8)" />
-    <ellipse cx="8" cy="8" rx="6" ry="2.5" stroke="#61DAFB" strokeWidth="0.8" fill="none"
-      transform="rotate(120 8 8)" />
-  </svg>
-);
-
-export const DockerBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#2496ED" />
-    <rect x="3" y="7" width="3" height="2.5" rx="0.5" fill="white" opacity={0.9} />
-    <rect x="6.5" y="7" width="3" height="2.5" rx="0.5" fill="white" opacity={0.9} />
-    <rect x="6.5" y="4" width="3" height="2.5" rx="0.5" fill="white" opacity={0.9} />
-    <rect x="10" y="7" width="3" height="2.5" rx="0.5" fill="white" opacity={0.9} />
-    <path d="M2 10.5c2 3 10 3 13 0" stroke="white" strokeWidth="0.8" opacity={0.6} />
-  </svg>
-);
-
-export const AWSBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#232F3E" />
-    <text x="1" y="11" fill="#FF9900" fontSize="7" fontWeight="bold" fontFamily="monospace">AWS</text>
-  </svg>
-);
-
-export const GoBadge: React.FC<IconProps> = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#00ADD8" />
-    <text x="3" y="12" fill="white" fontSize="9" fontWeight="bold" fontFamily="monospace">Go</text>
-  </svg>
-);
-
-export const DefaultTechBadge: React.FC<IconProps & { label: string }> = ({ size = 16, label }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <rect width="16" height="16" rx="2" fill="#555" />
-    <text x="3" y="11" fill="white" fontSize="7" fontWeight="bold" fontFamily="monospace">
-      {label.substring(0, 2).toUpperCase()}
-    </text>
-  </svg>
-);
-
 // ── Helper: Get type icon by DadNodeType ──
 
 export function getC4TypeIcon(c4Type: string, size?: number, color?: string): React.ReactElement {
@@ -207,32 +117,32 @@ export function getC4TypeIcon(c4Type: string, size?: number, color?: string): Re
   }
 }
 
-// ── Helper: Get tech badge from technology string ──
+// ── Technology Icon via Registry (loads real SVGs from media/tech-icons/) ──
 
-const TECH_BADGE_MAP: Record<string, React.FC<IconProps>> = {
-  typescript: TypeScriptBadge,
-  ts:         TypeScriptBadge,
-  python:     PythonBadge,
-  py:         PythonBadge,
-  postgresql: PostgreSQLBadge,
-  postgres:   PostgreSQLBadge,
-  pg:         PostgreSQLBadge,
-  redis:      RedisBadge,
-  kafka:      KafkaBadge,
-  express:    ExpressBadge,
-  react:      ReactBadge,
-  docker:     DockerBadge,
-  aws:        AWSBadge,
-  go:         GoBadge,
-  golang:     GoBadge,
-};
+import { resolveTechIcon } from './utils/techIconRegistry';
+
+declare global {
+  interface Window {
+    techIconsBaseUri?: string;
+  }
+}
 
 export function getTechBadgeIcon(technology?: string, size?: number): React.ReactElement | null {
   if (!technology) return null;
-  const parts = technology.toLowerCase().replace(/[\/\-_]/g, ' ').split(/\s+/);
-  for (const part of parts) {
-    const Badge = TECH_BADGE_MAP[part];
-    if (Badge) return <Badge size={size} />;
-  }
-  return null;
+
+  const filename = resolveTechIcon(technology);
+  if (!filename) return null;
+
+  const baseUri = typeof window !== 'undefined' ? window.techIconsBaseUri : undefined;
+  if (!baseUri) return null;
+
+  return (
+    <img
+      src={`${baseUri}/${filename}`}
+      alt={technology}
+      width={size || 16}
+      height={size || 16}
+      style={{ verticalAlign: 'middle', flexShrink: 0 }}
+    />
+  );
 }

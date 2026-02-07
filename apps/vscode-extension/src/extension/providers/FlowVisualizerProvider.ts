@@ -124,6 +124,10 @@ export class FlowVisualizerProvider {
       vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview.css')
     );
 
+    const techIconsUri = this._panel.webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'tech-icons')
+    );
+
     const nonce = getNonce();
 
     return `<!DOCTYPE html>
@@ -173,6 +177,7 @@ export class FlowVisualizerProvider {
       <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
         window.vscode = vscode;
+        window.techIconsBaseUri = "${techIconsUri}";
       </script>
       <script nonce="${nonce}" src="${scriptUri}"></script>
     </body>

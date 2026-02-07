@@ -14,6 +14,21 @@ interface LayoutResult {
 }
 
 /**
+ * Get the actual rendered dimensions of a node.
+ * Prefers the adapter-resolved style dimensions, falls back to C4_NODE_SIZES.
+ */
+function getNodeDimensions(node: Node): { w: number; h: number } {
+  // Adapter-resolved dimensions (from VisualNodeData.style)
+  if (node.data?.style?.width && node.data?.style?.height) {
+    return { w: node.data.style.width, h: node.data.style.height };
+  }
+  // Fallback to C4_NODE_SIZES by level
+  const c4Level = node.data?.c4Level || 'container';
+  const sizes = C4_NODE_SIZES[c4Level] || C4_NODE_SIZES.container;
+  return { w: sizes.width, h: sizes.height };
+}
+
+/**
  * Apply dagre layout to a set of nodes and edges.
  * Nodes are positioned based on the directed graph structure.
  */
@@ -34,13 +49,9 @@ export function applyC4DagreLayout(
     marginy: 30,
   });
 
-  // Add nodes with their sizes
+  // Add nodes with their actual rendered sizes
   for (const node of nodes) {
-    const c4Level = node.data?.c4Level || 'container';
-    const sizes = C4_NODE_SIZES[c4Level] || C4_NODE_SIZES.container;
-    const isPerson = node.data?.c4Type === 'person';
-    const w = isPerson ? 130 : sizes.width;
-    const h = isPerson ? 160 : sizes.height;
+    const { w, h } = getNodeDimensions(node);
     g.setNode(node.id, { width: w + 20, height: h + 20 });
   }
 
@@ -59,11 +70,7 @@ export function applyC4DagreLayout(
     const dagreNode = g.node(node.id);
     if (!dagreNode) return node;
 
-    const c4Level = node.data?.c4Level || 'container';
-    const sizes = C4_NODE_SIZES[c4Level] || C4_NODE_SIZES.container;
-    const isPerson = node.data?.c4Type === 'person';
-    const w = isPerson ? 130 : sizes.width;
-    const h = isPerson ? 160 : sizes.height;
+    const { w, h } = getNodeDimensions(node);
 
     return {
       ...node,
