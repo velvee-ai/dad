@@ -31,6 +31,9 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.74.0
         version: 0.74.0(zod@3.25.76)
+      '@dad/generation':
+        specifier: workspace:*
+        version: link:../../packages/dad-generation
       '@dad/pipeline':
         specifier: workspace:*
         version: link:../../packages/pipeline

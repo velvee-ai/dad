@@ -7,7 +7,7 @@ import { DadFileAssembler } from '../../src/assembler/DadFileAssembler';
 const MOCK_ROOT = path.resolve(__dirname, '../../../../examples/mock-microservices');
 
 describe('DadFileAssembler', () => {
-  it('should assemble a DadFileSet with all 5 levels + combined', async () => {
+  it('should assemble a DadFileSet with 4 levels + combined', async () => {
     const scanner = new FilesystemScanner();
     const scanResult = await scanner.scan(MOCK_ROOT);
 
@@ -20,7 +20,6 @@ describe('DadFileAssembler', () => {
     const assembler = new DadFileAssembler();
     const dadFileSet = assembler.assemble(scanResult, components, []);
 
-    expect(dadFileSet.landscape).toBeDefined();
     expect(dadFileSet.context).toBeDefined();
     expect(dadFileSet.container).toBeDefined();
     expect(dadFileSet.component).toBeDefined();
@@ -28,16 +27,18 @@ describe('DadFileAssembler', () => {
     expect(dadFileSet.combined).toBeDefined();
   });
 
-  it('should produce exactly one landscape node', async () => {
+  it('should produce context nodes as roots (parentId: null)', async () => {
     const scanner = new FilesystemScanner();
     const scanResult = await scanner.scan(MOCK_ROOT);
 
     const assembler = new DadFileAssembler();
     const dadFileSet = assembler.assemble(scanResult, [], []);
 
-    expect(dadFileSet.landscape.nodes).toHaveLength(1);
-    expect(dadFileSet.landscape.nodes[0].type).toBe('landscape');
-    expect(dadFileSet.landscape.nodes[0].parentId).toBeNull();
+    const contextNodes = dadFileSet.context.nodes.filter(n => !n.boundary);
+    expect(contextNodes.length).toBeGreaterThan(0);
+    for (const node of contextNodes) {
+      expect(node.parentId).toBeNull();
+    }
   });
 
   it('should produce context nodes for systems and external services', async () => {
@@ -103,7 +104,7 @@ describe('DadFileAssembler', () => {
     const assembler = new DadFileAssembler();
     const dadFileSet = assembler.assemble(scanResult, [], []);
 
-    for (const level of ['landscape', 'context', 'container', 'component', 'code', 'combined'] as const) {
+    for (const level of ['context', 'container', 'component', 'code', 'combined'] as const) {
       expect(dadFileSet[level].version).toBe('1.0');
     }
   });
@@ -142,9 +143,6 @@ describe('DadFileAssembler', () => {
 
     for (const node of dadFileSet.combined.nodes) {
       switch (node.type) {
-        case 'landscape':
-          expect(node.id).toMatch(/^landscape:/);
-          break;
         case 'softwareSystem':
           expect(node.id).toMatch(/^system:/);
           break;

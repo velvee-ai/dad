@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-02-07T20:00:10.190Z",
+  "projectName": "ecommerce-platform",
+  "landscapeFile": "levels/landscape.dad.json",
+  "nodeCount": 37,
+  "edgeCount": 32,
+  "levels": {
+    "landscape": {
+      "file": "levels/landscape.dad.json",
+      "nodeCount": 1,
+      "edgeCount": 0
+    },
+    "context": {
+      "file": "levels/context.dad.json",
+      "nodeCount": 4,
+      "edgeCount": 0
+    },
+    "container": {
+      "file": "levels/container.dad.json",
+      "nodeCount": 11,
+      "edgeCount": 10
+    },
+    "component": {
+      "file": "levels/component.dad.json",
+      "nodeCount": 21,
+      "edgeCount": 22
+    },
+    "code": {
+      "file": "levels/code.dad.json",
+      "nodeCount": 0,
+      "edgeCount": 0
+    }
+  },
+  "totalNodes": 37,
+  "totalEdges": 32
+}

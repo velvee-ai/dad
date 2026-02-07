@@ -13,8 +13,7 @@ describe('Pipeline (integration)', () => {
 
     const result = await pipeline.run();
 
-    // Should have all 5 levels + combined
-    expect(result.landscape).toBeDefined();
+    // Should have 4 levels + combined
     expect(result.context).toBeDefined();
     expect(result.container).toBeDefined();
     expect(result.component).toBeDefined();
@@ -188,7 +187,7 @@ describe('Pipeline (integration)', () => {
 
     const result = await pipeline.run();
 
-    for (const level of ['landscape', 'context', 'container', 'component', 'code', 'combined'] as const) {
+    for (const level of ['context', 'container', 'component', 'code', 'combined'] as const) {
       expect(result[level].version).toBe('1.0');
     }
   });
@@ -202,9 +201,6 @@ describe('Pipeline (integration)', () => {
 
     for (const node of result.combined.nodes) {
       switch (node.type) {
-        case 'landscape':
-          expect(node.c4Level).toBe('landscape');
-          break;
         case 'softwareSystem':
         case 'person':
         case 'externalSystem':
@@ -288,7 +284,6 @@ describe('Pipeline (integration)', () => {
 
     // Views
     expect(result.combined.views).toBeDefined();
-    expect(result.combined.views!.systemLandscape).toBeDefined();
     expect(result.combined.views!.systemContext).toBeDefined();
     expect(result.combined.views!.systemContext!.length).toBeGreaterThan(0);
     expect(result.combined.views!.container).toBeDefined();

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { Pipeline } from '@dad/pipeline';
+import { DadStorage, type DadFileSetInput } from '@dad/generation';
 import { FlowVisualizerProvider } from './extension/providers/FlowVisualizerProvider';
 import type { DadFile } from '@dad/shared-types';
 
@@ -14,10 +15,26 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       try {
-        const raw = await vscode.workspace.fs.readFile(uri);
-        const dadFile: DadFile = JSON.parse(Buffer.from(raw).toString('utf-8'));
+        let dadFile: DadFile | null = null;
 
-        if (!Array.isArray(dadFile.nodes) || !Array.isArray(dadFile.edges)) {
+        // If the file is under .dad/levels/, load and merge all level files
+        const filePath = uri.fsPath;
+        const dadDir = filePath.includes(`${path.sep}.dad${path.sep}`)
+          ? filePath.substring(0, filePath.indexOf(`${path.sep}.dad${path.sep}`))
+          : null;
+
+        if (dadDir) {
+          const storage = new DadStorage(dadDir);
+          dadFile = storage.loadMerged();
+        }
+
+        // Fallback: load the single file directly
+        if (!dadFile) {
+          const raw = await vscode.workspace.fs.readFile(uri);
+          dadFile = JSON.parse(Buffer.from(raw).toString('utf-8'));
+        }
+
+        if (!dadFile || !Array.isArray(dadFile.nodes) || !Array.isArray(dadFile.edges)) {
           vscode.window.showErrorMessage('DAD: Invalid .dad.json file — missing nodes or edges.');
           return;
         }
@@ -61,12 +78,15 @@ export function activate(context: vscode.ExtensionContext) {
             const result = await pipeline.run();
             const dadFile = result.combined;
 
-            const dadDir = vscode.Uri.file(path.join(rootPath, '.dad'));
-            await vscode.workspace.fs.createDirectory(dadDir);
+            // Write combined + per-level files via DadStorage
+            const storage = new DadStorage(rootPath);
+            const saveResult = storage.saveAll(result as unknown as DadFileSetInput);
+            if (!saveResult.success) {
+              vscode.window.showErrorMessage(`DAD: Save failed — ${saveResult.errors.join(', ')}`);
+              return;
+            }
 
-            const outUri = vscode.Uri.file(path.join(rootPath, '.dad', 'landscape.dad.json'));
-            const json = JSON.stringify(dadFile, null, 2);
-            await vscode.workspace.fs.writeFile(outUri, Buffer.from(json, 'utf-8'));
+            const outUri = vscode.Uri.file(storage.getFilePath());
 
             vscode.window.showInformationMessage(
               `DAD: Analysis complete — ${dadFile.nodes.length} nodes, ${dadFile.edges.length} edges`

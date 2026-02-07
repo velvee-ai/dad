@@ -22,7 +22,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build && changeset publish"
+    "release": "turbo run build && changeset publish",
+    "package:extension": "turbo run build --filter=dad-vscode-extension && pnpm --filter dad-vscode-extension run package"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

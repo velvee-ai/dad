@@ -1,23 +1,26 @@
 {
   "version": "1.0",
   "metadata": {
-    "projectName": "admin-dashboard",
-    "generatedAt": "2026-02-07T07:24:02.106Z",
+    "projectName": "ecommerce-platform",
+    "generatedAt": "2026-02-07T20:00:10.190Z",
     "generatedBy": "dad-pipeline/0.0.1",
     "totalNodes": 1,
     "totalEdges": 0
   },
   "nodes": [
     {
-      "id": "landscape:admin-dashboard",
+      "id": "landscape:ecommerce-platform",
       "c4Level": "landscape",
-      "name": "admin-dashboard",
+      "name": "ecommerce-platform",
       "type": "landscape",
       "designSpec": "",
-      "documentation": "All software systems in admin-dashboard",
+      "documentation": "All software systems in ecommerce-platform",
       "parentId": null,
       "childIds": [
-        "system:admin-dashboard"
+        "system:ecommerce-platform",
+        "external:stripe",
+        "external:sendgrid",
+        "external:twilio"
       ],
       "technology": "Multi-system",
       "tags": [

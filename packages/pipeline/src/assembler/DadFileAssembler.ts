@@ -9,7 +9,7 @@ import type {
   AnalyzedFile,
   DadFileSet,
 } from '../types';
-import { landscapeId, codeUnitId } from './IdGenerator';
+import { codeUnitId } from './IdGenerator';
 import { EdgeInference } from './EdgeInference';
 import { PersonDetector } from './PersonDetector';
 import { ViewsStylesGenerator } from './ViewsStylesGenerator';
@@ -32,23 +32,17 @@ export class DadFileAssembler {
     analyzedFiles: AnalyzedFile[]
   ): DadFileSet {
     // Build all nodes
-    const landscapeNode = this.buildLandscapeNode(scanResult);
-    const contextNodes = this.buildContextNodes(scanResult, landscapeNode.id);
+    const contextNodes = this.buildContextNodes(scanResult);
     const containerNodes = this.buildContainerNodes(scanResult);
     const componentNodes = this.buildComponentNodes(components);
     const codeNodes = this.buildCodeNodes(analyzedFiles, components);
 
     // Detect persons heuristically
-    const detectedPersons = this.personDetector.detect(scanResult, landscapeNode.id);
+    const detectedPersons = this.personDetector.detect(scanResult);
     const personNodes = detectedPersons.map(p => p.node);
     const personEdges = detectedPersons.flatMap(p => p.edges);
 
-    // Update childIds for landscape and context nodes
-    landscapeNode.childIds = [
-      ...contextNodes.map(n => n.id),
-      ...personNodes.map(n => n.id),
-    ];
-
+    // Update childIds for context nodes
     for (const sys of scanResult.systems) {
       const sysNode = contextNodes.find(n => n.id === sys.id);
       if (sysNode) {
@@ -75,7 +69,7 @@ export class DadFileAssembler {
     ];
     const contextEdges = this.edgeInference.inferContextEdges(scanResult);
 
-    const allNodes = [landscapeNode, ...contextNodes, ...personNodes, ...containerNodes, ...componentNodes, ...codeNodes];
+    const allNodes = [...contextNodes, ...personNodes, ...containerNodes, ...componentNodes, ...codeNodes];
     const allEdges = [...contextEdges, ...personEdges, ...containerEdges, ...componentEdges];
 
     const metadata = this.buildMetadata(scanResult.projectName, allNodes.length, allEdges.length);
@@ -85,7 +79,6 @@ export class DadFileAssembler {
     const styles = this.viewsStylesGenerator.generateStyles();
 
     return {
-      landscape: this.filterByLevel('landscape', allNodes, allEdges, metadata),
       context: this.filterByLevel('context', allNodes, allEdges, metadata),
       container: this.filterByLevel('container', allNodes, allEdges, metadata),
       component: this.filterByLevel('component', allNodes, allEdges, metadata),
@@ -101,22 +94,7 @@ export class DadFileAssembler {
     };
   }
 
-  private buildLandscapeNode(scanResult: ScanResult): DadNode {
-    return {
-      id: landscapeId(scanResult.projectName),
-      c4Level: 'landscape',
-      name: scanResult.projectName,
-      type: 'landscape',
-      designSpec: '',
-      documentation: `All software systems in ${scanResult.projectName}`,
-      parentId: null,
-      childIds: [],
-      technology: 'Multi-system',
-      tags: ['root'],
-    };
-  }
-
-  private buildContextNodes(scanResult: ScanResult, landscapeNodeId: string): DadNode[] {
+  private buildContextNodes(scanResult: ScanResult): DadNode[] {
     const nodes: DadNode[] = [];
 
     // Software system nodes
@@ -128,7 +106,7 @@ export class DadFileAssembler {
         type: 'softwareSystem',
         designSpec: '',
         documentation: `${sys.name} software system`,
-        parentId: landscapeNodeId,
+        parentId: null,
         childIds: [],
         technology: this.inferSystemTechnology(scanResult, sys.id),
         tags: [],
@@ -144,7 +122,7 @@ export class DadFileAssembler {
         type: 'externalSystem',
         designSpec: '',
         documentation: `${ext.name} external service`,
-        parentId: landscapeNodeId,
+        parentId: null,
         childIds: [],
         technology: ext.technology,
         tags: ['external'],
@@ -300,8 +278,35 @@ export class DadFileAssembler {
     allEdges: DadEdge[],
     metadata: DadFileMetadata
   ): DadFile {
-    const nodes = allNodes.filter(n => n.c4Level === level);
+    const levelNodes = allNodes.filter(n => n.c4Level === level);
     const edges = allEdges.filter(e => e.c4Level === level);
+
+    // Collect boundary nodes: nodes referenced by edges but belonging to a different level
+    const levelNodeIds = new Set(levelNodes.map(n => n.id));
+    const referencedIds = new Set<string>();
+    for (const edge of edges) {
+      if (!levelNodeIds.has(edge.source)) referencedIds.add(edge.source);
+      if (!levelNodeIds.has(edge.target)) referencedIds.add(edge.target);
+    }
+
+    const boundaryNodes: DadNode[] = [];
+    for (const id of referencedIds) {
+      const node = allNodes.find(n => n.id === id);
+      if (node) {
+        boundaryNodes.push({
+          id: node.id,
+          name: node.name,
+          type: node.type,
+          c4Level: node.c4Level,
+          designSpec: '',
+          documentation: '',
+          childIds: [],
+          boundary: true,
+        });
+      }
+    }
+
+    const nodes = [...levelNodes, ...boundaryNodes];
 
     return {
       version: '1.0',

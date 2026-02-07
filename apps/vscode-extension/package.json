@@ -82,6 +82,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.74.0",
+    "@dad/generation": "workspace:*",
     "@dad/pipeline": "workspace:*",
     "@dad/shared-types": "workspace:*",
     "@dad/visualizer": "workspace:*",

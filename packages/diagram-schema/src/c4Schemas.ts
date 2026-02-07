@@ -81,6 +81,9 @@ export const DadNodeSchema = z.object({
 
   // Author mode
   status: DadElementStatusSchema,
+
+  // Multi-file per-level
+  boundary: z.boolean().optional(),
 });
 
 // --- Edge ---
@@ -126,10 +129,10 @@ export const DadViewSchema = z.object({
 });
 
 export const DadViewsSchema = z.object({
-  systemLandscape: DadViewSchema,
-  systemContext: z.array(DadViewSchema),
-  container: z.array(DadViewSchema),
-  component: z.array(DadViewSchema),
+  systemLandscape: DadViewSchema.optional(),
+  systemContext: z.array(DadViewSchema).optional(),
+  container: z.array(DadViewSchema).optional(),
+  component: z.array(DadViewSchema).optional(),
 });
 
 // --- Styles ---
@@ -272,6 +275,83 @@ export function validateDadFileIntegrity(file: DadFileZ): string[] {
     }
     if (!nodeIds.has(edge.target)) {
       errors.push(`Edge "${edge.id}": target "${edge.target}" does not exist`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates a per-level DadFile:
+ * - Skips cross-level parentId/childId checks (those live in other level files)
+ * - Validates edge source/target exist (including boundary nodes)
+ * - Validates boundary nodes have boundary: true
+ * Returns an array of error messages (empty = valid).
+ */
+export function validateLevelFileIntegrity(file: DadFileZ): string[] {
+  const errors: string[] = [];
+  const nodeIds = new Set(file.nodes.map(n => n.id));
+
+  // Edge source/target must exist in this file (as real or boundary nodes)
+  for (const edge of file.edges) {
+    if (!nodeIds.has(edge.source)) {
+      errors.push(`Edge "${edge.id}": source "${edge.source}" does not exist in level file`);
+    }
+    if (!nodeIds.has(edge.target)) {
+      errors.push(`Edge "${edge.id}": target "${edge.target}" does not exist in level file`);
+    }
+  }
+
+  // Boundary nodes must have boundary: true
+  for (const node of file.nodes) {
+    if (node.boundary) {
+      // Boundary nodes should be minimal references
+      if (!node.id || !node.name || !node.type || !node.c4Level) {
+        errors.push(`Boundary node "${node.id}": missing required fields (id, name, type, c4Level)`);
+      }
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates cross-file referential integrity across a set of per-level files:
+ * - No duplicate node IDs across files (excluding boundary nodes)
+ * - parentId references exist in the correct level file
+ * - childIds references exist in the correct level file
+ * Returns an array of error messages (empty = valid).
+ */
+export function validateDadFileSetIntegrity(files: Record<string, DadFileZ>): string[] {
+  const errors: string[] = [];
+
+  // Collect all non-boundary node IDs across files, check for duplicates
+  const globalNodeIds = new Map<string, string>(); // nodeId -> level key
+  for (const [levelKey, file] of Object.entries(files)) {
+    for (const node of file.nodes) {
+      if (node.boundary) continue;
+      if (globalNodeIds.has(node.id)) {
+        errors.push(`Duplicate node ID "${node.id}" in levels "${globalNodeIds.get(node.id)}" and "${levelKey}"`);
+      } else {
+        globalNodeIds.set(node.id, levelKey);
+      }
+    }
+  }
+
+  // Check parentId and childIds resolve across files
+  for (const [levelKey, file] of Object.entries(files)) {
+    for (const node of file.nodes) {
+      if (node.boundary) continue;
+
+      if (node.parentId && !globalNodeIds.has(node.parentId)) {
+        errors.push(`Node "${node.id}" in "${levelKey}": parentId "${node.parentId}" not found in any level file`);
+      }
+
+      for (const childId of node.childIds) {
+        if (!globalNodeIds.has(childId)) {
+          errors.push(`Node "${node.id}" in "${levelKey}": childId "${childId}" not found in any level file`);
+        }
+      }
     }
   }
 

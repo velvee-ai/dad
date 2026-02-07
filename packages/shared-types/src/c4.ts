@@ -111,6 +111,9 @@ export interface DadNode {
 
   // Code-specific fields (when type === 'codeUnit')
   codeUnitKind?: CodeUnitKind;   // 'interface', 'class', 'abstract-class', 'type', etc.
+
+  // Multi-file per-level fields
+  boundary?: boolean;            // true = reference copy from another level
 }
 
 // --- Edge ---

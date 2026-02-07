@@ -4,8 +4,8 @@
     "example-diagram": {
       "id": "example-diagram",
       "name": "Example Flow",
-      "createdAt": "2025-11-26T06:42:55Z",
-      "updatedAt": "2025-11-26T06:42:55.48618816Z",
+      "createdAt": "2026-02-07T11:08:09-08:00",
+      "updatedAt": "2026-02-07T11:08:09.275885-08:00",
       "sourceFile": "example.go",
       "language": "go",
       "format": "json",
@@ -34,8 +34,8 @@
     "multi-format": {
       "id": "multi-format",
       "name": "Multi Format Diagram",
-      "createdAt": "2025-11-26T06:42:55Z",
-      "updatedAt": "2025-11-26T06:42:55.486673571Z",
+      "createdAt": "2026-02-07T11:08:09-08:00",
+      "updatedAt": "2026-02-07T11:08:09.277356-08:00",
       "sourceFile": "",
       "language": "go",
       "format": "mermaid",

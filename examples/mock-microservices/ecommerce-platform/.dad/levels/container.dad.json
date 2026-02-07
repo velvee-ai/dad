@@ -1,0 +1,301 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "ecommerce-platform",
+    "generatedAt": "2026-02-07T20:00:10.190Z",
+    "generatedBy": "dad-pipeline/0.0.1",
+    "totalNodes": 11,
+    "totalEdges": 10
+  },
+  "nodes": [
+    {
+      "id": "container:order-service",
+      "c4Level": "container",
+      "name": "Order Service",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Order Service container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:ordercontroller",
+        "component:orderevents",
+        "component:order",
+        "component:orderservice",
+        "component:paymentservice"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:api-gateway",
+      "c4Level": "container",
+      "name": "Api Gateway",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Api Gateway container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:authmiddleware",
+        "component:ratelimiter",
+        "component:auth",
+        "component:orders",
+        "component:products"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:user-service",
+      "c4Level": "container",
+      "name": "User Service",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "User Service container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:usercontroller",
+        "component:user",
+        "component:userrepository",
+        "component:emailservice",
+        "component:userservice"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:notification-service",
+      "c4Level": "container",
+      "name": "Notification Service",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Notification Service container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/notification-service",
+        "language": "python"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:email-handler",
+        "component:sms-handler"
+      ],
+      "technology": "Python/Kafka",
+      "tags": []
+    },
+    {
+      "id": "container:shared",
+      "c4Level": "container",
+      "name": "Shared",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Shared container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/shared",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:schemas"
+      ],
+      "technology": "TypeScript",
+      "tags": []
+    },
+    {
+      "id": "datastore:postgresql",
+      "c4Level": "container",
+      "name": "PostgreSQL",
+      "type": "dataStore",
+      "designSpec": "",
+      "documentation": "PostgreSQL data store",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "PostgreSQL 15",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "datastore:redis",
+      "c4Level": "container",
+      "name": "Redis",
+      "type": "dataStore",
+      "designSpec": "",
+      "documentation": "Redis data store",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "Redis 7",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "datastore:kafka",
+      "c4Level": "container",
+      "name": "Kafka",
+      "type": "dataStore",
+      "designSpec": "",
+      "documentation": "Kafka data store",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "Apache Kafka 7.5.0",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "external:stripe",
+      "name": "Stripe",
+      "type": "externalSystem",
+      "c4Level": "context",
+      "designSpec": "",
+      "documentation": "",
+      "childIds": [],
+      "boundary": true
+    },
+    {
+      "id": "external:sendgrid",
+      "name": "SendGrid",
+      "type": "externalSystem",
+      "c4Level": "context",
+      "designSpec": "",
+      "documentation": "",
+      "childIds": [],
+      "boundary": true
+    },
+    {
+      "id": "external:twilio",
+      "name": "Twilio",
+      "type": "externalSystem",
+      "c4Level": "context",
+      "designSpec": "",
+      "documentation": "",
+      "childIds": [],
+      "boundary": true
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:order-service-to-postgresql",
+      "source": "container:order-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
+      ]
+    },
+    {
+      "id": "edge:order-service-to-stripe",
+      "source": "container:order-service",
+      "target": "external:stripe",
+      "label": "Uses Stripe",
+      "technology": "REST/HTTPS (Stripe API)",
+      "c4Level": "container",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:api-gateway-to-user-service",
+      "source": "container:api-gateway",
+      "target": "container:user-service",
+      "label": "Routes requests to",
+      "technology": "REST/HTTP",
+      "c4Level": "container",
+      "tags": [
+        "sync"
+      ]
+    },
+    {
+      "id": "edge:api-gateway-to-order-service",
+      "source": "container:api-gateway",
+      "target": "container:order-service",
+      "label": "Routes requests to",
+      "technology": "REST/HTTP",
+      "c4Level": "container",
+      "tags": [
+        "sync"
+      ]
+    },
+    {
+      "id": "edge:api-gateway-to-redis",
+      "source": "container:api-gateway",
+      "target": "datastore:redis",
+      "label": "Caches data",
+      "technology": "Redis protocol",
+      "c4Level": "container",
+      "tags": [
+        "cache"
+      ]
+    },
+    {
+      "id": "edge:user-service-to-postgresql",
+      "source": "container:user-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
+      ]
+    },
+    {
+      "id": "edge:notification-service-to-sendgrid",
+      "source": "container:notification-service",
+      "target": "external:sendgrid",
+      "label": "Uses SendGrid",
+      "technology": "REST/HTTPS (SendGrid API)",
+      "c4Level": "container",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:notification-service-to-twilio",
+      "source": "container:notification-service",
+      "target": "external:twilio",
+      "label": "Uses Twilio",
+      "technology": "REST/HTTPS (Twilio API)",
+      "c4Level": "container",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:order-service-to-notification-service",
+      "source": "container:order-service",
+      "target": "container:notification-service",
+      "label": "Publishes events to",
+      "technology": "Kafka events",
+      "c4Level": "container",
+      "tags": [
+        "async",
+        "event-driven"
+      ]
+    },
+    {
+      "id": "edge:user-service-to-notification-service",
+      "source": "container:user-service",
+      "target": "container:notification-service",
+      "label": "Publishes events to",
+      "technology": "Kafka events",
+      "c4Level": "container",
+      "tags": [
+        "async",
+        "event-driven"
+      ]
+    }
+  ]
+}

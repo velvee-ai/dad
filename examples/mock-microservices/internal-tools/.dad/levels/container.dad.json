@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "internal-tools",
+    "generatedAt": "2026-02-07T19:59:53.471Z",
+    "generatedBy": "dad-pipeline/0.0.1",
+    "totalNodes": 1,
+    "totalEdges": 0
+  },
+  "nodes": [
+    {
+      "id": "container:admin-dashboard",
+      "c4Level": "container",
+      "name": "Admin Dashboard",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Admin Dashboard container",
+      "sourceMapping": {
+        "filePath": "internal-tools/admin-dashboard",
+        "language": "typescript"
+      },
+      "parentId": "system:internal-tools",
+      "childIds": [],
+      "technology": "TypeScript/React",
+      "tags": []
+    }
+  ],
+  "edges": []
+}

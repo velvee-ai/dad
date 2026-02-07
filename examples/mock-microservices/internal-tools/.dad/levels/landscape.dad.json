@@ -2,7 +2,7 @@
   "version": "1.0",
   "metadata": {
     "projectName": "internal-tools",
-    "generatedAt": "2026-02-07T07:23:56.574Z",
+    "generatedAt": "2026-02-07T19:59:53.471Z",
     "generatedBy": "dad-pipeline/0.0.1",
     "totalNodes": 1,
     "totalEdges": 0
@@ -17,7 +17,9 @@
       "documentation": "All software systems in internal-tools",
       "parentId": null,
       "childIds": [
-        "system:internal-tools"
+        "system:internal-tools",
+        "person:customer",
+        "person:admin-user"
       ],
       "technology": "Multi-system",
       "tags": [
