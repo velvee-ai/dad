@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -16,14 +16,23 @@ import ReactFlow, {
   Panel
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import './icicle.css';
 import useUndoable from 'use-undoable';
-import { FlowChartData } from '../shared/types';
+import { FlowChartData } from '@daad/shared-types';
 import CustomNode from './components/CustomNode';
 import CustomEdge from './components/CustomEdge';
 import SmartEdge from './components/SmartEdge';
 import EditToolbar from './components/EditToolbar';
 import HierarchicalNode from './components/HierarchicalNode';
+import C4Node from './components/C4Node';
+import C4Edge from './components/C4Edge';
+import C4Breadcrumbs, { C4Breadcrumb } from './components/C4Breadcrumbs';
+import C4ControlBar from './components/C4ControlBar';
+import NodeDetailPanel, { NodeDetail } from './components/NodeDetailPanel';
 import { ZoomManager } from './utils/zoomManager';
+import { layoutForScope } from './utils/c4LayoutEngine';
+import { translateDadToVisual } from './adapter/c4Adapter';
+import { ICICLE_THEME } from './theme/icicleTheme';
 
 // Define custom node types
 const nodeTypes: NodeTypes = {
@@ -37,7 +46,9 @@ const nodeTypes: NodeTypes = {
   // Hierarchical node types
   file: HierarchicalNode,
   function: HierarchicalNode,
-  code: HierarchicalNode
+  code: HierarchicalNode,
+  // C4 Architecture node type
+  c4Node: C4Node,
 };
 
 // Define custom edge types
@@ -46,7 +57,8 @@ const edgeTypes: EdgeTypes = {
   conditional: SmartEdge,
   loop: SmartEdge,
   error: SmartEdge,
-  smart: SmartEdge
+  smart: SmartEdge,
+  c4Edge: C4Edge,
 };
 
 interface VSCode {
@@ -171,6 +183,20 @@ const App: React.FC = () => {
     { id: 'root', label: 'Software', type: 'software' }
   ]);
 
+  // C4 Architecture view state
+  const [isC4View, setIsC4View] = useState(false);
+  const [c4Breadcrumbs, setC4Breadcrumbs] = useState<C4Breadcrumb[]>([
+    { id: 'root', label: 'Landscape', level: 'landscape' }
+  ]);
+  const [selectedNodeDetail, setSelectedNodeDetail] = useState<NodeDetail | null>(null);
+  // All C4 nodes/edges from DadFile (unfiltered, for drill-down recomputation)
+  const [allC4Nodes, setAllC4Nodes] = useState<Node[]>([]);
+  const [allC4Edges, setAllC4Edges] = useState<Edge[]>([]);
+  // Current drill-down scope (null = root, showing context-level children)
+  const [c4Scope, setC4Scope] = useState<string | null>(null);
+  // ReactFlow instance ref for programmatic fitView on drill-down
+  const reactFlowRef = useRef<any>(null);
+
   const onConnect = useCallback(
     (params: Connection | Edge) => {
       setEdges((eds) => addEdge(params, eds));
@@ -196,6 +222,14 @@ const App: React.FC = () => {
           setError(null);
           setIsHierarchical(true);
           updateHierarchicalFlowChart(message.data);
+          break;
+
+        case 'updateC4View':
+          setIsLoading(false);
+          setError(null);
+          setIsC4View(true);
+          setIsHierarchical(false);
+          updateC4FlowChart(message.data);
           break;
 
         case 'showLoading':
@@ -393,6 +427,163 @@ const App: React.FC = () => {
 
     setHasChanges(true);
   }, [nodes, setNodes, setEdges]);
+
+  // --- C4 Architecture View ---
+
+  // Fit view after drill-down scope changes
+  useEffect(() => {
+    if (isC4View && reactFlowRef.current) {
+      const timer = setTimeout(() => {
+        reactFlowRef.current.fitView({ duration: 300, padding: 0.12 });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isC4View, c4Scope]);
+
+  const updateC4FlowChart = (data: any) => {
+    console.log('Received C4 architecture data:', data);
+
+    if (!data || !data.nodes || !data.edges) {
+      setError('Invalid C4 architecture data received.');
+      return;
+    }
+
+    // Translate DAD data to visual model via adapter
+    const { nodes: flowNodes, edges: flowEdges } = translateDadToVisual(data, ICICLE_THEME);
+
+    // Store all nodes/edges for drill-down recomputation
+    setAllC4Nodes(flowNodes);
+    setAllC4Edges(flowEdges);
+
+    // Reset to root scope (context level)
+    setC4Scope(null);
+    setC4Breadcrumbs([{ id: 'root', label: 'Landscape', level: 'landscape' }]);
+
+    // Apply layout for root scope (shows context-level children)
+    const { nodes: positioned, edges: scopeEdges } = layoutForScope(flowNodes, flowEdges, null);
+
+    setNodes(positioned);
+    setEdges(scopeEdges);
+    setOriginalNodes(positioned);
+    setOriginalEdges(scopeEdges);
+    setHasChanges(false);
+    setIsEditMode(false);
+  };
+
+  const handleC4DrillDown = useCallback((nodeId: string) => {
+    const hasChildren = allC4Nodes.some(n => n.data?.parentId === nodeId);
+    if (!hasChildren) return;
+
+    const targetNode = allC4Nodes.find(n => n.id === nodeId);
+    if (!targetNode) return;
+
+    const { nodes: positioned, edges: scopeEdges } = layoutForScope(allC4Nodes, allC4Edges, nodeId);
+    if (positioned.length === 0) return;
+
+    setC4Breadcrumbs(prev => [
+      ...prev,
+      { id: nodeId, label: targetNode.data.label, level: targetNode.data.c4Level }
+    ]);
+    setC4Scope(nodeId);
+    setNodes(positioned);
+    setEdges(scopeEdges);
+  }, [allC4Nodes, allC4Edges, setNodes, setEdges]);
+
+  // Listen for drill-down events from C4Node buttons
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const nodeId = (e as CustomEvent).detail?.nodeId;
+      if (nodeId) handleC4DrillDown(nodeId);
+    };
+    window.addEventListener('c4-drill-down', handler);
+    return () => window.removeEventListener('c4-drill-down', handler);
+  }, [handleC4DrillDown]);
+
+  const handleC4DrillUp = useCallback(() => {
+    if (c4Breadcrumbs.length <= 1) return;
+
+    const newBreadcrumbs = c4Breadcrumbs.slice(0, -1);
+    const parentCrumb = newBreadcrumbs[newBreadcrumbs.length - 1];
+    const newScope = parentCrumb.id === 'root' ? null : parentCrumb.id;
+
+    const { nodes: positioned, edges: scopeEdges } = layoutForScope(allC4Nodes, allC4Edges, newScope);
+
+    setC4Breadcrumbs(newBreadcrumbs);
+    setC4Scope(newScope);
+    setNodes(positioned);
+    setEdges(scopeEdges);
+  }, [c4Breadcrumbs, allC4Nodes, allC4Edges, setNodes, setEdges]);
+
+  const handleC4NodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
+    if (!isC4View) return;
+    const d = node.data;
+    setSelectedNodeDetail({
+      id: node.id,
+      name: d.label || d.dadNodeId || node.id,
+      c4Level: d.c4Level,
+      c4Type: d.c4Type,
+      technology: d.technology,
+      designSpec: d.designSpec || '',
+      documentation: d.documentation || '',
+      sourceFilePath: d.sourceFilePath,
+    });
+  }, [isC4View]);
+
+  const handleC4NodeDoubleClick = useCallback((_event: React.MouseEvent, node: Node) => {
+    if (!isC4View) return;
+    handleC4DrillDown(node.id);
+  }, [isC4View, handleC4DrillDown]);
+
+  const handleC4BreadcrumbNavigate = useCallback((nodeId: string) => {
+    const idx = c4Breadcrumbs.findIndex(b => b.id === nodeId);
+    if (idx < 0) return;
+
+    const newBreadcrumbs = c4Breadcrumbs.slice(0, idx + 1);
+    const targetCrumb = newBreadcrumbs[newBreadcrumbs.length - 1];
+    const newScope = targetCrumb.id === 'root' ? null : targetCrumb.id;
+
+    const { nodes: positioned, edges: scopeEdges } = layoutForScope(allC4Nodes, allC4Edges, newScope);
+
+    setC4Breadcrumbs(newBreadcrumbs);
+    setC4Scope(newScope);
+    setNodes(positioned);
+    setEdges(scopeEdges);
+  }, [c4Breadcrumbs, allC4Nodes, allC4Edges, setNodes, setEdges]);
+
+  const handleOpenSource = useCallback((filePath: string) => {
+    if (window.vscode) {
+      window.vscode.postMessage({ command: 'openSourceFile', filePath });
+    }
+  }, []);
+
+  // C4 Control Bar handlers
+  const handleC4ZoomIn = useCallback(() => {
+    reactFlowRef.current?.zoomIn({ duration: 200 });
+  }, []);
+
+  const handleC4ZoomOut = useCallback(() => {
+    reactFlowRef.current?.zoomOut({ duration: 200 });
+  }, []);
+
+  const handleC4FitView = useCallback(() => {
+    reactFlowRef.current?.fitView({ duration: 300, padding: 0.12 });
+  }, []);
+
+  const handleC4FocusNode = useCallback((nodeId: string) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node || !reactFlowRef.current) return;
+    const x = node.position.x + (node.data?.style?.width || 300) / 2;
+    const y = node.position.y + (node.data?.style?.height || 140) / 2;
+    reactFlowRef.current.setCenter(x, y, { duration: 300, zoom: 1.2 });
+  }, [nodes]);
+
+  const handleC4DrillToRoot = useCallback(() => {
+    const { nodes: positioned, edges: scopeEdges } = layoutForScope(allC4Nodes, allC4Edges, null);
+    setC4Breadcrumbs([{ id: 'root', label: 'Landscape', level: 'landscape' }]);
+    setC4Scope(null);
+    setNodes(positioned);
+    setEdges(scopeEdges);
+  }, [allC4Nodes, allC4Edges, setNodes, setEdges]);
 
   const getEdgeStyle = (type?: string) => {
     switch (type) {
@@ -659,11 +850,11 @@ const App: React.FC = () => {
 
   // Track zoom changes for LOD (Level of Detail)
   const handleMove = useCallback((_event: any, viewport: any) => {
-    if (isHierarchical) {
-      const newZoom = viewport.zoom;
-      setPreviousZoom(currentZoom);
-      setCurrentZoom(newZoom);
+    const newZoom = viewport.zoom;
+    setPreviousZoom(currentZoom);
+    setCurrentZoom(newZoom);
 
+    if (isHierarchical) {
       // Apply LOD based on zoom level
       const { nodes: lodNodes, edges: lodEdges } = ZoomManager.applyLOD(
         nodes,
@@ -685,7 +876,11 @@ const App: React.FC = () => {
   }, [isHierarchical, currentZoom, nodes, edges, setNodes, setEdges]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{
+      width: '100vw',
+      height: '100vh',
+      background: isC4View ? ICICLE_THEME.canvas.bg0 : undefined,
+    }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -694,6 +889,9 @@ const App: React.FC = () => {
         onConnect={onConnect}
         onNodeDragStop={handleNodeDragStop}
         onMove={handleMove}
+        onInit={(instance) => { reactFlowRef.current = instance; }}
+        onNodeClick={handleC4NodeClick}
+        onNodeDoubleClick={handleC4NodeDoubleClick}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
@@ -703,8 +901,24 @@ const App: React.FC = () => {
         elementsSelectable={isEditMode}
       >
         <Controls />
-        <MiniMap />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <MiniMap
+          nodeColor={(node) => {
+            if (node.type === 'c4Node' && node.data?.style?.accentColor) {
+              return node.data.style.accentColor;
+            }
+            return '#555';
+          }}
+          style={isC4View ? {
+            background: ICICLE_THEME.canvas.bg1,
+            border: `1px solid ${ICICLE_THEME.glass.stroke}`,
+          } : undefined}
+        />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={12}
+          size={isC4View ? ICICLE_THEME.canvas.gridDotSize : 1}
+          color={isC4View ? ICICLE_THEME.canvas.gridDotColor : undefined}
+        />
 
         {/* Hierarchical View Info */}
         {isHierarchical && (
@@ -734,8 +948,36 @@ const App: React.FC = () => {
           </Panel>
         )}
 
-        {/* Edit Toolbar - only show in non-hierarchical mode */}
-        {!isHierarchical && (
+        {/* C4 Architecture View Panel */}
+        {isC4View && (
+          <>
+            <Panel position="top-left">
+              <C4Breadcrumbs
+                breadcrumbs={c4Breadcrumbs}
+                onNavigate={handleC4BreadcrumbNavigate}
+                onDrillUp={handleC4DrillUp}
+                scopeLabel={c4Scope
+                  ? `Contents of ${c4Breadcrumbs[c4Breadcrumbs.length - 1]?.label}`
+                  : 'System Context View'}
+              />
+            </Panel>
+            <Panel position="bottom-center">
+              <C4ControlBar
+                allNodes={allC4Nodes}
+                currentScope={c4Scope}
+                onDrillDown={handleC4DrillDown}
+                onDrillToRoot={handleC4DrillToRoot}
+                onZoomIn={handleC4ZoomIn}
+                onZoomOut={handleC4ZoomOut}
+                onFitView={handleC4FitView}
+                onFocusNode={handleC4FocusNode}
+              />
+            </Panel>
+          </>
+        )}
+
+        {/* Edit Toolbar - only show in non-hierarchical, non-C4 mode */}
+        {!isHierarchical && !isC4View && (
           <EditToolbar
             isEditMode={isEditMode}
             hasChanges={hasChanges}
@@ -752,6 +994,15 @@ const App: React.FC = () => {
           />
         )}
       </ReactFlow>
+
+      {/* C4 Node Detail Panel */}
+      {isC4View && selectedNodeDetail && (
+        <NodeDetailPanel
+          detail={selectedNodeDetail}
+          onClose={() => setSelectedNodeDetail(null)}
+          onOpenSource={handleOpenSource}
+        />
+      )}
     </div>
   );
 };

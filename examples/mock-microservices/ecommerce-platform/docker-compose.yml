@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - USER_SERVICE_URL=http://user-service:4001
+      - ORDER_SERVICE_URL=http://order-service:4002
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - user-service
+      - order-service
+      - redis
+
+  user-service:
+    build: ./services/user-service
+    ports:
+      - "4001:4001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/users
+      - KAFKA_BROKERS=kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+
+  order-service:
+    build: ./services/order-service
+    ports:
+      - "4002:4002"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/orders
+      - KAFKA_BROKERS=kafka:9092
+      - PAYMENT_API_KEY=${STRIPE_API_KEY}
+    depends_on:
+      - postgres
+      - kafka
+
+  notification-service:
+    build: ./services/notification-service
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - SMTP_HOST=smtp.sendgrid.net
+      - TWILIO_SID=${TWILIO_SID}
+    depends_on:
+      - kafka
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+volumes:
+  pgdata:

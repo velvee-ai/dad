@@ -1,0 +1,926 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "Acme Corp Engineering",
+    "generatedAt": "2026-02-06T12:00:00.000Z",
+    "generatedBy": "daad-vscode/0.0.1 (mock)",
+    "sourceCommit": "abc1234",
+    "totalNodes": 40,
+    "totalEdges": 28
+  },
+  "nodes": [
+    {
+      "id": "landscape:acme",
+      "c4Level": "landscape",
+      "name": "Acme Corp Engineering",
+      "type": "landscape",
+      "designSpec": "element:\n  type: landscape\n  name: \"Acme Corp Engineering\"\n  description: \"All software systems maintained by the engineering org\"\n  systems:\n    - \"ecommerce-platform\"\n    - \"internal-tools\"\n  teams:\n    - name: \"Platform Team\"\n      owns: [\"ecommerce-platform\"]\n    - name: \"Internal Tools Team\"\n      owns: [\"internal-tools\"]\n",
+      "documentation": "# Acme Corp Engineering\n\nThe entire software ecosystem maintained by Acme Corp's engineering organization.\n\n## Systems\n- **E-Commerce Platform** - Customer-facing online store\n- **Internal Tools** - Admin dashboards and operational tooling\n\n## Teams\n| Team | Ownership |\n|------|----------|\n| Platform Team | E-Commerce Platform |\n| Internal Tools Team | Internal Tools |\n",
+      "parentId": null,
+      "childIds": ["system:ecommerce-platform", "system:internal-tools", "person:customer", "person:admin", "external:payment-provider", "external:email-provider", "external:monitoring"],
+      "technology": "Multi-system",
+      "tags": ["root"]
+    },
+    {
+      "id": "system:ecommerce-platform",
+      "c4Level": "context",
+      "name": "E-Commerce Platform",
+      "type": "softwareSystem",
+      "designSpec": "element:\n  type: softwareSystem\n  name: \"E-Commerce Platform\"\n  description: \"Customer-facing e-commerce system handling orders, users, and payments\"\n  technology: \"TypeScript, Python\"\n  boundaries:\n    - \"User Management\"\n    - \"Order Processing\"\n    - \"Notifications\"\n",
+      "documentation": "# E-Commerce Platform\n\nThe primary customer-facing system. Handles user registration, product browsing, order placement, and payment processing.\n\n## Architecture\nMicroservice architecture with an API Gateway fronting specialized services.\n\n## Key Flows\n1. User registers -> User Service -> Email notification\n2. User places order -> Order Service -> Payment Service -> Notification Service\n",
+      "parentId": "landscape:acme",
+      "childIds": ["container:web-frontend", "container:api-gateway", "container:user-service", "container:order-service", "container:product-catalog", "container:notification-service", "container:kafka", "datastore:postgres", "datastore:redis"],
+      "technology": "TypeScript, Python",
+      "tags": ["primary", "customer-facing"]
+    },
+    {
+      "id": "system:internal-tools",
+      "c4Level": "context",
+      "name": "Internal Tools",
+      "type": "softwareSystem",
+      "designSpec": "element:\n  type: softwareSystem\n  name: \"Internal Tools\"\n  description: \"Administrative dashboards and operational tooling\"\n  technology: \"TypeScript, React\"\n",
+      "documentation": "# Internal Tools\n\nAdmin dashboards and operational tooling used by internal teams to manage the e-commerce platform.\n",
+      "parentId": "landscape:acme",
+      "childIds": ["container:admin-dashboard", "container:monitoring-dashboard"],
+      "technology": "TypeScript, React",
+      "tags": ["internal"]
+    },
+    {
+      "id": "person:customer",
+      "c4Level": "context",
+      "name": "Customer",
+      "type": "person",
+      "designSpec": "element:\n  type: person\n  name: \"Customer\"\n  description: \"A user of the e-commerce platform who browses products, places orders, and manages their account\"\n",
+      "documentation": "# Customer\n\nEnd user who interacts with the e-commerce platform through a web browser or mobile app.\n",
+      "parentId": "landscape:acme",
+      "childIds": [],
+      "tags": ["external-actor"]
+    },
+    {
+      "id": "person:admin",
+      "c4Level": "context",
+      "name": "Admin User",
+      "type": "person",
+      "designSpec": "element:\n  type: person\n  name: \"Admin User\"\n  description: \"Internal administrator who manages users, orders, and system configuration\"\n",
+      "documentation": "# Admin User\n\nInternal staff member who uses the admin dashboard to manage the e-commerce platform.\n",
+      "parentId": "landscape:acme",
+      "childIds": [],
+      "tags": ["internal-actor"]
+    },
+    {
+      "id": "external:payment-provider",
+      "c4Level": "context",
+      "name": "Stripe",
+      "type": "externalSystem",
+      "designSpec": "element:\n  type: externalSystem\n  name: \"Stripe\"\n  description: \"Third-party payment processing provider\"\n  technology: \"REST\"\n",
+      "documentation": "# Stripe Payment Provider\n\nExternal payment gateway handling credit card transactions and refunds.\n",
+      "parentId": "landscape:acme",
+      "childIds": [],
+      "technology": "REST",
+      "tags": ["external"]
+    },
+    {
+      "id": "external:email-provider",
+      "c4Level": "context",
+      "name": "SendGrid",
+      "type": "externalSystem",
+      "designSpec": "element:\n  type: externalSystem\n  name: \"SendGrid\"\n  description: \"Third-party email delivery service\"\n  technology: \"REST\"\n",
+      "documentation": "# SendGrid Email Provider\n\nExternal email delivery service used for transactional emails (order confirmations, password resets).\n",
+      "parentId": "landscape:acme",
+      "childIds": [],
+      "technology": "REST",
+      "tags": ["external"]
+    },
+    {
+      "id": "external:monitoring",
+      "c4Level": "context",
+      "name": "Prometheus / Grafana",
+      "type": "externalSystem",
+      "designSpec": "element:\n  type: externalSystem\n  name: \"Prometheus / Grafana\"\n  description: \"External monitoring and observability stack\"\n  technology: \"Prometheus\"\n",
+      "documentation": "# Prometheus / Grafana\n\nExternal monitoring stack that scrapes metrics from all services and provides dashboards.\n",
+      "parentId": "landscape:acme",
+      "childIds": [],
+      "technology": "Prometheus",
+      "tags": ["external", "monitoring"]
+    },
+
+    {
+      "id": "container:web-frontend",
+      "c4Level": "container",
+      "name": "Web Frontend",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"Web Frontend\"\n  description: \"Customer-facing single-page application\"\n  technology: \"TypeScript, React, Next.js\"\n  responsibilities:\n    - \"Product browsing\"\n    - \"Shopping cart\"\n    - \"Checkout flow\"\n    - \"User account management\"\n",
+      "documentation": "# Web Frontend\n\nReact-based SPA served via Next.js. Provides the customer-facing UI for browsing products, managing cart, and completing checkout.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/apps/web-frontend",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "TypeScript, React, Next.js",
+      "tags": ["web-app", "customer-facing"]
+    },
+    {
+      "id": "container:api-gateway",
+      "c4Level": "container",
+      "name": "API Gateway",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"API Gateway\"\n  description: \"Routes and authenticates incoming API requests\"\n  technology: \"TypeScript, Express.js\"\n  responsibilities:\n    - \"Route HTTP requests to services\"\n    - \"JWT authentication\"\n    - \"Rate limiting\"\n  interfaces:\n    - name: \"REST API\"\n      protocol: \"HTTPS\"\n      port: 3000\n",
+      "documentation": "# API Gateway\n\nThe API Gateway serves as the single entry point for all client requests.\n\n## Responsibilities\n- **Authentication**: JWT token validation\n- **Routing**: Maps external URLs to internal services\n- **Rate Limiting**: Per-IP throttling (100 req/min)\n\n## Endpoints\n| Method | Path | Service |\n|--------|------|---------|\n| POST | /auth/login | User Service |\n| POST | /auth/register | User Service |\n| GET | /orders | Order Service |\n| POST | /orders | Order Service |\n| GET | /products | Product Catalog |\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": ["component:auth-routes", "component:order-routes", "component:product-routes", "component:auth-middleware", "component:rate-limiter"],
+      "technology": "TypeScript, Express.js",
+      "tags": ["entry-point"]
+    },
+    {
+      "id": "container:user-service",
+      "c4Level": "container",
+      "name": "User Service",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"User Service\"\n  description: \"Manages user accounts, authentication, and profile data\"\n  technology: \"TypeScript, Express.js\"\n  responsibilities:\n    - \"User registration and login\"\n    - \"Profile management\"\n    - \"Password hashing and JWT issuance\"\n",
+      "documentation": "# User Service\n\nManages all user-related operations including registration, authentication, and profile management.\n\n## Data Model\n- Users table: id, email, passwordHash, name, createdAt\n- Sessions table: userId, token, expiresAt\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": ["component:user-controller", "component:user-service-logic", "component:email-service"],
+      "technology": "TypeScript, Express.js",
+      "tags": ["core"]
+    },
+    {
+      "id": "container:order-service",
+      "c4Level": "container",
+      "name": "Order Service",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"Order Service\"\n  description: \"Handles order lifecycle from creation to fulfillment\"\n  technology: \"TypeScript, Express.js\"\n  responsibilities:\n    - \"Order creation and validation\"\n    - \"Payment orchestration\"\n    - \"Order status tracking\"\n    - \"Event publishing\"\n",
+      "documentation": "# Order Service\n\nManages the complete order lifecycle including creation, payment processing, and status tracking.\n\n## Order States\n`pending` -> `payment_processing` -> `confirmed` -> `shipped` -> `delivered`\n\n## Events Published\n- `order.created`\n- `order.paid`\n- `order.shipped`\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": ["component:order-controller", "component:order-service-logic", "component:payment-service"],
+      "technology": "TypeScript, Express.js",
+      "tags": ["core", "event-driven"]
+    },
+    {
+      "id": "container:product-catalog",
+      "c4Level": "container",
+      "name": "Product Catalog",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"Product Catalog\"\n  description: \"Manages product listings, categories, and inventory\"\n  technology: \"Go\"\n  responsibilities:\n    - \"Product CRUD\"\n    - \"Category management\"\n    - \"Inventory tracking\"\n    - \"Search indexing\"\n",
+      "documentation": "# Product Catalog\n\nGo-based microservice managing the product catalog. Provides gRPC endpoints for product queries and inventory updates.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/product-catalog",
+        "language": "go"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": ["component:product-controller", "component:product-repository"],
+      "technology": "Go",
+      "tags": ["core"]
+    },
+    {
+      "id": "container:notification-service",
+      "c4Level": "container",
+      "name": "Notification Service",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"Notification Service\"\n  description: \"Sends email and SMS notifications triggered by system events\"\n  technology: \"Python, FastAPI\"\n  responsibilities:\n    - \"Email notifications via SendGrid\"\n    - \"SMS notifications via Twilio\"\n    - \"Event subscription\"\n",
+      "documentation": "# Notification Service\n\nListens to Kafka events and dispatches notifications through email and SMS channels.\n\n## Supported Events\n- `user.registered` -> Welcome email\n- `order.confirmed` -> Order confirmation email + SMS\n- `order.shipped` -> Shipping notification\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/notification-service",
+        "language": "python"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": ["component:email-handler", "component:sms-handler"],
+      "technology": "Python, FastAPI",
+      "tags": ["async", "event-driven"]
+    },
+    {
+      "id": "container:kafka",
+      "c4Level": "container",
+      "name": "Kafka",
+      "type": "dataStore",
+      "designSpec": "element:\n  type: dataStore\n  name: \"Kafka\"\n  description: \"Distributed event streaming platform for async messaging\"\n  technology: \"Apache Kafka\"\n",
+      "documentation": "# Apache Kafka\n\nDistributed event streaming platform used for async communication between services.\n\n## Topics\n- `user-events` - User registration, profile updates\n- `order-events` - Order lifecycle events\n- `payment-events` - Payment processing results\n",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "Apache Kafka",
+      "tags": ["messaging", "event-driven"]
+    },
+    {
+      "id": "datastore:postgres",
+      "c4Level": "container",
+      "name": "PostgreSQL",
+      "type": "dataStore",
+      "designSpec": "element:\n  type: dataStore\n  name: \"PostgreSQL\"\n  description: \"Primary relational database for users and orders\"\n  technology: \"PostgreSQL\"\n",
+      "documentation": "# PostgreSQL Database\n\nPrimary relational database storing user accounts, orders, and product catalog data.\n\n## Schemas\n- `users` - User accounts and profiles\n- `orders` - Order records and line items\n- `products` - Product catalog\n",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "PostgreSQL",
+      "tags": ["database", "persistent"]
+    },
+    {
+      "id": "datastore:redis",
+      "c4Level": "container",
+      "name": "Redis",
+      "type": "dataStore",
+      "designSpec": "element:\n  type: dataStore\n  name: \"Redis\"\n  description: \"In-memory cache and session store\"\n  technology: \"Redis\"\n",
+      "documentation": "# Redis Cache\n\nIn-memory data store used for session management, rate limiting counters, and caching frequently accessed data.\n",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "Redis",
+      "tags": ["cache", "session-store"]
+    },
+    {
+      "id": "container:admin-dashboard",
+      "c4Level": "container",
+      "name": "Admin Dashboard",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"Admin Dashboard\"\n  description: \"Internal web application for managing users, orders, and system settings\"\n  technology: \"TypeScript, React\"\n",
+      "documentation": "# Admin Dashboard\n\nWeb-based admin interface for internal teams to manage the e-commerce platform.\n\n## Features\n- User management (view, suspend, delete)\n- Order management (view, refund, cancel)\n- System health monitoring\n",
+      "sourceMapping": {
+        "filePath": "internal-tools/admin-dashboard",
+        "language": "typescript"
+      },
+      "parentId": "system:internal-tools",
+      "childIds": [],
+      "technology": "TypeScript, React",
+      "tags": ["internal", "web-app"]
+    },
+    {
+      "id": "container:monitoring-dashboard",
+      "c4Level": "container",
+      "name": "Monitoring Dashboard",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: \"Monitoring Dashboard\"\n  description: \"Internal monitoring and alerting dashboards\"\n  technology: \"Grafana\"\n",
+      "documentation": "# Monitoring Dashboard\n\nGrafana-based dashboards showing system health, latency metrics, error rates, and infrastructure status.\n",
+      "parentId": "system:internal-tools",
+      "childIds": [],
+      "technology": "Grafana",
+      "tags": ["internal", "monitoring"]
+    },
+
+    {
+      "id": "component:auth-routes",
+      "c4Level": "component",
+      "name": "Auth Routes",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Auth Routes\"\n  description: \"Express router handling authentication endpoints\"\n  responsibilities:\n    - \"POST /auth/login\"\n    - \"POST /auth/register\"\n    - \"POST /auth/refresh\"\n",
+      "documentation": "# Auth Routes\n\nExpress router that handles all authentication-related HTTP endpoints.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway/src/routes/auth.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "Express.js",
+      "tags": ["route"]
+    },
+    {
+      "id": "component:order-routes",
+      "c4Level": "component",
+      "name": "Order Routes",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Order Routes\"\n  description: \"Express router for order CRUD operations\"\n  responsibilities:\n    - \"GET /orders\"\n    - \"POST /orders\"\n    - \"GET /orders/:id\"\n",
+      "documentation": "# Order Routes\n\nHandles all order-related HTTP endpoints in the API Gateway.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway/src/routes/orders.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "Express.js",
+      "tags": ["route"]
+    },
+    {
+      "id": "component:product-routes",
+      "c4Level": "component",
+      "name": "Product Routes",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Product Routes\"\n  description: \"Express router for product catalog browsing\"\n",
+      "documentation": "# Product Routes\n\nHandles product listing and detail endpoints.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway/src/routes/products.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "Express.js",
+      "tags": ["route"]
+    },
+    {
+      "id": "component:auth-middleware",
+      "c4Level": "component",
+      "name": "Auth Middleware",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Auth Middleware\"\n  description: \"JWT validation middleware applied to protected routes\"\n",
+      "documentation": "# Auth Middleware\n\nExpress middleware that validates JWT tokens on protected routes. Extracts user ID and attaches it to `req.user`.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway/src/middleware/authMiddleware.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["middleware", "security"]
+    },
+    {
+      "id": "component:rate-limiter",
+      "c4Level": "component",
+      "name": "Rate Limiter",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Rate Limiter\"\n  description: \"Per-IP request throttling middleware using Redis counters\"\n",
+      "documentation": "# Rate Limiter\n\nMiddleware that enforces per-IP rate limits using Redis sliding window counters. Default: 100 requests per minute.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway/src/middleware/rateLimiter.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["middleware", "security"]
+    },
+
+    {
+      "id": "component:user-controller",
+      "c4Level": "component",
+      "name": "User Controller",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"User Controller\"\n  description: \"Handles HTTP request/response for user operations\"\n",
+      "documentation": "# User Controller\n\nExpress controller handling user CRUD operations. Delegates business logic to UserService.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service/src/controllers/userController.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": ["code:register-user", "code:get-user-profile"],
+      "technology": "TypeScript",
+      "tags": ["controller"]
+    },
+    {
+      "id": "component:user-service-logic",
+      "c4Level": "component",
+      "name": "User Service Logic",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"User Service Logic\"\n  description: \"Business logic for user management\"\n  responsibilities:\n    - \"Password hashing\"\n    - \"JWT token generation\"\n    - \"User validation\"\n",
+      "documentation": "# User Service Logic\n\nCore business logic for user management including password hashing (bcrypt), JWT token generation, and input validation.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service/src/services/userService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["business-logic"]
+    },
+    {
+      "id": "component:email-service",
+      "c4Level": "component",
+      "name": "Email Service",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Email Service\"\n  description: \"Sends transactional emails via SendGrid API\"\n",
+      "documentation": "# Email Service\n\nHandles sending transactional emails (welcome, password reset) through the SendGrid API.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service/src/services/emailService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["integration"]
+    },
+
+    {
+      "id": "component:order-controller",
+      "c4Level": "component",
+      "name": "Order Controller",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Order Controller\"\n  description: \"Handles HTTP request/response for order operations\"\n",
+      "documentation": "# Order Controller\n\nExpress controller for order CRUD. Delegates to OrderService for business logic.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service/src/controllers/orderController.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": ["code:create-order"],
+      "technology": "TypeScript",
+      "tags": ["controller"]
+    },
+    {
+      "id": "component:order-service-logic",
+      "c4Level": "component",
+      "name": "Order Service Logic",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Order Service Logic\"\n  description: \"Business logic for order lifecycle management\"\n  responsibilities:\n    - \"Order validation\"\n    - \"Inventory check\"\n    - \"Payment orchestration\"\n    - \"Event publishing\"\n",
+      "documentation": "# Order Service Logic\n\nCore business logic for order management. Coordinates between payment processing and inventory checks.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service/src/services/orderService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["business-logic", "event-driven"]
+    },
+    {
+      "id": "component:payment-service",
+      "c4Level": "component",
+      "name": "Payment Service",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Payment Service\"\n  description: \"Integrates with Stripe for payment processing\"\n",
+      "documentation": "# Payment Service\n\nHandles payment processing through the Stripe API. Supports charges, refunds, and webhook verification.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service/src/services/paymentService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": ["code:process-payment"],
+      "technology": "TypeScript",
+      "tags": ["integration", "critical-path"]
+    },
+
+    {
+      "id": "component:product-controller",
+      "c4Level": "component",
+      "name": "Product Controller",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Product Controller\"\n  description: \"Go HTTP handler for product API endpoints\"\n",
+      "documentation": "# Product Controller\n\nGo HTTP handler providing product CRUD endpoints. Supports pagination, filtering, and search.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/product-catalog/handlers/product_handler.go",
+        "language": "go"
+      },
+      "parentId": "container:product-catalog",
+      "childIds": [],
+      "technology": "Go",
+      "tags": ["controller"]
+    },
+    {
+      "id": "component:product-repository",
+      "c4Level": "component",
+      "name": "Product Repository",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Product Repository\"\n  description: \"Go data access layer for product data\"\n",
+      "documentation": "# Product Repository\n\nGo repository pattern implementation for PostgreSQL product data access. Uses sqlx for query building.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/product-catalog/repositories/product_repo.go",
+        "language": "go"
+      },
+      "parentId": "container:product-catalog",
+      "childIds": [],
+      "technology": "Go",
+      "tags": ["data-access"]
+    },
+
+    {
+      "id": "component:email-handler",
+      "c4Level": "component",
+      "name": "Email Handler",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"Email Handler\"\n  description: \"Processes events and sends email notifications\"\n",
+      "documentation": "# Email Handler\n\nPython handler that listens for Kafka events and dispatches email notifications via SendGrid.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/notification-service/src/handlers/email_handler.py",
+        "language": "python"
+      },
+      "parentId": "container:notification-service",
+      "childIds": [],
+      "technology": "Python",
+      "tags": ["handler", "async"]
+    },
+    {
+      "id": "component:sms-handler",
+      "c4Level": "component",
+      "name": "SMS Handler",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: \"SMS Handler\"\n  description: \"Processes events and sends SMS notifications via Twilio\"\n",
+      "documentation": "# SMS Handler\n\nPython handler that sends SMS notifications for high-priority events (order shipped, delivery updates).\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/notification-service/src/handlers/sms_handler.py",
+        "language": "python"
+      },
+      "parentId": "container:notification-service",
+      "childIds": [],
+      "technology": "Python",
+      "tags": ["handler", "async"]
+    },
+
+    {
+      "id": "code:register-user",
+      "c4Level": "code",
+      "name": "registerUser()",
+      "type": "codeUnit",
+      "designSpec": "element:\n  type: codeUnit\n  name: \"registerUser\"\n  description: \"Handles user registration request - validates input, hashes password, creates user record, sends welcome email\"\n  signature: \"async registerUser(req: Request, res: Response): Promise<void>\"\n",
+      "documentation": "# registerUser()\n\nHandles `POST /users/register`. Validates email uniqueness, hashes password with bcrypt, stores user in PostgreSQL, triggers welcome email.\n\n```typescript\nasync registerUser(req: Request, res: Response) {\n  const { email, password, name } = req.body;\n  // 1. Validate input\n  // 2. Check email uniqueness\n  // 3. Hash password (bcrypt, 12 rounds)\n  // 4. Insert into users table\n  // 5. Send welcome email\n  // 6. Return 201 with user profile\n}\n```\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service/src/controllers/userController.ts",
+        "startLine": 10,
+        "endLine": 45,
+        "language": "typescript"
+      },
+      "parentId": "component:user-controller",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["function", "api-handler"]
+    },
+    {
+      "id": "code:get-user-profile",
+      "c4Level": "code",
+      "name": "getUserProfile()",
+      "type": "codeUnit",
+      "designSpec": "element:\n  type: codeUnit\n  name: \"getUserProfile\"\n  description: \"Retrieves authenticated user's profile data\"\n  signature: \"async getUserProfile(req: Request, res: Response): Promise<void>\"\n",
+      "documentation": "# getUserProfile()\n\nHandles `GET /users/me`. Returns the authenticated user's profile data. Requires valid JWT.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service/src/controllers/userController.ts",
+        "startLine": 47,
+        "endLine": 65,
+        "language": "typescript"
+      },
+      "parentId": "component:user-controller",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["function", "api-handler"]
+    },
+    {
+      "id": "code:create-order",
+      "c4Level": "code",
+      "name": "createOrder()",
+      "type": "codeUnit",
+      "designSpec": "element:\n  type: codeUnit\n  name: \"createOrder\"\n  description: \"Creates a new order, validates items, reserves inventory, initiates payment\"\n  signature: \"async createOrder(req: Request, res: Response): Promise<void>\"\n",
+      "documentation": "# createOrder()\n\nHandles `POST /orders`. Validates cart items, checks inventory, creates order record, initiates payment flow, publishes `order.created` event.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service/src/controllers/orderController.ts",
+        "startLine": 15,
+        "endLine": 62,
+        "language": "typescript"
+      },
+      "parentId": "component:order-controller",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["function", "api-handler"]
+    },
+    {
+      "id": "code:process-payment",
+      "c4Level": "code",
+      "name": "processPayment()",
+      "type": "codeUnit",
+      "designSpec": "element:\n  type: codeUnit\n  name: \"processPayment\"\n  description: \"Calls Stripe API to charge customer, handles success/failure\"\n  signature: \"async processPayment(orderId: string, amount: number, token: string): Promise<PaymentResult>\"\n",
+      "documentation": "# processPayment()\n\nCreates a Stripe charge for the given order. Handles 3D Secure redirects, idempotency keys, and webhook verification.\n",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service/src/services/paymentService.ts",
+        "startLine": 20,
+        "endLine": 58,
+        "language": "typescript"
+      },
+      "parentId": "component:payment-service",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": ["function", "critical-path"]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:customer-to-frontend",
+      "source": "person:customer",
+      "target": "container:web-frontend",
+      "label": "Browses products and places orders",
+      "technology": "HTTPS",
+      "c4Level": "context",
+      "tags": ["external"]
+    },
+    {
+      "id": "edge:frontend-to-gateway",
+      "source": "container:web-frontend",
+      "target": "container:api-gateway",
+      "label": "Makes API requests to",
+      "technology": "REST/HTTPS",
+      "c4Level": "container",
+      "tags": ["sync"]
+    },
+    {
+      "id": "edge:admin-to-dashboard",
+      "source": "person:admin",
+      "target": "container:admin-dashboard",
+      "label": "Manages platform via",
+      "technology": "HTTPS",
+      "c4Level": "context",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:dashboard-to-gateway",
+      "source": "container:admin-dashboard",
+      "target": "container:api-gateway",
+      "label": "Makes admin API requests to",
+      "technology": "REST/HTTPS",
+      "c4Level": "container",
+      "tags": ["sync", "internal"]
+    },
+    {
+      "id": "edge:gateway-to-user-service",
+      "source": "container:api-gateway",
+      "target": "container:user-service",
+      "label": "Routes auth requests to",
+      "technology": "REST/HTTP",
+      "c4Level": "container",
+      "tags": ["sync"]
+    },
+    {
+      "id": "edge:gateway-to-order-service",
+      "source": "container:api-gateway",
+      "target": "container:order-service",
+      "label": "Routes order requests to",
+      "technology": "REST/HTTP",
+      "c4Level": "container",
+      "tags": ["sync"]
+    },
+    {
+      "id": "edge:gateway-to-product-catalog",
+      "source": "container:api-gateway",
+      "target": "container:product-catalog",
+      "label": "Queries product data from",
+      "technology": "gRPC",
+      "c4Level": "container",
+      "tags": ["sync"]
+    },
+    {
+      "id": "edge:order-to-kafka",
+      "source": "container:order-service",
+      "target": "container:kafka",
+      "label": "Publishes order events to",
+      "technology": "Apache Kafka",
+      "c4Level": "container",
+      "tags": ["async", "event-driven"]
+    },
+    {
+      "id": "edge:user-to-kafka",
+      "source": "container:user-service",
+      "target": "container:kafka",
+      "label": "Publishes user events to",
+      "technology": "Apache Kafka",
+      "c4Level": "container",
+      "tags": ["async", "event-driven"]
+    },
+    {
+      "id": "edge:kafka-to-notification",
+      "source": "container:kafka",
+      "target": "container:notification-service",
+      "label": "Delivers events to",
+      "technology": "Apache Kafka",
+      "c4Level": "container",
+      "tags": ["async", "event-driven"]
+    },
+    {
+      "id": "edge:order-to-payment",
+      "source": "component:order-service-logic",
+      "target": "component:payment-service",
+      "label": "Delegates payment processing to",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": ["sync", "critical-path"]
+    },
+    {
+      "id": "edge:payment-to-stripe",
+      "source": "component:payment-service",
+      "target": "external:payment-provider",
+      "label": "Processes payments via",
+      "technology": "REST/HTTPS",
+      "c4Level": "container",
+      "tags": ["external", "critical-path"]
+    },
+    {
+      "id": "edge:email-handler-to-sendgrid",
+      "source": "component:email-handler",
+      "target": "external:email-provider",
+      "label": "Sends emails via",
+      "technology": "REST/HTTPS",
+      "c4Level": "component",
+      "tags": ["external", "async"]
+    },
+    {
+      "id": "edge:user-service-to-postgres",
+      "source": "container:user-service",
+      "target": "datastore:postgres",
+      "label": "Reads/writes user data",
+      "technology": "PostgreSQL",
+      "c4Level": "container",
+      "tags": ["data"]
+    },
+    {
+      "id": "edge:order-service-to-postgres",
+      "source": "container:order-service",
+      "target": "datastore:postgres",
+      "label": "Reads/writes order data",
+      "technology": "PostgreSQL",
+      "c4Level": "container",
+      "tags": ["data"]
+    },
+    {
+      "id": "edge:product-catalog-to-postgres",
+      "source": "container:product-catalog",
+      "target": "datastore:postgres",
+      "label": "Reads/writes product data",
+      "technology": "PostgreSQL",
+      "c4Level": "container",
+      "tags": ["data"]
+    },
+    {
+      "id": "edge:gateway-to-redis",
+      "source": "container:api-gateway",
+      "target": "datastore:redis",
+      "label": "Rate limit counters, session cache",
+      "technology": "Redis",
+      "c4Level": "container",
+      "tags": ["cache"]
+    },
+    {
+      "id": "edge:monitoring-to-ecommerce",
+      "source": "external:monitoring",
+      "target": "system:ecommerce-platform",
+      "label": "Scrapes metrics from",
+      "technology": "Prometheus",
+      "c4Level": "context",
+      "tags": ["external", "monitoring"]
+    },
+    {
+      "id": "edge:admin-to-ecommerce",
+      "source": "system:internal-tools",
+      "target": "system:ecommerce-platform",
+      "label": "Manages via internal APIs",
+      "technology": "REST/HTTPS",
+      "c4Level": "context",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:auth-routes-to-middleware",
+      "source": "component:auth-routes",
+      "target": "component:auth-middleware",
+      "label": "Uses for token validation",
+      "technology": "Express.js",
+      "c4Level": "component",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:user-controller-to-service",
+      "source": "component:user-controller",
+      "target": "component:user-service-logic",
+      "label": "Delegates business logic to",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:user-service-to-email",
+      "source": "component:user-service-logic",
+      "target": "component:email-service",
+      "label": "Sends welcome emails via",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:order-controller-to-service",
+      "source": "component:order-controller",
+      "target": "component:order-service-logic",
+      "label": "Delegates business logic to",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:rate-limiter-to-redis",
+      "source": "component:rate-limiter",
+      "target": "datastore:redis",
+      "label": "Checks/increments rate counters",
+      "technology": "Redis",
+      "c4Level": "component",
+      "tags": ["cache"]
+    },
+    {
+      "id": "edge:product-controller-to-repo",
+      "source": "component:product-controller",
+      "target": "component:product-repository",
+      "label": "Queries product data via",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:register-to-service",
+      "source": "code:register-user",
+      "target": "component:user-service-logic",
+      "label": "Calls createUser()",
+      "technology": "Internal call",
+      "c4Level": "code",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:create-order-to-service",
+      "source": "code:create-order",
+      "target": "component:order-service-logic",
+      "label": "Calls placeOrder()",
+      "technology": "Internal call",
+      "c4Level": "code",
+      "tags": ["internal"]
+    },
+    {
+      "id": "edge:process-payment-to-stripe",
+      "source": "code:process-payment",
+      "target": "external:payment-provider",
+      "label": "Calls Stripe charges API",
+      "technology": "REST/HTTPS",
+      "c4Level": "code",
+      "tags": ["external", "critical-path"]
+    }
+  ],
+  "views": {
+    "systemLandscape": {
+      "key": "landscape",
+      "title": "Acme Corp \u2014 System Landscape",
+      "scopeId": "landscape:acme",
+      "include": ["*"],
+      "autoLayout": { "direction": "tb", "rankSeparation": 100, "nodeSeparation": 80 }
+    },
+    "systemContext": [
+      {
+        "key": "context-ecommerce",
+        "title": "E-Commerce Platform \u2014 Context",
+        "scopeId": "system:ecommerce-platform",
+        "include": ["*"],
+        "autoLayout": { "direction": "tb" }
+      },
+      {
+        "key": "context-internal-tools",
+        "title": "Internal Tools \u2014 Context",
+        "scopeId": "system:internal-tools",
+        "include": ["*"],
+        "autoLayout": { "direction": "lr" }
+      }
+    ],
+    "container": [
+      {
+        "key": "containers-ecommerce",
+        "title": "E-Commerce Platform \u2014 Containers",
+        "scopeId": "system:ecommerce-platform",
+        "include": ["*"],
+        "autoLayout": { "direction": "tb", "rankSeparation": 120, "nodeSeparation": 60 }
+      }
+    ],
+    "component": [
+      {
+        "key": "components-api-gateway",
+        "title": "API Gateway \u2014 Components",
+        "scopeId": "container:api-gateway",
+        "include": ["*"],
+        "autoLayout": { "direction": "lr" }
+      },
+      {
+        "key": "components-user-service",
+        "title": "User Service \u2014 Components",
+        "scopeId": "container:user-service",
+        "include": ["*"],
+        "autoLayout": { "direction": "tb" }
+      },
+      {
+        "key": "components-order-service",
+        "title": "Order Service \u2014 Components",
+        "scopeId": "container:order-service",
+        "include": ["*"],
+        "autoLayout": { "direction": "tb" }
+      },
+      {
+        "key": "components-product-catalog",
+        "title": "Product Catalog \u2014 Components",
+        "scopeId": "container:product-catalog",
+        "include": ["*"],
+        "autoLayout": { "direction": "lr" }
+      }
+    ]
+  },
+  "styles": {
+    "elements": [
+      { "tag": "Person", "shape": "Person", "background": "#08427B", "color": "#FFFFFF" },
+      { "tag": "Software System", "shape": "RoundedBox", "background": "#1168BD", "color": "#FFFFFF" },
+      { "tag": "External System", "shape": "RoundedBox", "background": "#777777", "color": "#FFFFFF", "border": "dashed" },
+      { "tag": "Container", "shape": "RoundedBox", "background": "#438DD5", "color": "#FFFFFF" },
+      { "tag": "Data Store", "shape": "Cylinder", "background": "#438DD5", "color": "#FFFFFF" },
+      { "tag": "Component", "shape": "Component", "background": "#85BBF0", "color": "#1A1A1A" },
+      { "tag": "Code Unit", "shape": "Box", "background": "#B8D9F8", "color": "#1A1A1A", "fontSize": 11 },
+      { "tag": "external", "border": "dashed", "opacity": 80 },
+      { "tag": "critical", "stroke": "#FF0000", "strokeWidth": 3 },
+      { "tag": "deprecated", "opacity": 50, "border": "dotted" }
+    ],
+    "relationships": [
+      { "tag": "sync", "color": "#555555", "dashed": false },
+      { "tag": "async", "color": "#E67E22", "dashed": true },
+      { "tag": "event-driven", "color": "#E67E22", "dashed": true },
+      { "tag": "data", "color": "#3498DB", "dashed": false },
+      { "tag": "cache", "color": "#3498DB", "dashed": false },
+      { "tag": "external", "color": "#7F8C8D", "dashed": true }
+    ]
+  }
+}

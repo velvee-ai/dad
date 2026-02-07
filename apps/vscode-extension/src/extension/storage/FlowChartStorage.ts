@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FlowChartData } from '../../shared/types';
+import { FlowChartData } from '@daad/shared-types';
 
 export interface SavedFlowChart {
   id: string;

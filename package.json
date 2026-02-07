@@ -1,8 +1,8 @@
 {
-  "name": "daad-monorepo",
+  "name": "dad-monorepo",
   "version": "0.0.1",
   "private": true,
-  "description": "DAAD - Diagram as a Delivery Monorepo",
+  "description": "DAD - Diagram as a Delivery Monorepo",
   "repository": {
     "type": "git",
     "url": "https://github.com/velvee-ai/daad.git"

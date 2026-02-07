@@ -1,3 +1,9 @@
+// C4/DAD Types (Extended 5-Level Architecture)
+export * from './c4';
+
+// Flow Chart Types (used by VS Code extension webview)
+export * from './flowchart';
+
 // Node Types
 export type NodeType = 'start' | 'process' | 'decision' | 'loop' | 'call' | 'return' | 'end';
 

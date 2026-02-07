@@ -1,6 +1,6 @@
 {
   "name": "@daad/vscode-extension",
-  "displayName": "DAAD - Diagram as a Delivery",
+  "displayName": "DAD - Diagram as a Delivery",
   "description": "Visualize code flow and architecture using AI (OpenRouter/Claude) and React Flow",
   "version": "0.0.1",
   "publisher": "daad",
@@ -24,55 +24,65 @@
     "commands": [
       {
         "command": "daad.visualize",
-        "title": "DAAD: Visualize Code Flow (Selection)"
+        "title": "DAD: Visualize Code Flow (Selection)"
       },
       {
         "command": "daad.visualizeFile",
-        "title": "DAAD: Visualize Entire File",
+        "title": "DAD: Visualize Entire File",
         "icon": "$(file-code)"
       },
       {
         "command": "daad.visualizeAllFunctions",
-        "title": "DAAD: Visualize All Functions",
+        "title": "DAD: Visualize All Functions",
         "icon": "$(symbol-method)"
       },
       {
         "command": "daad.visualizeSmart",
-        "title": "DAAD: Smart Visualize (Auto-detect)",
+        "title": "DAD: Smart Visualize (Auto-detect)",
         "icon": "$(sparkle)"
       },
       {
         "command": "daad.visualizeProject",
-        "title": "DAAD: Visualize Entire Project (Hierarchical)",
+        "title": "DAD: Visualize Entire Project (Hierarchical)",
         "icon": "$(graph)"
       },
       {
         "command": "daad.listSaved",
-        "title": "DAAD: Open Saved Diagrams",
+        "title": "DAD: Open Saved Diagrams",
         "icon": "$(list-flat)"
       },
       {
         "command": "daad.openSavedFolder",
-        "title": "DAAD: Open .daad Folder",
+        "title": "DAD: Open .daad Folder",
         "icon": "$(folder-opened)"
       },
       {
         "command": "daad.loadChart",
-        "title": "DAAD: Load Diagram"
+        "title": "DAD: Load Diagram"
       },
       {
         "command": "daad.visualizeChanges",
-        "title": "DAAD: Visualize Changes",
+        "title": "DAD: Visualize Changes",
         "icon": "$(git-commit)"
+      },
+      {
+        "command": "daad.generateC4",
+        "title": "DAD: Generate Architecture Diagram",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "daad.openC4",
+        "title": "DAD: Open Architecture View",
+        "icon": "$(type-hierarchy-sub)"
       }
     ],
     "views": {
       "explorer": [
         {
           "id": "daadSavedCharts",
-          "name": "DAAD Diagrams",
+          "name": "DAD Diagrams",
           "icon": "$(graph)",
-          "contextualTitle": "DAAD Diagrams"
+          "contextualTitle": "DAD Diagrams"
         }
       ]
     },
@@ -143,10 +153,15 @@
         "key": "ctrl+shift+g",
         "mac": "cmd+shift+g",
         "when": "!inDebugMode"
+      },
+      {
+        "command": "daad.generateC4",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a"
       }
     ],
     "configuration": {
-      "title": "DAAD - Diagram as a Delivery",
+      "title": "DAD - Diagram as a Delivery",
       "properties": {
         "daad.apiProvider": {
           "type": "string",
@@ -179,7 +194,7 @@
         "daad.workersApiUrl": {
           "type": "string",
           "default": "",
-          "description": "DAAD Workers API URL for preview generation (optional). Example: https://your-worker.workers.dev"
+          "description": "DAD Workers API URL for preview generation (optional). Example: https://your-worker.workers.dev"
         }
       }
     }
@@ -213,6 +228,10 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@daad/shared-types": "workspace:*",
+    "@daad/diagram-schema": "workspace:*",
+    "@dad/generation": "workspace:*",
+    "@dad/visualizer": "workspace:*",
     "@integratorivan/react-flow-smart-edge": "^1.0.1",
     "dagre": "^0.8.5",
     "dexie": "^4.2.1",
