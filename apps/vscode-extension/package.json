@@ -1,7 +1,7 @@
 {
   "name": "dad-vscode-extension",
   "displayName": "DAD - Diagram as a Delivery",
-  "description": "Visualize code flow and architecture using AI (OpenRouter/Claude) and React Flow",
+  "description": "Visualize .dad.json architecture diagrams",
   "version": "0.0.1",
   "publisher": "dad",
   "private": true,
@@ -17,196 +17,24 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onCommand:dad.visualizeDadFile"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "dad.visualize",
-        "title": "DAD: Visualize Code Flow (Selection)"
-      },
-      {
-        "command": "dad.visualizeFile",
-        "title": "DAD: Visualize Entire File",
-        "icon": "$(file-code)"
-      },
-      {
-        "command": "dad.visualizeAllFunctions",
-        "title": "DAD: Visualize All Functions",
-        "icon": "$(symbol-method)"
-      },
-      {
-        "command": "dad.visualizeSmart",
-        "title": "DAD: Smart Visualize (Auto-detect)",
-        "icon": "$(sparkle)"
-      },
-      {
-        "command": "dad.visualizeProject",
-        "title": "DAD: Visualize Entire Project (Hierarchical)",
-        "icon": "$(graph)"
-      },
-      {
-        "command": "dad.listSaved",
-        "title": "DAD: Open Saved Diagrams",
-        "icon": "$(list-flat)"
-      },
-      {
-        "command": "dad.openSavedFolder",
-        "title": "DAD: Open .dad Folder",
-        "icon": "$(folder-opened)"
-      },
-      {
-        "command": "dad.loadChart",
-        "title": "DAD: Load Diagram"
-      },
-      {
-        "command": "dad.visualizeChanges",
-        "title": "DAD: Visualize Changes",
-        "icon": "$(git-commit)"
-      },
-      {
-        "command": "dad.generateC4",
-        "title": "DAD: Generate Architecture Diagram",
-        "icon": "$(type-hierarchy)"
-      },
-      {
-        "command": "dad.openC4",
-        "title": "DAD: Open Architecture View",
-        "icon": "$(type-hierarchy-sub)"
-      }
-    ],
-    "views": {
-      "explorer": [
-        {
-          "id": "dadSavedCharts",
-          "name": "DAD Diagrams",
-          "icon": "$(graph)",
-          "contextualTitle": "DAD Diagrams"
-        }
-      ]
-    },
-    "viewsWelcome": [
-      {
-        "view": "dadSavedCharts",
-        "contents": "No saved diagrams yet.\n[Visualize Code](command:dad.visualize)\nSelect code and visualize to save diagrams automatically."
+        "command": "dad.visualizeDadFile",
+        "title": "DAD: Visualize"
       }
     ],
     "menus": {
-      "editor/context": [
-        {
-          "command": "dad.visualize",
-          "when": "editorHasSelection",
-          "group": "navigation@1"
-        },
-        {
-          "command": "dad.visualizeSmart",
-          "when": "editorTextFocus && !editorHasSelection",
-          "group": "navigation@2"
-        },
-        {
-          "command": "dad.visualizeFile",
-          "when": "editorTextFocus",
-          "group": "navigation@3"
-        },
-        {
-          "command": "dad.visualizeAllFunctions",
-          "when": "editorTextFocus",
-          "group": "navigation@4"
-        }
-      ],
       "explorer/context": [
         {
-          "command": "dad.visualizeFile",
-          "when": "resourceExtname =~ /\\.(js|ts|jsx|tsx|py|java|go|rs|c|cpp|cs)$/",
+          "command": "dad.visualizeDadFile",
+          "when": "resourceFilename =~ /\\.dad\\.json$/",
           "group": "navigation"
         }
-      ],
-      "commandPalette": [
-        {
-          "command": "dad.visualize",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "dad.visualizeFile",
-          "when": "editorTextFocus"
-        },
-        {
-          "command": "dad.visualizeAllFunctions",
-          "when": "editorTextFocus"
-        },
-        {
-          "command": "dad.visualizeSmart",
-          "when": "editorTextFocus"
-        }
       ]
-    },
-    "keybindings": [
-      {
-        "command": "dad.visualizeSmart",
-        "key": "ctrl+shift+v",
-        "mac": "cmd+shift+v",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "dad.visualizeChanges",
-        "key": "ctrl+shift+g",
-        "mac": "cmd+shift+g",
-        "when": "!inDebugMode"
-      },
-      {
-        "command": "dad.generateC4",
-        "key": "ctrl+shift+a",
-        "mac": "cmd+shift+a"
-      }
-    ],
-    "configuration": {
-      "title": "DAD - Diagram as a Delivery",
-      "properties": {
-        "dad.apiProvider": {
-          "type": "string",
-          "enum": [
-            "claude",
-            "openrouter"
-          ],
-          "default": "claude",
-          "description": "API provider to use for code analysis (Claude Code CLI or OpenRouter)"
-        },
-        "dad.openRouterApiKey": {
-          "type": "string",
-          "default": "",
-          "description": "OpenRouter API key (get one at https://openrouter.ai/keys)"
-        },
-        "dad.openRouterModel": {
-          "type": "string",
-          "default": "qwen/qwen-2.5-coder-32b-instruct",
-          "description": "OpenRouter model to use",
-          "enum": [
-            "qwen/qwen-2.5-coder-32b-instruct",
-            "anthropic/claude-3.5-sonnet",
-            "anthropic/claude-3-haiku",
-            "openai/gpt-4o",
-            "openai/gpt-4o-mini",
-            "google/gemini-flash-1.5",
-            "meta-llama/llama-3.1-70b-instruct"
-          ]
-        },
-        "dad.workersApiUrl": {
-          "type": "string",
-          "default": "",
-          "description": "DAD Workers API URL for preview generation (optional). Example: https://your-worker.workers.dev"
-        },
-        "dad.pyrefly.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable Pyrefly language server for Python code analysis (call hierarchy, symbol resolution)"
-        },
-        "dad.pyrefly.path": {
-          "type": "string",
-          "default": "pyrefly",
-          "description": "Path to the pyrefly executable. Defaults to 'pyrefly' (must be in PATH)"
-        }
-      }
     }
   },
   "scripts": {
@@ -216,7 +44,7 @@
     "compile": "NODE_ENV=production webpack --mode production",
     "watch": "webpack --mode development --watch",
     "package": "vsce package --no-dependencies",
-    "install-extension": "code --install-extension dad-0.0.1.vsix",
+    "install-extension": "agy --install-extension dad-vscode-extension-0.0.1.vsix",
     "pretest": "pnpm run compile",
     "test": "node ./out/test/runTest.js",
     "clean": "rm -rf dist",
@@ -239,20 +67,10 @@
   },
   "dependencies": {
     "@dad/shared-types": "workspace:*",
-    "@dad/diagram-schema": "workspace:*",
-    "@dad/generation": "workspace:*",
     "@dad/visualizer": "workspace:*",
-    "@integratorivan/react-flow-smart-edge": "^1.0.1",
     "dagre": "^0.8.5",
-    "dexie": "^4.2.1",
-    "dexie-export-import": "^4.1.4",
-    "elkjs": "^0.11.0",
-    "fake-indexeddb": "^6.2.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "reactflow": "^11.11.4",
-    "use-undoable": "^5.0.0",
-    "vscode-languageclient": "^9.0.1",
-    "vscode-languageserver-protocol": "^3.17.5"
+    "reactflow": "^11.11.4"
   }
 }
