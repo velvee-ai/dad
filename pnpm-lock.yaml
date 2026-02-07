@@ -28,6 +28,9 @@ importers:
 
   apps/vscode-extension:
     dependencies:
+      '@dad/pipeline':
+        specifier: workspace:*
+        version: link:../../packages/pipeline
       '@dad/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types

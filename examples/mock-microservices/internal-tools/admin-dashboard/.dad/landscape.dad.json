@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "admin-dashboard",
+    "generatedAt": "2026-02-07T07:24:02.106Z",
+    "generatedBy": "dad-pipeline/0.0.1",
+    "totalNodes": 1,
+    "totalEdges": 0
+  },
+  "nodes": [
+    {
+      "id": "landscape:admin-dashboard",
+      "c4Level": "landscape",
+      "name": "admin-dashboard",
+      "type": "landscape",
+      "designSpec": "",
+      "documentation": "All software systems in admin-dashboard",
+      "parentId": null,
+      "childIds": [
+        "system:admin-dashboard"
+      ],
+      "technology": "Multi-system",
+      "tags": [
+        "root"
+      ]
+    }
+  ],
+  "edges": []
+}

@@ -17,7 +17,8 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onCommand:dad.visualizeDadFile"
+    "onCommand:dad.visualizeDadFile",
+    "onCommand:dad.analyzeProject"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -25,6 +26,10 @@
       {
         "command": "dad.visualizeDadFile",
         "title": "DAD: Visualize"
+      },
+      {
+        "command": "dad.analyzeProject",
+        "title": "DAD: Analyze Project"
       }
     ],
     "menus": {
@@ -32,6 +37,11 @@
         {
           "command": "dad.visualizeDadFile",
           "when": "resourceFilename =~ /\\.dad\\.json$/",
+          "group": "navigation"
+        },
+        {
+          "command": "dad.analyzeProject",
+          "when": "explorerResourceIsFolder",
           "group": "navigation"
         }
       ]
@@ -66,6 +76,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@dad/pipeline": "workspace:*",
     "@dad/shared-types": "workspace:*",
     "@dad/visualizer": "workspace:*",
     "dagre": "^0.8.5",

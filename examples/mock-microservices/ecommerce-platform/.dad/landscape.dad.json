@@ -1,0 +1,638 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "ecommerce-platform",
+    "generatedAt": "2026-02-07T07:36:47.202Z",
+    "generatedBy": "dad-pipeline/0.0.1",
+    "totalNodes": 29,
+    "totalEdges": 10
+  },
+  "nodes": [
+    {
+      "id": "landscape:ecommerce-platform",
+      "c4Level": "landscape",
+      "name": "ecommerce-platform",
+      "type": "landscape",
+      "designSpec": "",
+      "documentation": "All software systems in ecommerce-platform",
+      "parentId": null,
+      "childIds": [
+        "system:ecommerce-platform",
+        "external:stripe",
+        "external:sendgrid",
+        "external:twilio"
+      ],
+      "technology": "Multi-system",
+      "tags": [
+        "root"
+      ]
+    },
+    {
+      "id": "system:ecommerce-platform",
+      "c4Level": "context",
+      "name": "Ecommerce Platform",
+      "type": "softwareSystem",
+      "designSpec": "",
+      "documentation": "Ecommerce Platform software system",
+      "parentId": "landscape:ecommerce-platform",
+      "childIds": [
+        "container:api-gateway",
+        "container:order-service",
+        "container:user-service",
+        "container:notification-service",
+        "container:shared",
+        "datastore:postgresql",
+        "datastore:redis",
+        "datastore:kafka"
+      ],
+      "technology": "TypeScript/Express, Python/Kafka, TypeScript",
+      "tags": []
+    },
+    {
+      "id": "external:stripe",
+      "c4Level": "context",
+      "name": "Stripe",
+      "type": "externalSystem",
+      "designSpec": "",
+      "documentation": "Stripe external service",
+      "parentId": "landscape:ecommerce-platform",
+      "childIds": [],
+      "technology": "REST API",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "external:sendgrid",
+      "c4Level": "context",
+      "name": "SendGrid",
+      "type": "externalSystem",
+      "designSpec": "",
+      "documentation": "SendGrid external service",
+      "parentId": "landscape:ecommerce-platform",
+      "childIds": [],
+      "technology": "REST API",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "external:twilio",
+      "c4Level": "context",
+      "name": "Twilio",
+      "type": "externalSystem",
+      "designSpec": "",
+      "documentation": "Twilio external service",
+      "parentId": "landscape:ecommerce-platform",
+      "childIds": [],
+      "technology": "REST API",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "container:api-gateway",
+      "c4Level": "container",
+      "name": "Api Gateway",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Api Gateway container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:authmiddleware",
+        "component:ratelimiter",
+        "component:auth",
+        "component:orders",
+        "component:products"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:order-service",
+      "c4Level": "container",
+      "name": "Order Service",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Order Service container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:ordercontroller",
+        "component:orderevents",
+        "component:order",
+        "component:orderservice",
+        "component:paymentservice"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:user-service",
+      "c4Level": "container",
+      "name": "User Service",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "User Service container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/user-service",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:usercontroller",
+        "component:user",
+        "component:userrepository",
+        "component:emailservice",
+        "component:userservice"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:notification-service",
+      "c4Level": "container",
+      "name": "Notification Service",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Notification Service container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/notification-service",
+        "language": "python"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "Python/Kafka",
+      "tags": []
+    },
+    {
+      "id": "container:shared",
+      "c4Level": "container",
+      "name": "Shared",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Shared container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/shared",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:schemas"
+      ],
+      "technology": "TypeScript",
+      "tags": []
+    },
+    {
+      "id": "datastore:postgresql",
+      "c4Level": "container",
+      "name": "PostgreSQL",
+      "type": "dataStore",
+      "designSpec": "",
+      "documentation": "PostgreSQL data store",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "PostgreSQL 15",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "datastore:redis",
+      "c4Level": "container",
+      "name": "Redis",
+      "type": "dataStore",
+      "designSpec": "",
+      "documentation": "Redis data store",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "Redis 7",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "datastore:kafka",
+      "c4Level": "container",
+      "name": "Kafka",
+      "type": "dataStore",
+      "designSpec": "",
+      "documentation": "Kafka data store",
+      "parentId": "system:ecommerce-platform",
+      "childIds": [],
+      "technology": "Apache Kafka 7.5.0",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "component:authmiddleware",
+      "c4Level": "component",
+      "name": "Auth Middleware",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Auth Middleware component",
+      "sourceMapping": {
+        "filePath": "src/middleware/authMiddleware.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "middleware"
+      ]
+    },
+    {
+      "id": "component:ratelimiter",
+      "c4Level": "component",
+      "name": "Rate Limiter",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Rate Limiter component",
+      "sourceMapping": {
+        "filePath": "src/middleware/rateLimiter.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "middleware"
+      ]
+    },
+    {
+      "id": "component:auth",
+      "c4Level": "component",
+      "name": "Auth",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Auth component",
+      "sourceMapping": {
+        "filePath": "src/routes/auth.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "route"
+      ]
+    },
+    {
+      "id": "component:orders",
+      "c4Level": "component",
+      "name": "Orders",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Orders component",
+      "sourceMapping": {
+        "filePath": "src/routes/orders.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "route"
+      ]
+    },
+    {
+      "id": "component:products",
+      "c4Level": "component",
+      "name": "Products",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Products component",
+      "sourceMapping": {
+        "filePath": "src/routes/products.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "route"
+      ]
+    },
+    {
+      "id": "component:ordercontroller",
+      "c4Level": "component",
+      "name": "Order Controller",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order Controller component",
+      "sourceMapping": {
+        "filePath": "src/controllers/orderController.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "controller"
+      ]
+    },
+    {
+      "id": "component:orderevents",
+      "c4Level": "component",
+      "name": "Order Events",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order Events component",
+      "sourceMapping": {
+        "filePath": "src/events/orderEvents.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "event"
+      ]
+    },
+    {
+      "id": "component:order",
+      "c4Level": "component",
+      "name": "Order",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order component",
+      "sourceMapping": {
+        "filePath": "src/models/order.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "model"
+      ]
+    },
+    {
+      "id": "component:orderservice",
+      "c4Level": "component",
+      "name": "Order Service",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order Service component",
+      "sourceMapping": {
+        "filePath": "src/services/orderService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "service"
+      ]
+    },
+    {
+      "id": "component:paymentservice",
+      "c4Level": "component",
+      "name": "Payment Service",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Payment Service component",
+      "sourceMapping": {
+        "filePath": "src/services/paymentService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "service"
+      ]
+    },
+    {
+      "id": "component:usercontroller",
+      "c4Level": "component",
+      "name": "User Controller",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "User Controller component",
+      "sourceMapping": {
+        "filePath": "src/controllers/userController.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "controller"
+      ]
+    },
+    {
+      "id": "component:user",
+      "c4Level": "component",
+      "name": "User",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "User component",
+      "sourceMapping": {
+        "filePath": "src/models/user.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "model"
+      ]
+    },
+    {
+      "id": "component:userrepository",
+      "c4Level": "component",
+      "name": "User Repository",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "User Repository component",
+      "sourceMapping": {
+        "filePath": "src/repositories/userRepository.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "repository"
+      ]
+    },
+    {
+      "id": "component:emailservice",
+      "c4Level": "component",
+      "name": "Email Service",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Email Service component",
+      "sourceMapping": {
+        "filePath": "src/services/emailService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "service"
+      ]
+    },
+    {
+      "id": "component:userservice",
+      "c4Level": "component",
+      "name": "User Service",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "User Service component",
+      "sourceMapping": {
+        "filePath": "src/services/userService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:user-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "service"
+      ]
+    },
+    {
+      "id": "component:schemas",
+      "c4Level": "component",
+      "name": "Schemas",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Schemas component",
+      "sourceMapping": {
+        "filePath": "events/schemas.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:shared",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": [
+        "event"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:api-gateway-to-user-service",
+      "source": "container:api-gateway",
+      "target": "container:user-service",
+      "label": "Routes requests to",
+      "technology": "REST/HTTP",
+      "c4Level": "container",
+      "tags": [
+        "sync"
+      ]
+    },
+    {
+      "id": "edge:api-gateway-to-order-service",
+      "source": "container:api-gateway",
+      "target": "container:order-service",
+      "label": "Routes requests to",
+      "technology": "REST/HTTP",
+      "c4Level": "container",
+      "tags": [
+        "sync"
+      ]
+    },
+    {
+      "id": "edge:api-gateway-to-redis",
+      "source": "container:api-gateway",
+      "target": "datastore:redis",
+      "label": "Caches data",
+      "technology": "Redis protocol",
+      "c4Level": "container",
+      "tags": [
+        "cache"
+      ]
+    },
+    {
+      "id": "edge:order-service-to-postgresql",
+      "source": "container:order-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
+      ]
+    },
+    {
+      "id": "edge:order-service-to-stripe",
+      "source": "container:order-service",
+      "target": "external:stripe",
+      "label": "Uses Stripe",
+      "technology": "REST/HTTPS (Stripe API)",
+      "c4Level": "container",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:user-service-to-postgresql",
+      "source": "container:user-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
+      ]
+    },
+    {
+      "id": "edge:notification-service-to-sendgrid",
+      "source": "container:notification-service",
+      "target": "external:sendgrid",
+      "label": "Uses SendGrid",
+      "technology": "REST/HTTPS (SendGrid API)",
+      "c4Level": "container",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:notification-service-to-twilio",
+      "source": "container:notification-service",
+      "target": "external:twilio",
+      "label": "Uses Twilio",
+      "technology": "REST/HTTPS (Twilio API)",
+      "c4Level": "container",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:order-service-to-notification-service",
+      "source": "container:order-service",
+      "target": "container:notification-service",
+      "label": "Publishes events to",
+      "technology": "Kafka events",
+      "c4Level": "container",
+      "tags": [
+        "async",
+        "event-driven"
+      ]
+    },
+    {
+      "id": "edge:user-service-to-notification-service",
+      "source": "container:user-service",
+      "target": "container:notification-service",
+      "label": "Publishes events to",
+      "technology": "Kafka events",
+      "c4Level": "container",
+      "tags": [
+        "async",
+        "event-driven"
+      ]
+    }
+  ]
+}

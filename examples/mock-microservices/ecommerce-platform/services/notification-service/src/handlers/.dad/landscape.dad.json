@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "handlers",
+    "generatedAt": "2026-02-07T07:20:39.747Z",
+    "generatedBy": "dad-pipeline/0.0.1",
+    "totalNodes": 1,
+    "totalEdges": 0
+  },
+  "nodes": [
+    {
+      "id": "landscape:handlers",
+      "c4Level": "landscape",
+      "name": "handlers",
+      "type": "landscape",
+      "designSpec": "",
+      "documentation": "All software systems in handlers",
+      "parentId": null,
+      "childIds": [
+        "system:handlers"
+      ],
+      "technology": "Multi-system",
+      "tags": [
+        "root"
+      ]
+    }
+  ],
+  "edges": []
+}

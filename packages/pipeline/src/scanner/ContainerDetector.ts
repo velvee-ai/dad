@@ -79,6 +79,10 @@ export class ContainerDetector {
       }
     }
 
+    // Find directories with source files that aren't covered by any manifest-based container
+    const orphans = await this.detectOrphanContainers(systemPath, systemId, containers);
+    containers.push(...orphans);
+
     return containers;
   }
 
@@ -204,6 +208,92 @@ export class ContainerDetector {
       .split('-')
       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ');
+  }
+
+  /**
+   * Find source files that aren't inside any detected container and group them
+   * into inferred containers by their nearest parent directory.
+   */
+  private async detectOrphanContainers(
+    systemPath: string,
+    systemId: string,
+    existing: ContainerMeta[]
+  ): Promise<ContainerMeta[]> {
+    const allSourceFiles = this.findSourceFiles(systemPath, ['ts', 'tsx', 'js', 'jsx', 'py']);
+    if (allSourceFiles.length === 0) return [];
+
+    // c.path is relative to dirname(systemPath), resolve correctly
+    const parentDir = path.dirname(systemPath);
+    const containerDirs = existing.map(c => path.resolve(parentDir, c.path));
+
+    // Find source files not covered by any existing container
+    // fast-glob returns forward-slash paths, normalise for comparison
+    const orphanFiles: string[] = [];
+    for (const file of allSourceFiles) {
+      const absFile = path.resolve(systemPath, file);
+      const covered = containerDirs.some(dir => absFile.startsWith(dir + '/'));
+      if (!covered) {
+        orphanFiles.push(file);
+      }
+    }
+
+    if (orphanFiles.length === 0) return [];
+
+    // Group orphan files by their deepest meaningful directory
+    // (up to 2 segments, e.g. "services/shared")
+    // fast-glob always uses '/' separators
+    const groups = new Map<string, string[]>();
+    for (const file of orphanFiles) {
+      const parts = file.split('/');
+      let groupKey: string;
+      if (parts.length <= 1) {
+        groupKey = '.';
+      } else if (parts.length === 2) {
+        groupKey = parts[0];
+      } else {
+        groupKey = parts[0] + '/' + parts[1];
+      }
+      if (!groups.has(groupKey)) groups.set(groupKey, []);
+      groups.get(groupKey)!.push(file);
+    }
+
+    const containers: ContainerMeta[] = [];
+    for (const [groupKey, files] of groups) {
+      const dirName = groupKey === '.' ? path.basename(systemPath) : path.basename(groupKey);
+      const containerDir = groupKey === '.' ? systemPath : path.join(systemPath, groupKey);
+      const relativePath = path.relative(parentDir, containerDir);
+      const sourceFiles = groupKey === '.'
+        ? files
+        : this.findSourceFiles(containerDir, ['ts', 'tsx', 'js', 'jsx', 'py']);
+
+      containers.push({
+        id: containerId(dirName),
+        name: this.formatName(dirName),
+        path: relativePath,
+        systemId,
+        detectedBy: 'source-file',
+        technology: this.inferTechnologyFromFiles(sourceFiles),
+        packageJson: {
+          name: dirName,
+          dependencies: {},
+          devDependencies: {},
+          scripts: {},
+        },
+        dockerfile: fs.existsSync(path.join(containerDir, 'Dockerfile')),
+        sourceFiles,
+        envVars: {},
+      });
+    }
+
+    return containers;
+  }
+
+  private inferTechnologyFromFiles(files: string[]): string {
+    const hasPy = files.some(f => f.endsWith('.py'));
+    const hasTs = files.some(f => f.endsWith('.ts') || f.endsWith('.tsx'));
+    if (hasPy && hasTs) return 'TypeScript/Python';
+    if (hasPy) return 'Python';
+    return 'TypeScript';
   }
 
   private findSourceFiles(dir: string, extensions: string[]): string[] {
