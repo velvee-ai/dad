@@ -21,6 +21,21 @@ export const DadNodeTypeSchema = z.enum([
   'codeUnit',
 ]);
 
+// --- Element Status (Author Mode) ---
+
+export const DadElementStatusSchema = z.enum([
+  'existing', 'user-proposed', 'agent-planned', 'finalized',
+]).optional();
+
+// --- Author Session ---
+
+export const AuthorSessionSchema = z.object({
+  mode: z.enum(['view', 'edit', 'coalescing', 'reviewing', 'implementing', 'finalized']),
+  baselineSnapshot: z.string().optional(),
+  agentPlan: z.string().optional(),
+  startedAt: z.string().optional(),
+});
+
 // --- Source Mapping ---
 
 export const SourceMappingSchema = z.object({
@@ -63,6 +78,9 @@ export const DadNodeSchema = z.object({
   // Classification
   technology: z.string().nullable().optional(),
   tags: z.array(z.string()).optional(),
+
+  // Author mode
+  status: DadElementStatusSchema,
 });
 
 // --- Edge ---
@@ -75,6 +93,7 @@ export const DadEdgeSchema = z.object({
   technology: z.string().optional(),
   c4Level: C4LevelSchema,
   tags: z.array(z.string()).optional(),
+  status: DadElementStatusSchema,
 });
 
 // --- File Metadata ---
@@ -157,6 +176,7 @@ export const DadFileSchema = z.object({
   edges: z.array(DadEdgeSchema),
   views: DadViewsSchema.optional(),
   styles: DadStylesSchema.optional(),
+  authorSession: AuthorSessionSchema.optional(),
 });
 
 // --- Inferred Types (for use without importing shared-types) ---

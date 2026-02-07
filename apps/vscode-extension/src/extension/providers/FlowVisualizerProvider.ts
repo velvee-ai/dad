@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import type { DadFile } from '@dad/shared-types';
+import { DadDesignAgent } from '../agents/DadDesignAgent';
+import { ClaudeCodeBridge } from '../agents/ClaudeCodeBridge';
+import type { CoalesceInput } from '../agents/AgentBridge';
 
 export class FlowVisualizerProvider {
   public static currentPanel: FlowVisualizerProvider | undefined;
@@ -9,6 +12,9 @@ export class FlowVisualizerProvider {
   private _disposables: vscode.Disposable[] = [];
   private _isReady = false;
   private _pendingMessages: any[] = [];
+  private _authorModeEnabled = false;
+  private _baselineDadFile: DadFile | null = null;
+  private _currentDadFile: DadFile | null = null;
 
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.ViewColumn.Beside;
@@ -80,6 +86,27 @@ export class FlowVisualizerProvider {
               }
             }
             break;
+
+          // --- Author Mode messages ---
+
+          case 'coalesceDesign':
+            await this._handleCoalesceDesign(message.dadFile as DadFile);
+            break;
+
+          case 'approveDesign':
+            await this._handleApproveDesign(
+              message.dadFile as DadFile,
+              message.plan as string
+            );
+            break;
+
+          case 'rejectDesign':
+            this._postMessage({ command: 'updateAuthorSession', mode: 'edit' });
+            break;
+
+          case 'dadFileChanged':
+            this._currentDadFile = message.dadFile as DadFile;
+            break;
         }
       },
       null,
@@ -96,11 +123,96 @@ export class FlowVisualizerProvider {
   }
 
   public updateDadFile(data: DadFile) {
+    this._currentDadFile = data;
+    this._baselineDadFile = JSON.parse(JSON.stringify(data));
     this._postMessage({ command: 'updateDadFile', data });
   }
 
   public showError(error: string) {
     this._postMessage({ command: 'showError', error });
+  }
+
+  // --- Author Mode ---
+
+  public enableAuthorMode() {
+    this._authorModeEnabled = true;
+    this._postMessage({ command: 'enableAuthorMode' });
+  }
+
+  private async _handleCoalesceDesign(dadFile: DadFile) {
+    this._postMessage({ command: 'updateAuthorSession', mode: 'coalescing' });
+    this._postMessage({ command: 'coalesceProgress', message: 'Preparing design agent request...', type: 'info' });
+
+    try {
+      const config = vscode.workspace.getConfiguration('dad');
+      const apiKey = config.get<string>('anthropicApiKey');
+
+      const agent = new DadDesignAgent(apiKey || undefined);
+
+      const proposedNodes = dadFile.nodes.filter(n => n.status === 'user-proposed');
+      const proposedEdges = dadFile.edges.filter(e => e.status === 'user-proposed');
+
+      this._postMessage({ command: 'coalesceProgress', message: `Analyzing ${proposedNodes.length} proposed node(s), ${proposedEdges.length} proposed edge(s)...`, type: 'progress' });
+
+      const input: CoalesceInput = {
+        currentDadFile: dadFile,
+        baselineDadFile: this._baselineDadFile || dadFile,
+        proposedNodes,
+        proposedEdges,
+      };
+
+      this._postMessage({ command: 'coalesceProgress', message: 'Calling Claude design agent (this may take 15-30s)...', type: 'progress' });
+
+      const result = await agent.coalesce(input);
+
+      this._postMessage({ command: 'coalesceProgress', message: 'Design agent completed — plan received', type: 'success' });
+
+      this._postMessage({
+        command: 'coalesceResult',
+        plan: result.plan,
+        dadFile: result.dadFile,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this._postMessage({ command: 'coalesceProgress', message: `Error: ${msg}`, type: 'error' });
+      vscode.window.showErrorMessage(`DAD Author Mode: Coalesce failed — ${msg}`);
+      this._postMessage({ command: 'updateAuthorSession', mode: 'edit' });
+    }
+  }
+
+  private async _handleApproveDesign(dadFile: DadFile, plan: string) {
+    this._postMessage({ command: 'updateAuthorSession', mode: 'implementing' });
+    this._postMessage({ command: 'coalesceProgress', message: 'Starting Claude Code implementation...', type: 'info' });
+
+    try {
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      if (!workspaceFolders) {
+        throw new Error('No workspace folder open');
+      }
+
+      const bridge = new ClaudeCodeBridge(workspaceFolders[0].uri.fsPath);
+
+      this._postMessage({ command: 'coalesceProgress', message: 'Spawning Claude Code CLI subprocess...', type: 'progress' });
+
+      const result = await bridge.implement({
+        approvedDadFile: dadFile,
+        agentPlan: plan,
+      });
+
+      this._currentDadFile = result.dadFile;
+
+      this._postMessage({ command: 'coalesceProgress', message: 'Implementation complete — DAD finalized', type: 'success' });
+
+      this._postMessage({
+        command: 'implementationResult',
+        dadFile: result.dadFile,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this._postMessage({ command: 'coalesceProgress', message: `Implementation error: ${msg}`, type: 'error' });
+      vscode.window.showErrorMessage(`DAD Author Mode: Implementation failed — ${msg}`);
+      this._postMessage({ command: 'updateAuthorSession', mode: 'reviewing' });
+    }
   }
 
   private _getHtmlForWebview() {

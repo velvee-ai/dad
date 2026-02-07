@@ -18,7 +18,8 @@
   ],
   "activationEvents": [
     "onCommand:dad.visualizeDadFile",
-    "onCommand:dad.analyzeProject"
+    "onCommand:dad.analyzeProject",
+    "onCommand:dad.enableAuthorMode"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -30,6 +31,10 @@
       {
         "command": "dad.analyzeProject",
         "title": "DAD: Analyze Project"
+      },
+      {
+        "command": "dad.enableAuthorMode",
+        "title": "DAD: Enable Author Mode"
       }
     ],
     "menus": {

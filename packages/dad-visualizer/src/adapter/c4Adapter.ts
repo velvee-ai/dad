@@ -9,7 +9,7 @@
 import type { Node, Edge } from 'reactflow';
 import { MarkerType } from 'reactflow';
 import type { VisualNodeData, VisualNodeStyle, VisualEdgeData, VisualEdgeStyle } from './c4VisualModel';
-import type { C4Theme } from '../theme/c4ThemeTypes';
+import type { C4Theme, StatusOverlayConfig } from '../theme/c4ThemeTypes';
 import { ICICLE_THEME } from '../theme/icicleTheme';
 
 // --- Public API ---
@@ -48,7 +48,14 @@ function translateNode(node: any, theme: C4Theme): Node<VisualNodeData> {
     ? theme.monoFontFamily
     : theme.fontFamily;
 
-  const style = resolveNodeStyle(variant, theme, fonts, width, height, fontFamily);
+  const status = node.status || 'existing';
+  let style = resolveNodeStyle(variant, theme, fonts, width, height, fontFamily);
+
+  // Apply status overlay for author mode (user-proposed → grey, agent-planned → blue)
+  const overlay = theme.statusOverlays?.[status];
+  if (overlay) {
+    style = applyStatusOverlay(style, overlay);
+  }
 
   const data: VisualNodeData = {
     dadNodeId: node.id,
@@ -64,6 +71,7 @@ function translateNode(node: any, theme: C4Theme): Node<VisualNodeData> {
     designSpec: node.designSpec || '',
     documentation: node.documentation || '',
     sourceFilePath: node.sourceMapping?.filePath || undefined,
+    status,
     style,
   };
 
@@ -137,23 +145,46 @@ function resolveNodeStyle(
   };
 }
 
+// --- Status Overlay ---
+
+function applyStatusOverlay(style: VisualNodeStyle, overlay: StatusOverlayConfig): VisualNodeStyle {
+  return {
+    ...style,
+    background: overlay.surfaceOverride || style.background,
+    borderColor: overlay.borderColorOverride || style.borderColor,
+    glowColor: overlay.glowColor || style.glowColor,
+  };
+}
+
 // --- Edge Translation ---
 
 function translateEdge(edge: any, theme: C4Theme): Edge<VisualEdgeData> {
   const classification = classifyEdge(edge.technology, edge.tags);
   const variant = theme.edgeVariants[classification] || theme.edgeVariants.sync;
+  const status = edge.status || 'existing';
+
+  // Status-aware edge colors
+  let strokeColor = variant.strokeColor;
+  let strokeDasharray = variant.strokeDasharray;
+  if (status === 'user-proposed') {
+    strokeColor = 'rgba(180,180,180,0.40)';
+    strokeDasharray = '4,4';
+  } else if (status === 'agent-planned') {
+    strokeColor = 'rgba(66,133,244,0.60)';
+    strokeDasharray = '4,4';
+  }
 
   const style: VisualEdgeStyle = {
-    strokeColor: variant.strokeColor,
+    strokeColor,
     strokeWidth: variant.strokeWidth,
-    strokeDasharray: variant.strokeDasharray,
+    strokeDasharray,
     animated: variant.animated,
     animationDuration: variant.animationDuration,
     labelBackground: 'rgba(7,11,16,0.75)',
     labelBorderColor: 'rgba(255,255,255,0.08)',
     labelTextColor: 'rgba(255,255,255,0.70)',
     hoverStrokeWidth: variant.strokeWidth + 0.8,
-    glowColor: hexToRgba(variant.strokeColor, 0.2),
+    glowColor: hexToRgba(strokeColor, 0.2),
   };
 
   const data: VisualEdgeData = {
@@ -161,6 +192,7 @@ function translateEdge(edge: any, theme: C4Theme): Edge<VisualEdgeData> {
     label: edge.label || '',
     technology: edge.technology || undefined,
     tags: edge.tags || [],
+    status,
     style,
   };
 
