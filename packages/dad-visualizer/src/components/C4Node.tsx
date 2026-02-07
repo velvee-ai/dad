@@ -218,7 +218,7 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
         )}
 
         {/* Row 5: Drill-down button — mint green for focus */}
-        {hasChildren && !data.collapsed && (
+        {((hasChildren && !data.collapsed) || data.contextFilePath) && (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -244,7 +244,9 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
           >
             <DrillDownIcon size={14} color={hovered ? 'rgba(47,247,199,0.95)' : 'rgba(47,247,199,0.75)'} />
             <span>
-              Explore {data.childCount} {data.childCount === 1 ? 'item' : 'items'}
+              {data.contextFilePath
+                ? `Open ${data.label} Context`
+                : `Explore ${data.childCount} ${data.childCount === 1 ? 'item' : 'items'}`}
             </span>
           </button>
         )}

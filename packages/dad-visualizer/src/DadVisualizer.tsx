@@ -54,6 +54,8 @@ export interface DadVisualizerProps {
   onApproveDesign?: (approvedDad: DadFile, plan: string) => void;
   onRejectDesign?: () => void;
   onDadFileChange?: (updatedDad: DadFile) => void;
+  // Cross-file navigation (landscape → context)
+  onNavigate?: (filePath: string) => void;
 }
 
 function buildBreadcrumbTrail(
@@ -90,6 +92,7 @@ export function DadVisualizer({
   onApproveDesign,
   onRejectDesign,
   onDadFileChange,
+  onNavigate,
 }: DadVisualizerProps): React.ReactElement {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -345,7 +348,14 @@ export function DadVisualizer({
 
   const handleDrillDown = useCallback((nodeId: string) => {
     const hasChildren = allC4Nodes.some(n => n.data?.parentId === nodeId);
-    if (!hasChildren) return;
+    if (!hasChildren) {
+      // Cross-file navigation: open the system's context DAD file
+      const targetNode = allC4Nodes.find(n => n.id === nodeId);
+      if (targetNode?.data?.contextFilePath) {
+        onNavigate?.(targetNode.data.contextFilePath);
+      }
+      return;
+    }
 
     const targetNode = allC4Nodes.find(n => n.id === nodeId);
     if (!targetNode) return;
@@ -361,7 +371,7 @@ export function DadVisualizer({
     setNodes(positioned);
     setEdges(scopeEdges);
     onDrillDown?.(nodeId);
-  }, [allC4Nodes, allC4Edges, setNodes, setEdges, onDrillDown]);
+  }, [allC4Nodes, allC4Edges, setNodes, setEdges, onDrillDown, onNavigate]);
 
   // Listen for drill-down events from C4Node buttons
   useEffect(() => {

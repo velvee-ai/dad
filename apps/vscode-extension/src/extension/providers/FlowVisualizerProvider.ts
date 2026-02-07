@@ -107,6 +107,16 @@ export class FlowVisualizerProvider {
           case 'dadFileChanged':
             this._currentDadFile = message.dadFile as DadFile;
             break;
+
+          case 'navigateDadFile': {
+            const filePath = message.filePath as string;
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (workspaceFolders) {
+              const fileUri = vscode.Uri.joinPath(workspaceFolders[0].uri, filePath);
+              vscode.commands.executeCommand('dad.visualizeDadFile', fileUri);
+            }
+            break;
+          }
         }
       },
       null,

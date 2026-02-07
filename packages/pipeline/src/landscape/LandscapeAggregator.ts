@@ -210,6 +210,8 @@ export class LandscapeAggregator {
         childIds: [],
         // Preserve description from workspace config if system had minimal docs
         documentation: systemNode.documentation || `${systemNode.name} software system`,
+        // Cross-file navigation: path to this system's context DAD file
+        contextFilePath: path.join(ctx.systemEntry.path, '.dad', 'levels', 'context.dad.json'),
       });
     }
 

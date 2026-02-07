@@ -57,6 +57,7 @@ export interface DadNode {
   codeUnitKind?: CodeUnitKind;
   status?: DadElementStatus;
   boundary?: boolean;            // true = reference copy from another level
+  contextFilePath?: string;      // Relative path to this system's context .dad.json
 }
 
 export interface DadEdge {

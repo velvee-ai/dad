@@ -114,6 +114,9 @@ export interface DadNode {
 
   // Multi-file per-level fields
   boundary?: boolean;            // true = reference copy from another level
+
+  // Cross-file navigation (landscape drill-down)
+  contextFilePath?: string;      // Relative path to this system's context .dad.json
 }
 
 // --- Edge ---
