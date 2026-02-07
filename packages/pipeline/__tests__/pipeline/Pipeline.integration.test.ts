@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import * as yaml from 'js-yaml';
 import * as path from 'path';
 import { Pipeline } from '../../src/pipeline/Pipeline';
 import { MockLLMProvider } from '../../src/enrichment/LLMProvider';
@@ -320,5 +321,43 @@ describe('Pipeline (integration)', () => {
     // We should be significantly closer now
     expect(result.combined.nodes.length).toBeGreaterThanOrEqual(30);
     expect(result.combined.edges.length).toBeGreaterThanOrEqual(15);
+  });
+
+  // ============================================================
+  // Static enrichment tests (Stage 4.5)
+  // ============================================================
+
+  it('should produce non-empty designSpec on all non-boundary nodes (static enrichment)', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    for (const node of result.combined.nodes) {
+      if (node.boundary) continue;
+      expect(node.designSpec, `designSpec empty for ${node.id}`).not.toBe('');
+
+      // designSpec should parse as valid YAML with element root
+      const parsed = yaml.load(node.designSpec) as Record<string, unknown>;
+      expect(parsed, `invalid YAML designSpec for ${node.id}`).toHaveProperty('element');
+      const element = parsed.element as Record<string, unknown>;
+      expect(element, `missing type in designSpec for ${node.id}`).toHaveProperty('type');
+      expect(element, `missing name in designSpec for ${node.id}`).toHaveProperty('name');
+    }
+  });
+
+  it('should produce Markdown documentation (not old templates) for containers and systems', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    const systems = result.combined.nodes.filter(n => n.type === 'softwareSystem');
+    for (const sys of systems) {
+      expect(sys.documentation).toContain('#');
+      expect(sys.documentation).not.toBe(`${sys.name} software system`);
+    }
+
+    const containers = result.combined.nodes.filter(n => n.type === 'container');
+    for (const c of containers) {
+      expect(c.documentation).toContain('#');
+      expect(c.documentation).not.toBe(`${c.name} container`);
+    }
   });
 });

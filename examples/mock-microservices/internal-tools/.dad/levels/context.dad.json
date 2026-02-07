@@ -2,7 +2,7 @@
   "version": "1.0",
   "metadata": {
     "projectName": "internal-tools",
-    "generatedAt": "2026-02-07T19:59:53.471Z",
+    "generatedAt": "2026-02-07T20:38:44.496Z",
     "generatedBy": "dad-pipeline/0.0.1",
     "totalNodes": 4,
     "totalEdges": 1
@@ -15,7 +15,7 @@
       "type": "softwareSystem",
       "designSpec": "",
       "documentation": "Internal Tools software system",
-      "parentId": "landscape:internal-tools",
+      "parentId": null,
       "childIds": [
         "container:admin-dashboard"
       ],
@@ -29,7 +29,7 @@
       "type": "person",
       "designSpec": "",
       "documentation": "End user who interacts with the system through a web browser or mobile app.",
-      "parentId": "landscape:internal-tools",
+      "parentId": null,
       "childIds": [],
       "scope": "external",
       "tags": [
@@ -43,7 +43,7 @@
       "type": "person",
       "designSpec": "",
       "documentation": "Internal administrator who manages the platform via admin tools.",
-      "parentId": "landscape:internal-tools",
+      "parentId": null,
       "childIds": [],
       "scope": "internal",
       "tags": [

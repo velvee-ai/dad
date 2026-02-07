@@ -2,7 +2,7 @@
   "version": "1.0",
   "metadata": {
     "projectName": "ecommerce-platform",
-    "generatedAt": "2026-02-07T20:00:10.190Z",
+    "generatedAt": "2026-02-07T20:41:20.338Z",
     "generatedBy": "dad-pipeline/0.0.1",
     "totalNodes": 21,
     "totalEdges": 22
@@ -99,96 +99,6 @@
       ]
     },
     {
-      "id": "component:authmiddleware",
-      "c4Level": "component",
-      "name": "Auth Middleware",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Auth Middleware component",
-      "sourceMapping": {
-        "filePath": "src/middleware/authMiddleware.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:api-gateway",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "middleware"
-      ]
-    },
-    {
-      "id": "component:ratelimiter",
-      "c4Level": "component",
-      "name": "Rate Limiter",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Rate Limiter component",
-      "sourceMapping": {
-        "filePath": "src/middleware/rateLimiter.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:api-gateway",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "middleware"
-      ]
-    },
-    {
-      "id": "component:auth",
-      "c4Level": "component",
-      "name": "Auth",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Auth component",
-      "sourceMapping": {
-        "filePath": "src/routes/auth.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:api-gateway",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "route"
-      ]
-    },
-    {
-      "id": "component:orders",
-      "c4Level": "component",
-      "name": "Orders",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Orders component",
-      "sourceMapping": {
-        "filePath": "src/routes/orders.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:api-gateway",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "route"
-      ]
-    },
-    {
-      "id": "component:products",
-      "c4Level": "component",
-      "name": "Products",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Products component",
-      "sourceMapping": {
-        "filePath": "src/routes/products.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:api-gateway",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "route"
-      ]
-    },
-    {
       "id": "component:usercontroller",
       "c4Level": "component",
       "name": "User Controller",
@@ -276,6 +186,96 @@
       "technology": "TypeScript/Express",
       "tags": [
         "service"
+      ]
+    },
+    {
+      "id": "component:authmiddleware",
+      "c4Level": "component",
+      "name": "Auth Middleware",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Auth Middleware component",
+      "sourceMapping": {
+        "filePath": "src/middleware/authMiddleware.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "middleware"
+      ]
+    },
+    {
+      "id": "component:ratelimiter",
+      "c4Level": "component",
+      "name": "Rate Limiter",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Rate Limiter component",
+      "sourceMapping": {
+        "filePath": "src/middleware/rateLimiter.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "middleware"
+      ]
+    },
+    {
+      "id": "component:auth",
+      "c4Level": "component",
+      "name": "Auth",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Auth component",
+      "sourceMapping": {
+        "filePath": "src/routes/auth.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "route"
+      ]
+    },
+    {
+      "id": "component:orders",
+      "c4Level": "component",
+      "name": "Orders",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Orders component",
+      "sourceMapping": {
+        "filePath": "src/routes/orders.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "route"
+      ]
+    },
+    {
+      "id": "component:products",
+      "c4Level": "component",
+      "name": "Products",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Products component",
+      "sourceMapping": {
+        "filePath": "src/routes/products.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "route"
       ]
     },
     {
@@ -409,72 +409,6 @@
       ]
     },
     {
-      "id": "edge:auth-to-authmiddleware",
-      "source": "component:auth",
-      "target": "component:authmiddleware",
-      "label": "Uses for request processing",
-      "technology": "Internal call",
-      "c4Level": "component",
-      "tags": [
-        "internal"
-      ]
-    },
-    {
-      "id": "edge:auth-to-ratelimiter",
-      "source": "component:auth",
-      "target": "component:ratelimiter",
-      "label": "Uses for request processing",
-      "technology": "Internal call",
-      "c4Level": "component",
-      "tags": [
-        "internal"
-      ]
-    },
-    {
-      "id": "edge:orders-to-authmiddleware",
-      "source": "component:orders",
-      "target": "component:authmiddleware",
-      "label": "Uses for request processing",
-      "technology": "Internal call",
-      "c4Level": "component",
-      "tags": [
-        "internal"
-      ]
-    },
-    {
-      "id": "edge:orders-to-ratelimiter",
-      "source": "component:orders",
-      "target": "component:ratelimiter",
-      "label": "Uses for request processing",
-      "technology": "Internal call",
-      "c4Level": "component",
-      "tags": [
-        "internal"
-      ]
-    },
-    {
-      "id": "edge:products-to-authmiddleware",
-      "source": "component:products",
-      "target": "component:authmiddleware",
-      "label": "Uses for request processing",
-      "technology": "Internal call",
-      "c4Level": "component",
-      "tags": [
-        "internal"
-      ]
-    },
-    {
-      "id": "edge:products-to-ratelimiter",
-      "source": "component:products",
-      "target": "component:ratelimiter",
-      "label": "Uses for request processing",
-      "technology": "Internal call",
-      "c4Level": "component",
-      "tags": [
-        "internal"
-      ]
-    },
-    {
       "id": "edge:usercontroller-to-emailservice",
       "source": "component:usercontroller",
       "target": "component:emailservice",
@@ -534,6 +468,72 @@
       "source": "component:userservice",
       "target": "component:user",
       "label": "Uses model types from",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:auth-to-authmiddleware",
+      "source": "component:auth",
+      "target": "component:authmiddleware",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:auth-to-ratelimiter",
+      "source": "component:auth",
+      "target": "component:ratelimiter",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:orders-to-authmiddleware",
+      "source": "component:orders",
+      "target": "component:authmiddleware",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:orders-to-ratelimiter",
+      "source": "component:orders",
+      "target": "component:ratelimiter",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:products-to-authmiddleware",
+      "source": "component:products",
+      "target": "component:authmiddleware",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:products-to-ratelimiter",
+      "source": "component:products",
+      "target": "component:ratelimiter",
+      "label": "Uses for request processing",
       "technology": "Internal call",
       "c4Level": "component",
       "tags": [

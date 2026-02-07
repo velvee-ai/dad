@@ -2,7 +2,7 @@
   "version": "1.0",
   "metadata": {
     "projectName": "ecommerce-platform",
-    "generatedAt": "2026-02-07T20:00:10.190Z",
+    "generatedAt": "2026-02-07T20:41:20.338Z",
     "generatedBy": "dad-pipeline/0.0.1",
     "totalNodes": 4,
     "totalEdges": 0
@@ -15,11 +15,11 @@
       "type": "softwareSystem",
       "designSpec": "",
       "documentation": "Ecommerce Platform software system",
-      "parentId": "landscape:ecommerce-platform",
+      "parentId": null,
       "childIds": [
         "container:order-service",
-        "container:api-gateway",
         "container:user-service",
+        "container:api-gateway",
         "container:notification-service",
         "container:shared",
         "datastore:postgresql",
@@ -36,7 +36,7 @@
       "type": "externalSystem",
       "designSpec": "",
       "documentation": "Stripe external service",
-      "parentId": "landscape:ecommerce-platform",
+      "parentId": null,
       "childIds": [],
       "technology": "REST API",
       "tags": [
@@ -50,7 +50,7 @@
       "type": "externalSystem",
       "designSpec": "",
       "documentation": "SendGrid external service",
-      "parentId": "landscape:ecommerce-platform",
+      "parentId": null,
       "childIds": [],
       "technology": "REST API",
       "tags": [
@@ -64,7 +64,7 @@
       "type": "externalSystem",
       "designSpec": "",
       "documentation": "Twilio external service",
-      "parentId": "landscape:ecommerce-platform",
+      "parentId": null,
       "childIds": [],
       "technology": "REST API",
       "tags": [

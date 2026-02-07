@@ -190,6 +190,9 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.74.0
         version: 0.74.0(zod@3.25.76)
+      '@dad/generation':
+        specifier: workspace:*
+        version: link:../dad-generation
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3

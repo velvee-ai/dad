@@ -17,7 +17,7 @@ interface ManifestLevelEntry {
   edgeCount: number;
 }
 
-interface DadManifest {
+export interface DadManifest {
   version: '1.0';
   generatedAt: string;
   projectName: string;
@@ -168,16 +168,63 @@ export class DadStorage {
   }
 
   /**
+   * Save only the landscape-level DadFile (levels/landscape.dad.json + manifest).
+   * Used by the LandscapeAggregator to write workspace-root .dad/ output.
+   */
+  saveLandscape(landscapeFile: DadFile): { success: boolean; errors: string[] } {
+    this.ensureDir();
+
+    // Create levels/ directory
+    const levelsDir = path.join(this.storageDir, LEVELS_FOLDER);
+    if (!fs.existsSync(levelsDir)) {
+      fs.mkdirSync(levelsDir, { recursive: true });
+    }
+
+    // Write landscape level file
+    const relPath = `${LEVELS_FOLDER}/landscape.dad.json`;
+    const absPath = path.join(this.storageDir, relPath);
+    fs.writeFileSync(absPath, JSON.stringify(landscapeFile, null, 2));
+
+    // Write manifest
+    const manifest: DadManifest = {
+      version: '1.0',
+      generatedAt: landscapeFile.metadata.generatedAt,
+      projectName: landscapeFile.metadata.projectName,
+      landscapeFile: relPath,
+      nodeCount: landscapeFile.nodes.length,
+      edgeCount: landscapeFile.edges.length,
+      levels: {
+        landscape: {
+          file: relPath,
+          nodeCount: landscapeFile.nodes.length,
+          edgeCount: landscapeFile.edges.length,
+        },
+      },
+      totalNodes: landscapeFile.nodes.length,
+      totalEdges: landscapeFile.edges.length,
+    };
+    const manifestPath = path.join(this.storageDir, MANIFEST_FILE);
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+
+    return { success: true, errors: [] };
+  }
+
+  /**
    * Load all per-level files and merge into a single DadFile for visualization.
    * Excludes boundary nodes (they're duplicates used for per-level self-containment).
+   * @param includeLandscape If true, also loads landscape level. Default false for backward compatibility.
    */
-  loadMerged(): DadFile | null {
+  loadMerged(includeLandscape: boolean = false): DadFile | null {
     const allNodes: DadFile['nodes'] = [];
     const allEdges: DadFile['edges'] = [];
     let metadata: DadFile['metadata'] | null = null;
 
-    for (const level of REPO_LEVELS) {
-      const levelFile = this.loadLevel(level);
+    const levels: readonly string[] = includeLandscape
+      ? ['landscape', ...REPO_LEVELS]
+      : REPO_LEVELS;
+
+    for (const level of levels) {
+      const levelFile = this.loadLevel(level as C4Level);
       if (!levelFile) continue;
 
       // Skip boundary nodes — they're reference copies from other levels

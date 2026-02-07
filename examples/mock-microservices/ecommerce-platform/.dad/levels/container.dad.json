@@ -2,7 +2,7 @@
   "version": "1.0",
   "metadata": {
     "projectName": "ecommerce-platform",
-    "generatedAt": "2026-02-07T20:00:10.190Z",
+    "generatedAt": "2026-02-07T20:41:20.338Z",
     "generatedBy": "dad-pipeline/0.0.1",
     "totalNodes": 11,
     "totalEdges": 10
@@ -31,28 +31,6 @@
       "tags": []
     },
     {
-      "id": "container:api-gateway",
-      "c4Level": "container",
-      "name": "Api Gateway",
-      "type": "container",
-      "designSpec": "",
-      "documentation": "Api Gateway container",
-      "sourceMapping": {
-        "filePath": "ecommerce-platform/services/api-gateway",
-        "language": "typescript"
-      },
-      "parentId": "system:ecommerce-platform",
-      "childIds": [
-        "component:authmiddleware",
-        "component:ratelimiter",
-        "component:auth",
-        "component:orders",
-        "component:products"
-      ],
-      "technology": "TypeScript/Express",
-      "tags": []
-    },
-    {
       "id": "container:user-service",
       "c4Level": "container",
       "name": "User Service",
@@ -70,6 +48,28 @@
         "component:userrepository",
         "component:emailservice",
         "component:userservice"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:api-gateway",
+      "c4Level": "container",
+      "name": "Api Gateway",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Api Gateway container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:authmiddleware",
+        "component:ratelimiter",
+        "component:auth",
+        "component:orders",
+        "component:products"
       ],
       "technology": "TypeScript/Express",
       "tags": []
@@ -208,6 +208,17 @@
       ]
     },
     {
+      "id": "edge:user-service-to-postgresql",
+      "source": "container:user-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
+      ]
+    },
+    {
       "id": "edge:api-gateway-to-user-service",
       "source": "container:api-gateway",
       "target": "container:user-service",
@@ -238,17 +249,6 @@
       "c4Level": "container",
       "tags": [
         "cache"
-      ]
-    },
-    {
-      "id": "edge:user-service-to-postgresql",
-      "source": "container:user-service",
-      "target": "datastore:postgresql",
-      "label": "Reads/writes data",
-      "technology": "PostgreSQL protocol",
-      "c4Level": "container",
-      "tags": [
-        "data"
       ]
     },
     {
