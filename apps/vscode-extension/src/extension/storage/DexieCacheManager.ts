@@ -12,7 +12,7 @@ import { Blob } from 'buffer';
 import Dexie, { Table } from 'dexie';
 import { exportDB, importInto } from 'dexie-export-import';
 
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 
 export interface CachedFlowChart {
   id: string;
@@ -59,7 +59,7 @@ class DadCacheDB extends Dexie {
   flowCache!: Table<FlowCacheRecord, string>;
 
   constructor() {
-    super('DAADCache');
+    super('DADCache');
     this.version(1).stores({
       flowCache: '&id, filePath, fileHash, codeHash, [filePath+codeHash], lastAccessed, createdAt'
     });
@@ -120,7 +120,7 @@ export class DexieCacheManager {
       throw new Error('DexieCacheManager requires a valid workspace root path');
     }
 
-    const cacheDir = path.join(workspaceRoot, '.daad');
+    const cacheDir = path.join(workspaceRoot, '.dad');
     await fs.mkdir(cacheDir, { recursive: true });
     const cacheFilePath = path.join(cacheDir, DexieCacheManager.CACHE_FILE);
 

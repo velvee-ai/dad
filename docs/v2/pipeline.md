@@ -1,6 +1,6 @@
-# DAAD Pipeline — `@daad/pipeline`
+# DAD Pipeline — `@dad/pipeline`
 
-The analysis pipeline that scans source code projects and produces C4 architecture diagrams as structured `DadFile` JSON. This is the backend engine behind the DAAD VS Code extension.
+The analysis pipeline that scans source code projects and produces C4 architecture diagrams as structured `DadFile` JSON. This is the backend engine behind the DAD VS Code extension.
 
 ## What It Does
 
@@ -115,7 +115,7 @@ packages/pipeline/
 When no `LanguageServiceAdapter` is provided, the pipeline uses filesystem scanning and file path heuristics to build the C4 model. This works without VS Code.
 
 ```typescript
-import { Pipeline } from '@daad/pipeline';
+import { Pipeline } from '@dad/pipeline';
 
 const pipeline = new Pipeline({
   rootPath: '/path/to/project',
@@ -131,7 +131,7 @@ const result = await pipeline.run();
 The VS Code extension injects a `LanguageServiceAdapter` wrapping the running language servers (vtsls for TypeScript, Pyrefly for Python). This gives rich symbol extraction and call hierarchy analysis.
 
 ```typescript
-import { Pipeline } from '@daad/pipeline';
+import { Pipeline } from '@dad/pipeline';
 
 const pipeline = new Pipeline({
   rootPath: workspaceRoot,
@@ -147,7 +147,7 @@ const result = await pipeline.run();
 ### With LLM enrichment
 
 ```typescript
-import { Pipeline, MockLLMProvider } from '@daad/pipeline';
+import { Pipeline, MockLLMProvider } from '@dad/pipeline';
 
 const pipeline = new Pipeline({
   rootPath: '/path/to/project',
@@ -302,5 +302,5 @@ No dependency on `ts-morph` or `vscode` — all code analysis goes through the i
 - **VS Code integration**: Implement `LanguageServiceAdapter` in the extension, wrapping vtsls and Pyrefly
 - **Python analysis**: The adapter interface already supports Python via Pyrefly — same LSP protocol
 - **LLM providers**: Wire up `ClaudeProvider` and `OpenRouterProvider` with real API calls
-- **Workspace config**: Support `daad.config.json` for project-specific overrides
+- **Workspace config**: Support `dad.config.json` for project-specific overrides
 - **Incremental updates**: Re-analyze only changed files on save

@@ -5,7 +5,7 @@
   "description": "DAD - Diagram as a Delivery Monorepo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/velvee-ai/daad.git"
+    "url": "https://github.com/velvee-ai/dad.git"
   },
   "workspaces": [
     "apps/*",

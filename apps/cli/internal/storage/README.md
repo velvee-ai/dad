@@ -1,6 +1,6 @@
 # Storage Package
 
-The storage package provides local file system storage for DAAD diagrams in the `.dad/` folder.
+The storage package provides local file system storage for DAD diagrams in the `.dad/` folder.
 
 ## Features
 
@@ -29,7 +29,7 @@ The storage package provides local file system storage for DAAD diagrams in the 
 ### Initialize Storage
 
 ```go
-import "github.com/velvee-ai/daad/apps/cli/internal/storage"
+import "github.com/velvee-ai/dad/apps/cli/internal/storage"
 
 // Create with default path (.dad)
 ls, err := storage.NewLocalStorage("")
@@ -307,7 +307,7 @@ Example integration in CLI commands:
 package main
 
 import (
-    "github.com/velvee-ai/daad/apps/cli/internal/storage"
+    "github.com/velvee-ai/dad/apps/cli/internal/storage"
     "github.com/spf13/cobra"
 )
 

@@ -41,7 +41,7 @@ POST /api/preview
 ```typescript
 {
   success: true;
-  diagram: FlowChartData;  // Standard DAAD flow chart data structure
+  diagram: FlowChartData;  // Standard DAD flow chart data structure
   metadata: {
     commitSha: string;
     branch: string;
@@ -218,9 +218,9 @@ curl -X POST http://localhost:8787/api/preview \
 
 The VSCode extension will automatically use this endpoint when configured:
 
-1. Set `daad.workersApiUrl` in VSCode settings
+1. Set `dad.workersApiUrl` in VSCode settings
 2. Make changes to a file in a git repository
-3. Run "DAAD: Visualize Changes"
+3. Run "DAD: Visualize Changes"
 4. Verify the request/response in network logs
 
 ## Deployment

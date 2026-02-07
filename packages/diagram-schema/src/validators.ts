@@ -1,5 +1,5 @@
 import { DiagramSchema, DiagramNodeSchema, DiagramEdgeSchema } from './schemas';
-import type { Diagram, DiagramNode, DiagramEdge } from '@daad/shared-types';
+import type { Diagram, DiagramNode, DiagramEdge } from '@dad/shared-types';
 
 export function validateDiagram(data: unknown): { success: true; data: Diagram } | { success: false; error: string } {
   const result = DiagramSchema.safeParse(data);

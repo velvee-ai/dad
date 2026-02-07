@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the implementation of the LocalStorage module for the DAAD CLI, which handles local diagram storage in the `.dad/` folder.
+This document describes the implementation of the LocalStorage module for the DAD CLI, which handles local diagram storage in the `.dad/` folder.
 
 ## Implementation Summary
 

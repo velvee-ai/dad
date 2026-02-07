@@ -1,7 +1,7 @@
 {
-  "name": "@daad/workers",
+  "name": "@dad/workers",
   "version": "0.0.1",
-  "description": "Cloudflare Workers backend for DAAD",
+  "description": "Cloudflare Workers backend for DAD",
   "private": true,
   "main": "src/index.ts",
   "scripts": {
@@ -13,8 +13,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*",
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*",
     "hono": "^3.12.8",
     "nanoid": "^5.0.0",
     "svgo": "^3.0.0",

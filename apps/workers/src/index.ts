@@ -27,7 +27,7 @@ app.use('/*', cors());
 // Cache middleware
 app.use('/*', async (c, next) => {
   const cacheEnabled = c.env.CACHE_ENABLED === 'true';
-  const cache = createCacheManager(c.env.DAAD_CACHE, cacheEnabled);
+  const cache = createCacheManager(c.env.DAD_CACHE, cacheEnabled);
   c.set('cache', cache);
   await next();
 });

@@ -100,9 +100,9 @@ CACHE_DEFAULT_TTL = "604800"  # 7 days in seconds
 
 ```toml
 [[kv_namespaces]]
-binding = "DAAD_CACHE"
-id = "daad_cache_namespace"
-preview_id = "daad_cache_preview"
+binding = "DAD_CACHE"
+id = "dad_cache_namespace"
+preview_id = "dad_cache_preview"
 ```
 
 ### Environment-Specific Configuration
@@ -226,7 +226,7 @@ As per acceptance criteria:
 
 ### Modified Files
 - `apps/workers/wrangler.toml` - Added KV bindings and cache vars
-- `apps/workers/src/types.ts` - Added DAAD_CACHE to Env interface
+- `apps/workers/src/types.ts` - Added DAD_CACHE to Env interface
 - `apps/workers/src/index.ts` - Cache middleware and metrics endpoints
 - `apps/workers/src/handlers/diagram.ts` - Integrated caching with R2
 - `apps/workers/src/handlers/preview.ts` - Added preview caching
@@ -238,8 +238,8 @@ Before deploying to production:
 
 1. **Create KV Namespaces:**
    ```bash
-   wrangler kv:namespace create "DAAD_CACHE"
-   wrangler kv:namespace create "DAAD_CACHE" --preview
+   wrangler kv:namespace create "DAD_CACHE"
+   wrangler kv:namespace create "DAD_CACHE" --preview
    ```
 
 2. **Update wrangler.toml:**

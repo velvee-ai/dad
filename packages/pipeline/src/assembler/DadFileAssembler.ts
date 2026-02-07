@@ -250,7 +250,7 @@ export class DadFileAssembler {
     return {
       projectName,
       generatedAt: new Date().toISOString(),
-      generatedBy: 'daad-pipeline/0.0.1',
+      generatedBy: 'dad-pipeline/0.0.1',
       totalNodes,
       totalEdges,
     };

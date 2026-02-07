@@ -85,7 +85,7 @@ func renderD2ToSVG(diagram *Diagram, options RenderOptions) (string, error) {
 	}
 
 	// Create temporary directory for rendering
-	tempDir, err := os.MkdirTemp("", "daad-d2-render-*")
+	tempDir, err := os.MkdirTemp("", "dad-d2-render-*")
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp directory: %w", err)
 	}
@@ -162,7 +162,7 @@ func renderMermaidToSVG(diagram *Diagram, options RenderOptions) (string, error)
 	}
 
 	// Create temporary directory for rendering
-	tempDir, err := os.MkdirTemp("", "daad-mermaid-render-*")
+	tempDir, err := os.MkdirTemp("", "dad-mermaid-render-*")
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp directory: %w", err)
 	}
@@ -338,7 +338,7 @@ func optimizeSVG(svg string) (string, error) {
 	}
 
 	// Create temporary files
-	tempDir, err := os.MkdirTemp("", "daad-svgo-*")
+	tempDir, err := os.MkdirTemp("", "dad-svgo-*")
 	if err != nil {
 		return svg, err
 	}

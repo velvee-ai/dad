@@ -1,6 +1,6 @@
 # Extracting to Standalone Repository
 
-This guide explains how to extract the DAAD Generate Diagrams action into a standalone repository for broader distribution and GitHub Marketplace publication.
+This guide explains how to extract the DAD Generate Diagrams action into a standalone repository for broader distribution and GitHub Marketplace publication.
 
 ## Why Extract?
 
@@ -23,21 +23,21 @@ This guide explains how to extract the DAAD Generate Diagrams action into a stan
 
 ```bash
 # Create new repository on GitHub
-gh repo create velvee-ai/daad-action --public --description "GitHub Action for DAAD diagram generation"
+gh repo create velvee-ai/dad-action --public --description "GitHub Action for DAD diagram generation"
 
 # Clone it
-git clone git@github.com:velvee-ai/daad-action.git
-cd daad-action
+git clone git@github.com:velvee-ai/dad-action.git
+cd dad-action
 ```
 
 ### 2. Copy Action Files
 
 ```bash
 # From the monorepo, copy action files to new repo root
-cp -r .github/actions/generate-diagrams/* /path/to/daad-action/
+cp -r .github/actions/generate-diagrams/* /path/to/dad-action/
 
 # The structure should be:
-# daad-action/
+# dad-action/
 # ├── action.yml
 # ├── README.md
 # └── EXTRACTION_GUIDE.md (this file)
@@ -45,23 +45,23 @@ cp -r .github/actions/generate-diagrams/* /path/to/daad-action/
 
 ### 3. Update action.yml
 
-Since the action will no longer be in the DAAD monorepo, update paths:
+Since the action will no longer be in the DAD monorepo, update paths:
 
 **Change:**
 ```yaml
-- name: Install DAAD CLI
+- name: Install DAD CLI
   working-directory: ${{ inputs.working-directory }}
   run: |
     if [[ "${{ inputs.cli-version }}" == "local" ]]; then
-      echo "Building local DAAD CLI..."
+      echo "Building local DAD CLI..."
       cd apps/cli
       make build
-      CLI_PATH="$(pwd)/bin/daad"
+      CLI_PATH="$(pwd)/bin/dad"
 ```
 
 **To:**
 ```yaml
-- name: Install DAAD CLI
+- name: Install DAD CLI
   working-directory: ${{ inputs.working-directory }}
   run: |
     if [[ "${{ inputs.cli-version }}" == "local" ]]; then
@@ -75,7 +75,7 @@ Add version installation logic:
 ```yaml
     # Download from releases
     VERSION="${{ inputs.cli-version }}"
-    echo "Downloading DAAD CLI version $VERSION..."
+    echo "Downloading DAD CLI version $VERSION..."
 
     # Detect OS and architecture
     OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -83,10 +83,10 @@ Add version installation logic:
     if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; fi
 
     # Download binary
-    DOWNLOAD_URL="https://github.com/velvee-ai/daad/releases/download/cli-${VERSION}/daad-${OS}-${ARCH}"
-    curl -fsSL "$DOWNLOAD_URL" -o /tmp/daad
-    chmod +x /tmp/daad
-    sudo mv /tmp/daad /usr/local/bin/daad
+    DOWNLOAD_URL="https://github.com/velvee-ai/dad/releases/download/cli-${VERSION}/dad-${OS}-${ARCH}"
+    curl -fsSL "$DOWNLOAD_URL" -o /tmp/dad
+    chmod +x /tmp/dad
+    sudo mv /tmp/dad /usr/local/bin/dad
 ```
 
 ### 4. Update README.md
@@ -100,7 +100,7 @@ uses: ./.github/actions/generate-diagrams
 
 **To:**
 ```yaml
-uses: velvee-ai/daad-action@v1
+uses: velvee-ai/dad-action@v1
 ```
 
 ### 5. Add GitHub Metadata
@@ -134,7 +134,7 @@ jobs:
 ```bash
 # Commit and push
 git add .
-git commit -m "Initial release of DAAD action"
+git commit -m "Initial release of DAD action"
 git push origin main
 
 # Create initial version tags
@@ -162,7 +162,7 @@ Update the monorepo workflow to use the published action:
 ```yaml
 # .github/workflows/generate-diagrams.yml
 - name: Generate diagrams
-  uses: velvee-ai/daad-action@v1
+  uses: velvee-ai/dad-action@v1
   with:
     mode: incremental
     cli-version: '0.1.0'  # Must specify version now
@@ -193,9 +193,9 @@ git push origin v1 --force
 ```
 
 This allows users to:
-- Pin to specific version: `uses: velvee-ai/daad-action@v1.2.0`
-- Track major version: `uses: velvee-ai/daad-action@v1`
-- Use latest: `uses: velvee-ai/daad-action@main` (not recommended)
+- Pin to specific version: `uses: velvee-ai/dad-action@v1.2.0`
+- Track major version: `uses: velvee-ai/dad-action@v1`
+- Use latest: `uses: velvee-ai/dad-action@main` (not recommended)
 
 ## Maintenance
 
@@ -208,7 +208,7 @@ To sync action updates back to the monorepo during development:
 cd .github/actions/generate-diagrams
 
 # Pull changes from standalone repo
-git remote add action-repo git@github.com:velvee-ai/daad-action.git
+git remote add action-repo git@github.com:velvee-ai/dad-action.git
 git fetch action-repo
 git checkout action-repo/main -- action.yml README.md
 
@@ -243,7 +243,7 @@ act -j test-action --secret OPENROUTER_API_KEY=your-key
 ## Example Standalone Repository Structure
 
 ```
-daad-action/
+dad-action/
 ├── .github/
 │   └── workflows/
 │       ├── test.yml
@@ -264,14 +264,14 @@ After publication, users can consume the action:
 
 ### Basic Usage
 ```yaml
-- uses: velvee-ai/daad-action@v1
+- uses: velvee-ai/dad-action@v1
   with:
     openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
 ```
 
 ### With Version Pinning
 ```yaml
-- uses: velvee-ai/daad-action@v1.2.0
+- uses: velvee-ai/dad-action@v1.2.0
   with:
     mode: full
     cli-version: '0.1.0'
@@ -281,10 +281,10 @@ After publication, users can consume the action:
 ## Support and Community
 
 After extraction:
-- **Issues**: `velvee-ai/daad-action/issues`
-- **Discussions**: `velvee-ai/daad-action/discussions`
-- **Docs**: `velvee-ai/daad-action/README.md`
-- **CLI Issues**: `velvee-ai/daad/issues` (separate)
+- **Issues**: `velvee-ai/dad-action/issues`
+- **Discussions**: `velvee-ai/dad-action/discussions`
+- **Docs**: `velvee-ai/dad-action/README.md`
+- **CLI Issues**: `velvee-ai/dad/issues` (separate)
 
 ## Benefits of Extraction
 
@@ -298,4 +298,4 @@ After extraction:
 
 ---
 
-**Ready to extract?** Follow the steps above and publish to GitHub Marketplace to make DAAD diagram generation available to the entire GitHub community!
+**Ready to extract?** Follow the steps above and publish to GitHub Marketplace to make DAD diagram generation available to the entire GitHub community!

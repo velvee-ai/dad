@@ -6,13 +6,13 @@ import type { StructuredLogger } from './monitoring/logger';
  */
 export interface Env {
   // KV namespace binding for caching
-  DAAD_CACHE: KVNamespace;
+  DAD_CACHE: KVNamespace;
 
   // R2 bucket binding for preview diagram storage
   PREVIEW_DIAGRAMS: R2Bucket;
 
   // R2 bucket binding for general storage (legacy/alternative)
-  DAAD_BUCKET?: R2Bucket;
+  DAD_BUCKET?: R2Bucket;
 
   // Environment variables
   ENVIRONMENT?: string;

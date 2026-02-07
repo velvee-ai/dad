@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 import { LayoutEngine } from '../utils/layoutEngine';
 
 interface OpenRouterMessage {
@@ -33,7 +33,7 @@ export class OpenRouterClient {
     this.outputChannel = vscode.window.createOutputChannel('DAD');
 
     // Get configuration
-    const config = vscode.workspace.getConfiguration('daad');
+    const config = vscode.workspace.getConfiguration('dad');
     this.apiKey = config.get<string>('openRouterApiKey');
     this.model = config.get<string>('openRouterModel') || 'qwen/qwen-2.5-coder-32b-instruct';
   }
@@ -43,7 +43,7 @@ export class OpenRouterClient {
     if (!this.apiKey) {
       this.outputChannel.appendLine('ERROR: OpenRouter API key not configured');
       vscode.window.showErrorMessage(
-        'OpenRouter API key not found. Please configure it in settings: daad.openRouterApiKey'
+        'OpenRouter API key not found. Please configure it in settings: dad.openRouterApiKey'
       );
       throw new Error('OpenRouter API key not configured');
     }
@@ -155,7 +155,7 @@ export class OpenRouterClient {
     const headers = {
       'Authorization': `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://github.com/yourusername/daad', // Optional
+      'HTTP-Referer': 'https://github.com/yourusername/dad', // Optional
       'X-Title': 'DAD - Diagram as a Delivery' // Optional
     };
 

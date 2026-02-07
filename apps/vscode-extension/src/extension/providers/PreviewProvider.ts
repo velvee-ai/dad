@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { PreviewSession } from '@daad/shared-types';
+import { PreviewSession } from '@dad/shared-types';
 
 export class PreviewProvider {
   public static currentPanel: PreviewProvider | undefined;
@@ -18,7 +18,7 @@ export class PreviewProvider {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      'daadPreview',
+      'dadPreview',
       'DAD - Preview Session',
       column,
       {

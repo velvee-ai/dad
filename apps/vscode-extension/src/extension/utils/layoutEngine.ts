@@ -1,6 +1,6 @@
 import dagre from 'dagre';
 import ELK from 'elkjs/lib/elk.bundled';
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 
 export interface LayoutOptions {
   rankdir?: 'TB' | 'BT' | 'LR' | 'RL';  // Top-Bottom, Bottom-Top, Left-Right, Right-Left

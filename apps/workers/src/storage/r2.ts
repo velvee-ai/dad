@@ -1,4 +1,4 @@
-import { Diagram } from '@daad/shared-types';
+import { Diagram } from '@dad/shared-types';
 import {
   StorageError,
   PreviewSession,

@@ -66,7 +66,7 @@ The batch processing system enables parallel diagram generation with the followi
 
 ### CLI (Go)
 
-**Command**: `daad batch analyze <directory>`
+**Command**: `dad batch analyze <directory>`
 
 **Flags**:
 - `-p, --pattern`: File pattern to match (default: `*.go`)
@@ -77,10 +77,10 @@ The batch processing system enables parallel diagram generation with the followi
 **Example**:
 ```bash
 # Analyze all TypeScript files in src directory
-daad batch analyze ./src -p "*.ts" -o ./output/diagrams
+dad batch analyze ./src -p "*.ts" -o ./output/diagrams
 
 # Analyze with custom timeout
-daad batch analyze ./src --timeout 600
+dad batch analyze ./src --timeout 600
 ```
 
 **Output**:
@@ -203,8 +203,8 @@ Manages R2 and KV storage with optimized batch operations.
 import { StorageManager } from './utils/storage';
 
 const storage = new StorageManager({
-  r2Bucket: env.DAAD_BUCKET,
-  kvNamespace: env.DAAD_KV
+  r2Bucket: env.DAD_BUCKET,
+  kvNamespace: env.DAD_KV
 });
 
 // Save batch with manifest
@@ -222,7 +222,7 @@ Go implementation of parallel batch processing.
 
 **Example**:
 ```go
-import "github.com/yourorg/daad/apps/cli/internal/batch"
+import "github.com/yourorg/dad/apps/cli/internal/batch"
 
 items := []*batch.Item{
     {ID: "1", Data: file1},
@@ -358,7 +358,7 @@ echo 'function test() {}' > test-files/test1.js
 echo 'function test2() {}' > test-files/test2.js
 
 # Run batch analysis
-daad batch analyze test-files -p "*.js" -o ./output
+dad batch analyze test-files -p "*.js" -o ./output
 ```
 
 ### Performance Tests
@@ -372,7 +372,7 @@ for i in {1..15}; do
 done
 
 # Time batch processing
-time daad batch analyze test-files -p "*.js"
+time dad batch analyze test-files -p "*.js"
 ```
 
 Expected: < 15 seconds for 10 files
@@ -462,7 +462,7 @@ See individual component documentation:
 - [Batch Utilities](../apps/workers/src/utils/batch.ts)
 - [Storage Manager](../apps/workers/src/utils/storage.ts)
 - [Go Batch Package](../apps/cli/internal/batch/batch.go)
-- [CLI Commands](../apps/cli/cmd/daad/main.go)
+- [CLI Commands](../apps/cli/cmd/dad/main.go)
 
 ## Troubleshooting
 

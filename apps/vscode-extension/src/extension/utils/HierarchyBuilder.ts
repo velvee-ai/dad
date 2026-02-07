@@ -1,4 +1,4 @@
-import { FlowChartData, FlowNode, FlowEdge } from '@daad/shared-types';
+import { FlowChartData, FlowNode, FlowEdge } from '@dad/shared-types';
 import { SavedFlowChart } from '../storage/FlowChartStorage';
 import * as path from 'path';
 

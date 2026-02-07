@@ -22,7 +22,7 @@ type IncrementalGenerator struct {
 // NewIncrementalGenerator creates a new incremental generator
 func NewIncrementalGenerator(config IncrementalConfig) *IncrementalGenerator {
 	if config.MetadataFile == "" {
-		config.MetadataFile = ".daad/metadata.json"
+		config.MetadataFile = ".dad/metadata.json"
 	}
 	if config.BaseBranch == "" {
 		config.BaseBranch = "main"
@@ -31,7 +31,7 @@ func NewIncrementalGenerator(config IncrementalConfig) *IncrementalGenerator {
 		config.SupportedLangs = SupportedLanguages
 	}
 	if config.OutputDir == "" {
-		config.OutputDir = ".daad/diagrams"
+		config.OutputDir = ".dad/diagrams"
 	}
 
 	gen := &IncrementalGenerator{

@@ -1,6 +1,6 @@
-# DAAD Generate Diagrams Action
+# DAD Generate Diagrams Action
 
-A reusable GitHub Action for automatically generating code diagrams using the DAAD (Diagram as a Delivery) CLI.
+A reusable GitHub Action for automatically generating code diagrams using the DAD (Diagram as a Delivery) CLI.
 
 ## Features
 
@@ -81,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: diagrams
-          path: .daad/
+          path: .dad/
 ```
 
 ## Inputs
@@ -91,10 +91,10 @@ jobs:
 | `mode` | Generation mode: `incremental` or `full` | No | `incremental` |
 | `openrouter-api-key` | OpenRouter API key | No | - |
 | `claude-api-key` | Claude API key (alternative to OpenRouter) | No | - |
-| `cli-version` | DAAD CLI version (`local` or version number) | No | `local` |
+| `cli-version` | DAD CLI version (`local` or version number) | No | `local` |
 | `go-version` | Go version for building CLI | No | `1.21` |
 | `working-directory` | Working directory for the action | No | `.` |
-| `output-directory` | Directory for generated diagrams | No | `.daad` |
+| `output-directory` | Directory for generated diagrams | No | `.dad` |
 | `file-patterns` | File patterns to include (glob) | No | `**/*.{ts,js,tsx,jsx,go,py,java,rb,rs}` |
 | `commit-changes` | Whether to commit generated diagrams | No | `true` |
 | `commit-message` | Custom commit message | No | `docs: update diagrams [skip ci]` |
@@ -236,7 +236,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: preview-diagrams
-          path: .daad/
+          path: .dad/
 ```
 
 ### Manual Trigger with Options
@@ -283,7 +283,7 @@ jobs:
       - uses: ./.github/actions/generate-diagrams
         with:
           working-directory: packages/${{ matrix.project }}
-          output-directory: .daad
+          output-directory: .dad
           openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
 ```
 
@@ -366,7 +366,7 @@ jobs:
   on:
     push:
       paths-ignore:
-        - '.daad/**'
+        - '.dad/**'
   ```
 
 ### Build failures
@@ -450,11 +450,11 @@ jobs:
 
 When ready to publish as a standalone action:
 
-1. Create new repository: `velvee-ai/daad-action`
+1. Create new repository: `velvee-ai/dad-action`
 2. Copy `.github/actions/generate-diagrams/*` to root
 3. Update references from local to published:
    ```yaml
-   uses: velvee-ai/daad-action@v1
+   uses: velvee-ai/dad-action@v1
    ```
 4. Add versioning tags: `v1.0.0`, `v1`, `latest`
 5. Publish to GitHub Marketplace
@@ -465,5 +465,5 @@ ISC
 
 ## Support
 
-- Issues: https://github.com/velvee-ai/daad/issues
-- Documentation: https://github.com/velvee-ai/daad
+- Issues: https://github.com/velvee-ai/dad/issues
+- Documentation: https://github.com/velvee-ai/dad

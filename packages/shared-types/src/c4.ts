@@ -117,7 +117,7 @@ export interface DadEdge {
 export interface DadFileMetadata {
   projectName: string;           // "Acme Corp Engineering"
   generatedAt: string;           // ISO 8601 timestamp
-  generatedBy: string;           // "daad-vscode/0.0.1"
+  generatedBy: string;           // "dad-vscode/0.0.1"
   sourceCommit?: string;         // Git commit hash at generation time
   totalNodes: number;
   totalEdges: number;

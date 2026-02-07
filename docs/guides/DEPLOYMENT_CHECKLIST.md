@@ -5,10 +5,10 @@
 ### 1. R2 Bucket Setup
 ```bash
 # Create production bucket
-wrangler r2 bucket create daad-diagrams
+wrangler r2 bucket create dad-diagrams
 
 # Create preview bucket (optional)
-wrangler r2 bucket create daad-diagrams-preview
+wrangler r2 bucket create dad-diagrams-preview
 ```
 
 - [ ] Production bucket created
@@ -49,7 +49,7 @@ wrangler deploy
 wrangler tail  # In one terminal
 
 # In Cloudflare dashboard:
-# Workers & Pages > daad-workers > Triggers > Send Test Event
+# Workers & Pages > dad-workers > Triggers > Send Test Event
 ```
 
 - [ ] Manual trigger works

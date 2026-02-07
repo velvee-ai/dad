@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${YELLOW}=== DAAD Cleanup Worker Test Script ===${NC}\n"
+echo -e "${YELLOW}=== DAD Cleanup Worker Test Script ===${NC}\n"
 
 # Check if wrangler is installed
 if ! command -v wrangler &> /dev/null; then

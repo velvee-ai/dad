@@ -1,6 +1,6 @@
 # Monitoring and Performance Metrics
 
-Comprehensive monitoring and performance tracking system for the DAAD Workers API.
+Comprehensive monitoring and performance tracking system for the DAD Workers API.
 
 ## Overview
 

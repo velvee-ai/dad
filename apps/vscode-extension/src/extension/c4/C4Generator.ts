@@ -8,7 +8,7 @@ import type {
   DadEdge,
   ProjectSkeleton,
   SkeletonNode,
-} from '@daad/shared-types';
+} from '@dad/shared-types';
 import { ProjectScanner } from '../utils/projectScanner';
 import { DadStorage } from '../storage/DadStorage';
 import { C4AnalysisClient } from './C4AnalysisClient';
@@ -288,7 +288,7 @@ export class C4Generator {
       metadata: {
         projectName,
         generatedAt: new Date().toISOString(),
-        generatedBy: 'daad-vscode/0.0.1',
+        generatedBy: 'dad-vscode/0.0.1',
         sourceCommit,
         totalNodes: nodes.length,
         totalEdges: edges.length,

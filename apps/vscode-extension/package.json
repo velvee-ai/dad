@@ -1,16 +1,16 @@
 {
-  "name": "@daad/vscode-extension",
+  "name": "@dad/vscode-extension",
   "displayName": "DAD - Diagram as a Delivery",
   "description": "Visualize code flow and architecture using AI (OpenRouter/Claude) and React Flow",
   "version": "0.0.1",
-  "publisher": "daad",
+  "publisher": "dad",
   "private": true,
   "engines": {
     "vscode": "^1.74.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/velvee-ai/daad.git"
+    "url": "https://github.com/velvee-ai/dad.git"
   },
   "categories": [
     "Visualization",
@@ -23,55 +23,55 @@
   "contributes": {
     "commands": [
       {
-        "command": "daad.visualize",
+        "command": "dad.visualize",
         "title": "DAD: Visualize Code Flow (Selection)"
       },
       {
-        "command": "daad.visualizeFile",
+        "command": "dad.visualizeFile",
         "title": "DAD: Visualize Entire File",
         "icon": "$(file-code)"
       },
       {
-        "command": "daad.visualizeAllFunctions",
+        "command": "dad.visualizeAllFunctions",
         "title": "DAD: Visualize All Functions",
         "icon": "$(symbol-method)"
       },
       {
-        "command": "daad.visualizeSmart",
+        "command": "dad.visualizeSmart",
         "title": "DAD: Smart Visualize (Auto-detect)",
         "icon": "$(sparkle)"
       },
       {
-        "command": "daad.visualizeProject",
+        "command": "dad.visualizeProject",
         "title": "DAD: Visualize Entire Project (Hierarchical)",
         "icon": "$(graph)"
       },
       {
-        "command": "daad.listSaved",
+        "command": "dad.listSaved",
         "title": "DAD: Open Saved Diagrams",
         "icon": "$(list-flat)"
       },
       {
-        "command": "daad.openSavedFolder",
-        "title": "DAD: Open .daad Folder",
+        "command": "dad.openSavedFolder",
+        "title": "DAD: Open .dad Folder",
         "icon": "$(folder-opened)"
       },
       {
-        "command": "daad.loadChart",
+        "command": "dad.loadChart",
         "title": "DAD: Load Diagram"
       },
       {
-        "command": "daad.visualizeChanges",
+        "command": "dad.visualizeChanges",
         "title": "DAD: Visualize Changes",
         "icon": "$(git-commit)"
       },
       {
-        "command": "daad.generateC4",
+        "command": "dad.generateC4",
         "title": "DAD: Generate Architecture Diagram",
         "icon": "$(type-hierarchy)"
       },
       {
-        "command": "daad.openC4",
+        "command": "dad.openC4",
         "title": "DAD: Open Architecture View",
         "icon": "$(type-hierarchy-sub)"
       }
@@ -79,7 +79,7 @@
     "views": {
       "explorer": [
         {
-          "id": "daadSavedCharts",
+          "id": "dadSavedCharts",
           "name": "DAD Diagrams",
           "icon": "$(graph)",
           "contextualTitle": "DAD Diagrams"
@@ -88,74 +88,74 @@
     },
     "viewsWelcome": [
       {
-        "view": "daadSavedCharts",
-        "contents": "No saved diagrams yet.\n[Visualize Code](command:daad.visualize)\nSelect code and visualize to save diagrams automatically."
+        "view": "dadSavedCharts",
+        "contents": "No saved diagrams yet.\n[Visualize Code](command:dad.visualize)\nSelect code and visualize to save diagrams automatically."
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "daad.visualize",
+          "command": "dad.visualize",
           "when": "editorHasSelection",
           "group": "navigation@1"
         },
         {
-          "command": "daad.visualizeSmart",
+          "command": "dad.visualizeSmart",
           "when": "editorTextFocus && !editorHasSelection",
           "group": "navigation@2"
         },
         {
-          "command": "daad.visualizeFile",
+          "command": "dad.visualizeFile",
           "when": "editorTextFocus",
           "group": "navigation@3"
         },
         {
-          "command": "daad.visualizeAllFunctions",
+          "command": "dad.visualizeAllFunctions",
           "when": "editorTextFocus",
           "group": "navigation@4"
         }
       ],
       "explorer/context": [
         {
-          "command": "daad.visualizeFile",
+          "command": "dad.visualizeFile",
           "when": "resourceExtname =~ /\\.(js|ts|jsx|tsx|py|java|go|rs|c|cpp|cs)$/",
           "group": "navigation"
         }
       ],
       "commandPalette": [
         {
-          "command": "daad.visualize",
+          "command": "dad.visualize",
           "when": "editorHasSelection"
         },
         {
-          "command": "daad.visualizeFile",
+          "command": "dad.visualizeFile",
           "when": "editorTextFocus"
         },
         {
-          "command": "daad.visualizeAllFunctions",
+          "command": "dad.visualizeAllFunctions",
           "when": "editorTextFocus"
         },
         {
-          "command": "daad.visualizeSmart",
+          "command": "dad.visualizeSmart",
           "when": "editorTextFocus"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "daad.visualizeSmart",
+        "command": "dad.visualizeSmart",
         "key": "ctrl+shift+v",
         "mac": "cmd+shift+v",
         "when": "editorTextFocus"
       },
       {
-        "command": "daad.visualizeChanges",
+        "command": "dad.visualizeChanges",
         "key": "ctrl+shift+g",
         "mac": "cmd+shift+g",
         "when": "!inDebugMode"
       },
       {
-        "command": "daad.generateC4",
+        "command": "dad.generateC4",
         "key": "ctrl+shift+a",
         "mac": "cmd+shift+a"
       }
@@ -163,7 +163,7 @@
     "configuration": {
       "title": "DAD - Diagram as a Delivery",
       "properties": {
-        "daad.apiProvider": {
+        "dad.apiProvider": {
           "type": "string",
           "enum": [
             "claude",
@@ -172,12 +172,12 @@
           "default": "claude",
           "description": "API provider to use for code analysis (Claude Code CLI or OpenRouter)"
         },
-        "daad.openRouterApiKey": {
+        "dad.openRouterApiKey": {
           "type": "string",
           "default": "",
           "description": "OpenRouter API key (get one at https://openrouter.ai/keys)"
         },
-        "daad.openRouterModel": {
+        "dad.openRouterModel": {
           "type": "string",
           "default": "qwen/qwen-2.5-coder-32b-instruct",
           "description": "OpenRouter model to use",
@@ -191,17 +191,17 @@
             "meta-llama/llama-3.1-70b-instruct"
           ]
         },
-        "daad.workersApiUrl": {
+        "dad.workersApiUrl": {
           "type": "string",
           "default": "",
           "description": "DAD Workers API URL for preview generation (optional). Example: https://your-worker.workers.dev"
         },
-        "daad.pyrefly.enabled": {
+        "dad.pyrefly.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Enable Pyrefly language server for Python code analysis (call hierarchy, symbol resolution)"
         },
-        "daad.pyrefly.path": {
+        "dad.pyrefly.path": {
           "type": "string",
           "default": "pyrefly",
           "description": "Path to the pyrefly executable. Defaults to 'pyrefly' (must be in PATH)"
@@ -216,7 +216,7 @@
     "compile": "NODE_ENV=production webpack --mode production",
     "watch": "webpack --mode development --watch",
     "package": "vsce package",
-    "install-extension": "code --install-extension daad-0.0.1.vsix",
+    "install-extension": "code --install-extension dad-0.0.1.vsix",
     "pretest": "pnpm run compile",
     "test": "node ./out/test/runTest.js",
     "clean": "rm -rf dist",
@@ -238,8 +238,8 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*",
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*",
     "@dad/generation": "workspace:*",
     "@dad/visualizer": "workspace:*",
     "@integratorivan/react-flow-smart-edge": "^1.0.1",

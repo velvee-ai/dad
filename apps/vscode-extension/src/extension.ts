@@ -6,7 +6,7 @@ import { FlowChartStorage } from './extension/storage/FlowChartStorage';
 import { SavedChartsProvider } from './extension/providers/SavedChartsProvider';
 import { CodeAnalyzer } from './extension/utils/codeAnalyzer';
 import { DexieCacheManager, CachedFlowChart } from './extension/storage/DexieCacheManager';
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 import { VisualizeChangesCommand } from './extension/commands/visualizeChanges';
 import { PyreflyLanguageClient } from './extension/pyrefly/PyreflyLanguageClient';
 import { FlowExtractor } from './extension/pyrefly/FlowExtractor';
@@ -27,7 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(statusBarItem);
 
     // Initialize the appropriate client based on configuration
-    const config = vscode.workspace.getConfiguration('daad');
+    const config = vscode.workspace.getConfiguration('dad');
     const apiProvider = config.get<string>('apiProvider') || 'claude';
 
     if (apiProvider === 'openrouter') {
@@ -52,8 +52,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration(e => {
         if (
-          e.affectsConfiguration('daad.apiProvider') ||
-          e.affectsConfiguration('daad.openRouterModel')
+          e.affectsConfiguration('dad.apiProvider') ||
+          e.affectsConfiguration('dad.openRouterModel')
         ) {
           vscode.window
             .showWarningMessage(
@@ -91,14 +91,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
       // Create tree data provider for saved charts
       savedChartsProvider = new SavedChartsProvider(storage, context.extensionUri);
-      vscode.window.createTreeView('daadSavedCharts', {
+      vscode.window.createTreeView('dadSavedCharts', {
         treeDataProvider: savedChartsProvider,
         showCollapseAll: true
       });
 
-      // Watch for changes in .daad folder
-      const daadPattern = new vscode.RelativePattern(workspaceFolder, '.daad/*.daad.json');
-      const fileWatcher = vscode.workspace.createFileSystemWatcher(daadPattern);
+      // Watch for changes in .dad folder
+      const dadPattern = new vscode.RelativePattern(workspaceFolder, '.dad/*.dad.json');
+      const fileWatcher = vscode.workspace.createFileSystemWatcher(dadPattern);
 
       fileWatcher.onDidCreate(() => {
         savedChartsProvider?.refresh();
@@ -125,11 +125,11 @@ export async function activate(context: vscode.ExtensionContext) {
       if (lspClient) {
         flowExtractor = new FlowExtractor(lspClient);
       }
-      console.log('DAAD: Pyrefly language server started');
+      console.log('DAD: Pyrefly language server started');
     } catch (error) {
-      console.error('DAAD: Failed to start Pyrefly language server:', error);
+      console.error('DAD: Failed to start Pyrefly language server:', error);
       vscode.window.showWarningMessage(
-        'DAAD: Pyrefly language server failed to start. LSP-based analysis will be unavailable. Ensure pyrefly is installed (pip install pyrefly).'
+        'DAD: Pyrefly language server failed to start. LSP-based analysis will be unavailable. Ensure pyrefly is installed (pip install pyrefly).'
       );
       pyreflyClient = undefined;
       flowExtractor = undefined;
@@ -138,7 +138,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register the visualize command
   const visualizeCommand = vscode.commands.registerCommand(
-    'daad.visualize',
+    'dad.visualize',
     async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
@@ -219,7 +219,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         let savedChartId: string | undefined;
 
-        // Auto-save the flow chart to .daad folder
+        // Auto-save the flow chart to .dad folder
         if (storage && flowChartData) {
           try {
             savedChartId = await storage.saveFlowChart(
@@ -268,7 +268,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to visualize entire file
   const visualizeFileCommand = vscode.commands.registerCommand(
-    'daad.visualizeFile',
+    'dad.visualizeFile',
     async (uri?: vscode.Uri) => {
       let document: vscode.TextDocument;
 
@@ -299,7 +299,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         if (choice === 'Functions') {
-          vscode.commands.executeCommand('daad.visualizeAllFunctions');
+          vscode.commands.executeCommand('dad.visualizeAllFunctions');
           return;
         }
       }
@@ -372,7 +372,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to visualize all functions in file
   const visualizeAllFunctionsCommand = vscode.commands.registerCommand(
-    'daad.visualizeAllFunctions',
+    'dad.visualizeAllFunctions',
     async (uri?: vscode.Uri) => {
       let document: vscode.TextDocument;
 
@@ -577,12 +577,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to visualize at cursor (smart detection)
   const visualizeSmartCommand = vscode.commands.registerCommand(
-    'daad.visualizeSmart',
+    'dad.visualizeSmart',
     async (uri?: vscode.Uri) => {
       if (uri) {
         // Called from explorer - no cursor position available, so visualize entire file
         vscode.window.showInformationMessage('No cursor position available from explorer. Visualizing entire file...');
-        vscode.commands.executeCommand('daad.visualizeFile', uri);
+        vscode.commands.executeCommand('dad.visualizeFile', uri);
         return;
       }
 
@@ -597,7 +597,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
       if (!segment) {
         vscode.window.showInformationMessage('No function found at cursor. Visualizing entire file...');
-        vscode.commands.executeCommand('daad.visualizeFile');
+        vscode.commands.executeCommand('dad.visualizeFile');
         return;
       }
 
@@ -671,7 +671,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to visualize entire project (hierarchical view)
   const visualizeProjectCommand = vscode.commands.registerCommand(
-    'daad.visualizeProject',
+    'dad.visualizeProject',
     async () => {
       if (!storage || !workspaceFolder) {
         vscode.window.showErrorMessage('No workspace folder open');
@@ -682,7 +682,7 @@ export async function activate(context: vscode.ExtensionContext) {
       panel.showLoading();
 
       try {
-        // Load all saved .daad files
+        // Load all saved .dad files
         const charts = await storage.listFlowCharts();
 
         if (charts.length === 0) {
@@ -719,7 +719,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to list saved flow charts
   const listCommand = vscode.commands.registerCommand(
-    'daad.listSaved',
+    'dad.listSaved',
     async () => {
       if (!storage) {
         vscode.window.showErrorMessage('No workspace folder open');
@@ -759,7 +759,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to load a specific chart
   const loadChartCommand = vscode.commands.registerCommand(
-    'daad.loadChart',
+    'dad.loadChart',
     async (chart: any) => {
       if (!chart || !chart.flowChart) {
         vscode.window.showErrorMessage('Invalid chart data');
@@ -774,7 +774,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to open saved charts folder
   const openFolderCommand = vscode.commands.registerCommand(
-    'daad.openSavedFolder',
+    'dad.openSavedFolder',
     async () => {
       if (!storage) {
         vscode.window.showErrorMessage('No workspace folder open');
@@ -783,15 +783,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
       if (workspaceFolder) {
-        const daadFolder = vscode.Uri.joinPath(workspaceFolder.uri, '.daad');
-        vscode.commands.executeCommand('revealFileInOS', daadFolder);
+        const dadFolder = vscode.Uri.joinPath(workspaceFolder.uri, '.dad');
+        vscode.commands.executeCommand('revealFileInOS', dadFolder);
       }
     }
   );
 
   // Register command to visualize uncommitted changes
   const visualizeChangesCommand = vscode.commands.registerCommand(
-    'daad.visualizeChanges',
+    'dad.visualizeChanges',
     async () => {
       if (!workspaceFolder) {
         vscode.window.showErrorMessage('No workspace folder open. This command requires a workspace.');
@@ -799,7 +799,7 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       // Get Workers API URL from configuration (optional)
-      const config = vscode.workspace.getConfiguration('daad');
+      const config = vscode.workspace.getConfiguration('dad');
       const workersApiUrl = config.get<string>('workersApiUrl');
 
       await VisualizeChangesCommand.execute({
@@ -814,7 +814,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // --- C4 Architecture Commands ---
 
   const generateC4Command = vscode.commands.registerCommand(
-    'daad.generateC4',
+    'dad.generateC4',
     async () => {
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
       if (!workspaceFolder) {
@@ -855,7 +855,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const openC4Command = vscode.commands.registerCommand(
-    'daad.openC4',
+    'dad.openC4',
     async () => {
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
       if (!workspaceFolder) {
@@ -873,7 +873,7 @@ export async function activate(context: vscode.ExtensionContext) {
           'Cancel'
         );
         if (generate === 'Generate') {
-          vscode.commands.executeCommand('daad.generateC4');
+          vscode.commands.executeCommand('dad.generateC4');
         }
         return;
       }

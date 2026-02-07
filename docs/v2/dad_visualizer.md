@@ -151,7 +151,7 @@ interface DadFile {
   metadata: {
     projectName: string;        // "Acme Corp Engineering"
     generatedAt: string;        // ISO 8601 timestamp
-    generatedBy: string;        // "daad-vscode/0.0.1"
+    generatedBy: string;        // "dad-vscode/0.0.1"
     sourceCommit?: string;      // Git commit hash at generation time
     totalNodes: number;
     totalEdges: number;
@@ -380,7 +380,7 @@ routing requests to the appropriate internal microservice.
   "metadata": {
     "projectName": "Acme Corp Engineering",
     "generatedAt": "2026-02-06T10:30:00Z",
-    "generatedBy": "daad-vscode/0.0.1",
+    "generatedBy": "dad-vscode/0.0.1",
     "sourceCommit": "abc123def456",
     "totalNodes": 4,
     "totalEdges": 2
@@ -558,7 +558,7 @@ dad_Dad_Visualizer/
 │   │   │   │   │   ├── FlowVisualizerProvider.ts   # Main webview provider
 │   │   │   │   │   └── SavedChartsProvider.ts      # Sidebar tree view
 │   │   │   │   ├── storage/
-│   │   │   │   │   ├── FlowChartStorage.ts     # .daad.json storage
+│   │   │   │   │   ├── FlowChartStorage.ts     # .dad.json storage
 │   │   │   │   │   └── DadStorage.ts           # NEW: .dad.json storage
 │   │   │   │   └── utils/
 │   │   │   │       ├── codeAnalyzer.ts         # Code parsing
@@ -721,7 +721,7 @@ Create `examples/mock-microservices/` with a realistic e-commerce platform:
 
 ### Phase 6: Integration
 
-- Register `daad.generateC4` and `daad.openC4` commands in `extension.ts`
+- Register `dad.generateC4` and `dad.openC4` commands in `extension.ts`
 - Add webview message protocol: `updateC4View`, `drillDown`, `drillUp`, `requestNodeDetail`
 - Ensure backward compatibility: all existing commands unchanged
 
@@ -830,13 +830,13 @@ RULES:
 
 | Command ID | Title | Keybinding | Description |
 |-----------|-------|-----------|-------------|
-| `daad.generateC4` | DAD: Generate Architecture Diagram | `Cmd+Shift+A` | Full multi-pass generation from codebase |
-| `daad.openC4` | DAD: Open Architecture View | — | Open existing `.dad.json` in canvas |
-| `daad.visualize` | DAAD: Visualize Selected Code | — | Existing: flow chart from selection |
-| `daad.visualizeFile` | DAAD: Visualize File | — | Existing: flow chart from file |
-| `daad.visualizeSmart` | DAAD: Smart Visualize | `Cmd+Shift+V` | Existing: auto-detect function at cursor |
-| `daad.visualizeProject` | DAAD: Visualize Project | — | Existing: hierarchical project view |
-| `daad.visualizeChanges` | DAAD: Visualize Changes | `Cmd+Shift+G` | Existing: git diff visualization |
+| `dad.generateC4` | DAD: Generate Architecture Diagram | `Cmd+Shift+A` | Full multi-pass generation from codebase |
+| `dad.openC4` | DAD: Open Architecture View | — | Open existing `.dad.json` in canvas |
+| `dad.visualize` | DAD: Visualize Selected Code | — | Existing: flow chart from selection |
+| `dad.visualizeFile` | DAD: Visualize File | — | Existing: flow chart from file |
+| `dad.visualizeSmart` | DAD: Smart Visualize | `Cmd+Shift+V` | Existing: auto-detect function at cursor |
+| `dad.visualizeProject` | DAD: Visualize Project | — | Existing: hierarchical project view |
+| `dad.visualizeChanges` | DAD: Visualize Changes | `Cmd+Shift+G` | Existing: git diff visualization |
 
 ### Webview Message Protocol
 
@@ -863,11 +863,11 @@ RULES:
 
 ```json
 {
-  "daad.apiProvider": "claude | openrouter",
-  "daad.openRouterApiKey": "sk-...",
-  "daad.openRouterModel": "qwen/qwen-2.5-coder-32b-instruct",
-  "daad.c4.excludePaths": ["node_modules", ".git", "dist", "build"],
-  "daad.c4.containerDetection": "auto | manual"
+  "dad.apiProvider": "claude | openrouter",
+  "dad.openRouterApiKey": "sk-...",
+  "dad.openRouterModel": "qwen/qwen-2.5-coder-32b-instruct",
+  "dad.c4.excludePaths": ["node_modules", ".git", "dist", "build"],
+  "dad.c4.containerDetection": "auto | manual"
 }
 ```
 
@@ -878,11 +878,11 @@ RULES:
 | Term | Definition |
 |------|-----------|
 | **DAD** | Diagram as a Delivery — the project name and philosophy |
-| **DAAD** | The VS Code extension name (legacy, used in command prefixes) |
+| **DAD** (extension) | The VS Code extension name, used in command prefixes |
 | **C4 Model** | Software architecture visualization model with 4 levels: Context, Container, Component, Code |
 | **Extended C4** | DAD's 5-level variant adding Landscape (L0) above System Context |
 | **`.dad.json`** | The hybrid file format storing the architecture graph (JSON + YAML + MD) |
-| **`.daad.json`** | Legacy format for function-level flow charts (still supported) |
+| **`.dad.json`** (flow) | Format for function-level flow charts (still supported) |
 | **Landscape** | Level 0: The entire software ecosystem of an org/workspace |
 | **System Context** | Level 1: A single software system and its external relationships |
 | **Container** | Level 2: A deployable/runnable unit (service, database, web app) |

@@ -14,7 +14,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*"
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*"
   }
 }

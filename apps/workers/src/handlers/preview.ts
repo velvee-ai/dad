@@ -5,7 +5,7 @@ import type {
   PreviewManifest,
   Diagram,
   ExportFormat,
-} from '@daad/shared-types';
+} from '@dad/shared-types';
 import type { Env, Variables } from '../types';
 import {
   CacheManager,

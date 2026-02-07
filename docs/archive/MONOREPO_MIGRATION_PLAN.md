@@ -1,4 +1,4 @@
-# DAAD Monorepo Migration Plan
+# DAD Monorepo Migration Plan
 
 ## Overview
 
@@ -10,7 +10,7 @@ Transform the current single VSCode extension repository into a monorepo contain
 ## Monorepo Structure
 
 ```
-daad-monorepo/
+dad-monorepo/
 ├── apps/
 │   ├── vscode-extension/          # Current VSCode extension
 │   ├── cli/                        # Go-based CLI tool
@@ -82,7 +82,7 @@ packages/config/
    - All other config files
 
 2. Update package.json:
-   - Add `"name": "@daad/vscode-extension"`
+   - Add `"name": "@dad/vscode-extension"`
    - Update scripts to work within monorepo
    - Update dependencies to use workspace packages
 
@@ -129,7 +129,7 @@ packages/config/
 ```
 apps/cli/
 ├── cmd/
-│   └── daad/
+│   └── dad/
 │       └── main.go              # CLI entry point
 ├── internal/
 │   ├── analyzer/
@@ -160,11 +160,11 @@ apps/cli/
 
 **Commands**:
 ```bash
-daad analyze <file>               # Analyze single file
-daad analyze <directory>          # Analyze directory
-daad generate <input> -o <output> # Generate diagram
-daad visualize <file>             # Interactive visualization
-daad export <input> --format d2   # Export to D2 format
+dad analyze <file>               # Analyze single file
+dad analyze <directory>          # Analyze directory
+dad generate <input> -o <output> # Generate diagram
+dad visualize <file>             # Interactive visualization
+dad export <input> --format d2   # Export to D2 format
 ```
 
 ### 3.3 D2 Integration
@@ -272,8 +272,8 @@ apps/workers/
 ```json
 {
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*",
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*",
     "hono": "^3.x",
     "zod": "^3.x"
   },
@@ -325,7 +325,7 @@ export interface AnalyzeResponse {
 **package.json**:
 ```json
 {
-  "name": "@daad/shared-types",
+  "name": "@dad/shared-types",
   "version": "0.0.1",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -421,7 +421,7 @@ packages/config/
 
 ```json
 {
-  "name": "daad-monorepo",
+  "name": "dad-monorepo",
   "version": "0.0.1",
   "private": true,
   "workspaces": [
@@ -545,7 +545,7 @@ turbo build
 turbo dev
 
 # Build specific package
-turbo build --filter=@daad/vscode-extension
+turbo build --filter=@dad/vscode-extension
 
 # Run tests
 turbo test
@@ -568,16 +568,16 @@ pnpm add -w <package>
 // apps/vscode-extension/package.json
 {
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*"
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*"
   }
 }
 
 // apps/workers/package.json
 {
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*"
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*"
   }
 }
 ```
@@ -678,9 +678,9 @@ pnpm changeset init
 
 Update to reflect monorepo structure:
 ```markdown
-# DAAD - Diagram as a Delivery Monorepo
+# DAD - Diagram as a Delivery Monorepo
 
-A monorepo containing DAAD tools for code visualization and diagram generation.
+A monorepo containing DAD tools for code visualization and diagram generation.
 
 ## Packages
 

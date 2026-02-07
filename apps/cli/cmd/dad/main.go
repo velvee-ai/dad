@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/velvee-ai/daad/apps/cli/internal/generator"
-	"github.com/velvee-ai/daad/apps/cli/internal/renderer"
+	"github.com/velvee-ai/dad/apps/cli/internal/generator"
+	"github.com/velvee-ai/dad/apps/cli/internal/renderer"
 )
 
 var (
@@ -16,8 +16,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "daad",
-	Short: "DAAD - Diagram as a Delivery CLI",
+	Use:   "dad",
+	Short: "DAD - Diagram as a Delivery CLI",
 	Long:  `A CLI tool for analyzing code and generating flow diagrams using AI and D2.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
@@ -28,7 +28,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("DAAD CLI v%s\n", version)
+		fmt.Printf("DAD CLI v%s\n", version)
 	},
 }
 
@@ -74,7 +74,7 @@ func runIncrementalGeneration(outputDir, baseBranch string, force bool) {
 	fmt.Println()
 
 	config := generator.IncrementalConfig{
-		MetadataFile:    ".daad/metadata.json",
+		MetadataFile:    ".dad/metadata.json",
 		BaseBranch:      baseBranch,
 		OutputDir:       outputDir,
 		ForceRegenerate: force,
@@ -228,7 +228,7 @@ func init() {
 	batchCmd.AddCommand(batchAnalyzeCmd)
 
 	// Generate command flags
-	generateCmd.Flags().StringP("output", "o", ".daad/diagrams", "Output directory for diagrams")
+	generateCmd.Flags().StringP("output", "o", ".dad/diagrams", "Output directory for diagrams")
 	generateCmd.Flags().Bool("incremental", false, "Enable incremental generation (only process changed files)")
 	generateCmd.Flags().String("base-branch", "main", "Base branch for detecting changes (used with --incremental)")
 	generateCmd.Flags().BoolP("force", "f", false, "Force regenerate all diagrams (used with --incremental)")

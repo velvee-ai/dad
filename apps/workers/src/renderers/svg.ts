@@ -1,4 +1,4 @@
-import type { Diagram } from '@daad/shared-types';
+import type { Diagram } from '@dad/shared-types';
 import { renderD2, type D2RenderOptions } from './d2-renderer';
 import { renderMermaid, type MermaidRenderOptions } from './mermaid-renderer';
 

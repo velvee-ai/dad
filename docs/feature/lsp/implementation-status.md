@@ -9,8 +9,8 @@
 
 **`src/extension/pyrefly/PyreflyLanguageClient.ts`** — LSP client lifecycle
 - Spawns `pyrefly lsp` as a child process over stdio
-- Reads `daad.pyrefly.path` config for custom binary location
-- Output channel: "DAAD Pyrefly"
+- Reads `dad.pyrefly.path` config for custom binary location
+- Output channel: "DAD Pyrefly"
 - Methods: `start()`, `stop()`, `isRunning()`, `getClient()`, `dispose()`
 
 **`src/extension/pyrefly/FlowExtractor.ts`** — Converts LSP data into flowcharts
@@ -33,12 +33,12 @@ High-level diagram builders:
 
 **`package.json`** — Dependencies + configuration
 - Added `vscode-languageclient: ^9.0.1` and `vscode-languageserver-protocol: ^3.17.5`
-- Added settings: `daad.pyrefly.enabled` (boolean, default true) and `daad.pyrefly.path` (string, default "pyrefly")
+- Added settings: `dad.pyrefly.enabled` (boolean, default true) and `dad.pyrefly.path` (string, default "pyrefly")
 
 **`src/extension.ts`** — Extension lifecycle integration
 - Imports `PyreflyLanguageClient` and `FlowExtractor`
 - Global variables: `pyreflyClient` and `flowExtractor`
-- On `activate()`: starts Pyrefly if `daad.pyrefly.enabled` is true, catches failures gracefully
+- On `activate()`: starts Pyrefly if `dad.pyrefly.enabled` is true, catches failures gracefully
 - On `deactivate()` + dispose: stops Pyrefly and cleans up
 
 ### Tooling
@@ -50,11 +50,11 @@ High-level diagram builders:
 
 ## Not Wired Up Yet
 
-The `flowExtractor` instance is available globally in `extension.ts`, but no command currently uses it. All existing commands (`daad.visualize`, `daad.visualizeFile`, etc.) still go through the AI path (Claude/OpenRouter).
+The `flowExtractor` instance is available globally in `extension.ts`, but no command currently uses it. All existing commands (`dad.visualize`, `dad.visualizeFile`, etc.) still go through the AI path (Claude/OpenRouter).
 
 ### Next Steps
 
-Option A — **New command**: Add `daad.visualizeLSP` that uses `flowExtractor.buildFlowChart()` for Python files
+Option A — **New command**: Add `dad.visualizeLSP` that uses `flowExtractor.buildFlowChart()` for Python files
 
 Option B — **Augment existing commands**: Detect Python files and offer "LSP (Pyrefly)" option alongside AI analysis
 

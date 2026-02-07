@@ -1,6 +1,6 @@
-# @daad/cli
+# @dad/cli
 
-CLI tool for DAAD code analysis and diagram generation using Go and D2.
+CLI tool for DAD code analysis and diagram generation using Go and D2.
 
 ## Features
 
@@ -29,26 +29,26 @@ make install
 ### Analyze code
 
 ```bash
-daad analyze <file>
+dad analyze <file>
 ```
 
 ### Generate diagram
 
 ```bash
-daad generate <input> -o <output>
+dad generate <input> -o <output>
 ```
 
 ### Export diagram
 
 ```bash
-daad export <input> --format d2 -o diagram.d2
-daad export <input> --format svg -o diagram.svg
+dad export <input> --format d2 -o diagram.d2
+dad export <input> --format svg -o diagram.svg
 ```
 
 ### Version
 
 ```bash
-daad version
+dad version
 ```
 
 ## Development

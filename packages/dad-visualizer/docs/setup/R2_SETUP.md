@@ -1,6 +1,6 @@
 # R2 Bucket Setup Guide
 
-This guide covers the setup and configuration of Cloudflare R2 buckets for DAAD preview diagram storage.
+This guide covers the setup and configuration of Cloudflare R2 buckets for DAD preview diagram storage.
 
 ## Prerequisites
 
@@ -13,13 +13,13 @@ This guide covers the setup and configuration of Cloudflare R2 buckets for DAAD 
 ### Production Bucket
 
 ```bash
-wrangler r2 bucket create daad-preview-diagrams
+wrangler r2 bucket create dad-preview-diagrams
 ```
 
 ### Development Bucket
 
 ```bash
-wrangler r2 bucket create daad-preview-diagrams-dev
+wrangler r2 bucket create dad-preview-diagrams-dev
 ```
 
 ## CORS Configuration
@@ -46,20 +46,20 @@ Apply the CORS policy:
 
 ```bash
 # For production bucket
-wrangler r2 bucket cors put daad-preview-diagrams --file=cors-policy.json
+wrangler r2 bucket cors put dad-preview-diagrams --file=cors-policy.json
 
 # For development bucket
-wrangler r2 bucket cors put daad-preview-diagrams-dev --file=cors-policy.json
+wrangler r2 bucket cors put dad-preview-diagrams-dev --file=cors-policy.json
 ```
 
 ### Verify CORS Configuration
 
 ```bash
 # Check production bucket
-wrangler r2 bucket cors get daad-preview-diagrams
+wrangler r2 bucket cors get dad-preview-diagrams
 
 # Check development bucket
-wrangler r2 bucket cors get daad-preview-diagrams-dev
+wrangler r2 bucket cors get dad-preview-diagrams-dev
 ```
 
 ## Environment Variables and Secrets
@@ -134,7 +134,7 @@ wrangler deploy --env production
 Diagrams are stored with the following structure:
 
 ```
-daad-preview-diagrams/
+dad-preview-diagrams/
 ├── diagrams/
 │   ├── {uuid-1}.json
 │   ├── {uuid-2}.json
@@ -157,10 +157,10 @@ Each diagram object includes:
 
 ```bash
 # List objects in bucket
-wrangler r2 bucket list daad-preview-diagrams
+wrangler r2 bucket list dad-preview-diagrams
 
 # Get bucket info
-wrangler r2 bucket info daad-preview-diagrams
+wrangler r2 bucket info dad-preview-diagrams
 ```
 
 ## Troubleshooting

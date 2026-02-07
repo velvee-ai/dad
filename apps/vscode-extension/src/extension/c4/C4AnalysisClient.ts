@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import * as vscode from 'vscode';
-import type { C4AnalysisResult } from '@daad/shared-types';
+import type { C4AnalysisResult } from '@dad/shared-types';
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -25,7 +25,7 @@ export class C4AnalysisClient {
   constructor() {
     this.outputChannel = vscode.window.createOutputChannel('DAD C4');
 
-    const config = vscode.workspace.getConfiguration('daad');
+    const config = vscode.workspace.getConfiguration('dad');
     this.provider = (config.get<string>('apiProvider') || 'claude') as 'claude' | 'openrouter';
     this.openRouterApiKey = config.get<string>('openRouterApiKey');
     this.openRouterModel = config.get<string>('openRouterModel') || 'qwen/qwen-2.5-coder-32b-instruct';
@@ -79,7 +79,7 @@ export class C4AnalysisClient {
 
   private async callOpenRouter(systemPrompt: string, userPrompt: string): Promise<string> {
     if (!this.openRouterApiKey) {
-      throw new Error('OpenRouter API key not configured. Set daad.openRouterApiKey in settings.');
+      throw new Error('OpenRouter API key not configured. Set dad.openRouterApiKey in settings.');
     }
 
     const messages: ChatMessage[] = [

@@ -1,7 +1,7 @@
 {
-  "name": "@daad/shared-types",
+  "name": "@dad/shared-types",
   "version": "0.0.1",
-  "description": "Shared TypeScript types for DAAD",
+  "description": "Shared TypeScript types for DAD",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {

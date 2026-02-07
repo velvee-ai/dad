@@ -1,7 +1,7 @@
 {
-  "name": "@daad/cli",
+  "name": "@dad/cli",
   "version": "0.0.1",
-  "description": "CLI tool for DAAD code analysis and diagram generation",
+  "description": "CLI tool for DAD code analysis and diagram generation",
   "private": true,
   "scripts": {
     "build": "make build",

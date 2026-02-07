@@ -274,13 +274,13 @@ export default {
       scheduledTime: new Date(event.scheduledTime).toISOString(),
     });
 
-    if (!env.DAAD_BUCKET) {
-      logger.error('DAAD_BUCKET binding not configured. Skipping cleanup.');
+    if (!env.DAD_BUCKET) {
+      logger.error('DAD_BUCKET binding not configured. Skipping cleanup.');
       return;
     }
 
     try {
-      const stats = await cleanupExpiredSessions(env.DAAD_BUCKET, dryRun, metrics, logger);
+      const stats = await cleanupExpiredSessions(env.DAD_BUCKET, dryRun, metrics, logger);
 
       const summary = formatStats(stats);
       logger.info('Cleanup completed', {

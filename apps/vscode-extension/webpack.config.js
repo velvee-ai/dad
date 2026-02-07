@@ -1,7 +1,7 @@
 const path = require('path');
 
 // Configuration for extension code
-// Workspace packages (@daad/*, @dad/*) are bundled automatically
+// Workspace packages (@dad/*) are bundled automatically
 const extensionConfig = {
   target: 'node',
   mode: 'none',

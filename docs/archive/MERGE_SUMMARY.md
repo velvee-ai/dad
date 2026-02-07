@@ -7,11 +7,11 @@
 
 ## Conflicts Resolved
 
-### 1. apps/cli/cmd/daad/main.go
+### 1. apps/cli/cmd/dad/main.go
 **Conflict**: Import path mismatch
-- **HEAD**: `github.com/yourorg/daad/apps/cli/internal/generator`
-- **main**: `github.com/velvee-ai/daad/apps/cli/internal/generator`
-- **Resolution**: Used correct organization path `github.com/velvee-ai/daad`
+- **HEAD**: `github.com/yourorg/dad/apps/cli/internal/generator`
+- **main**: `github.com/velvee-ai/dad/apps/cli/internal/generator`
+- **Resolution**: Used correct organization path `github.com/velvee-ai/dad`
 
 ### 2. packages/shared-types/src/index.ts
 **Conflict**: Type definitions overlap
@@ -72,7 +72,7 @@ All batch processing features from the current branch are intact:
 ### CLI Implementation
 - ✅ `apps/cli/internal/batch/batch.go` - Go batch utilities
 - ✅ `apps/cli/internal/generator/batch.go` - Batch generator
-- ✅ `daad batch analyze` command
+- ✅ `dad batch analyze` command
 
 ### Documentation
 - ✅ `docs/BATCH_PROCESSING.md`
@@ -109,16 +109,16 @@ The batch processing and preview features complement each other:
 ## CLI Commands After Merge
 
 ### From Batch Branch
-- `daad batch analyze <directory>` - Batch processing
+- `dad batch analyze <directory>` - Batch processing
 
 ### From Main
-- `daad generate --incremental` - Incremental generation
-- `daad generate [path]` - Standard generation
+- `dad generate --incremental` - Incremental generation
+- `dad generate [path]` - Standard generation
 
 ### Existing Commands
-- `daad analyze <file>` - Single file analysis
-- `daad export <input>` - Export to formats
-- `daad version` - Version info
+- `dad analyze <file>` - Single file analysis
+- `dad export <input>` - Export to formats
+- `dad version` - Version info
 
 ## Verification Steps
 
@@ -136,7 +136,7 @@ grep -E "(Batch|Preview)" packages/shared-types/src/index.ts
 pnpm build
 
 # 5. Check CLI compiles
-cd apps/cli && go build ./cmd/daad
+cd apps/cli && go build ./cmd/dad
 ```
 
 ## Next Steps

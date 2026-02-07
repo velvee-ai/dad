@@ -1,11 +1,11 @@
-# DAAD Documentation
+# DAD Documentation
 
-Welcome to the DAAD (Diagram as a Delivery) documentation directory.
+Welcome to the DAD (Diagram as a Delivery) documentation directory.
 
 ## Documentation Structure
 
 ### [setup/](./setup/)
-Complete setup guides for all components of the DAAD monorepo:
+Complete setup guides for all components of the DAD monorepo:
 - **[SETUP.md](./setup/SETUP.md)** - Comprehensive setup guide for the entire system
 - **[R2_SETUP.md](./setup/R2_SETUP.md)** - Cloudflare R2 storage configuration
 - **[CACHING.md](./setup/CACHING.md)** - KV cache layer setup and configuration

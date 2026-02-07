@@ -1,5 +1,5 @@
 import { Context } from 'hono';
-import type { SavedDiagram } from '@daad/shared-types';
+import type { SavedDiagram } from '@dad/shared-types';
 import { getMetrics } from '../monitoring/metrics';
 import { PerformanceTimer } from '../monitoring/logger';
 import type { Env } from '../types';

@@ -1,5 +1,5 @@
-import type { Diagram } from '@daad/shared-types';
-import { toD2 } from '@daad/diagram-schema';
+import type { Diagram } from '@dad/shared-types';
+import { toD2 } from '@dad/diagram-schema';
 
 export interface D2RenderOptions {
   theme?: 'default' | 'dark' | 'light' | 'terminal';

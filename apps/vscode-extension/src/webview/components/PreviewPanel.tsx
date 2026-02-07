@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 import DiagramDiff from './DiagramDiff';
 
 export type ExportFormat = 'd2' | 'mermaid' | 'json';

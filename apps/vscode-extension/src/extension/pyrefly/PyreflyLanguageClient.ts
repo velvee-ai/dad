@@ -11,11 +11,11 @@ export class PyreflyLanguageClient {
   private outputChannel: vscode.OutputChannel;
 
   constructor() {
-    this.outputChannel = vscode.window.createOutputChannel('DAAD Pyrefly');
+    this.outputChannel = vscode.window.createOutputChannel('DAD Pyrefly');
   }
 
   async start(): Promise<void> {
-    const config = vscode.workspace.getConfiguration('daad');
+    const config = vscode.workspace.getConfiguration('dad');
     const pyreflyPath = config.get<string>('pyrefly.path') || 'pyrefly';
 
     const serverOptions: ServerOptions = {

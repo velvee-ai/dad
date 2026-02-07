@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 
 export type ExportFormat = 'd2' | 'mermaid' | 'json';
 

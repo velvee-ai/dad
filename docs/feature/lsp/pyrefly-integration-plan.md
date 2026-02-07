@@ -1,7 +1,7 @@
-# Plan: Add Pyrefly LSP Support to DAAD Extension
+# Plan: Add Pyrefly LSP Support to DAD Extension
 
 ## Overview
-Add the Pyrefly (Meta's Python type checker and language server) LSP client to the existing DAAD VS Code extension at `apps/vscode-extension`. Pyrefly is chosen over ty (Astral) because it supports **call hierarchy** — the critical LSP capability for flowchart generation.
+Add the Pyrefly (Meta's Python type checker and language server) LSP client to the existing DAD VS Code extension at `apps/vscode-extension`. Pyrefly is chosen over ty (Astral) because it supports **call hierarchy** — the critical LSP capability for flowchart generation.
 
 ## Why Pyrefly over ty
 
@@ -20,7 +20,7 @@ Add the Pyrefly (Meta's Python type checker and language server) LSP client to t
 Key decision: `callHierarchy/outgoingCalls` lets us ask "what does this function call?" directly, instead of parsing source code and resolving each call expression manually.
 
 ## Current State
-- Extension: DAAD - Diagram as a Delivery
+- Extension: DAD - Diagram as a Delivery
 - Location: `apps/vscode-extension`
 - Bundler: webpack
 - Activation: `onStartupFinished`
@@ -190,8 +190,8 @@ Add `onLanguage:python` to activation events (already has `onStartupFinished` wh
 
 ### Step 6: Add Configuration
 Add settings for:
-- `daad.pyrefly.enabled` - Enable/disable Pyrefly integration (default: `true`)
-- `daad.pyrefly.path` - Custom path to pyrefly executable
+- `dad.pyrefly.enabled` - Enable/disable Pyrefly integration (default: `true`)
+- `dad.pyrefly.path` - Custom path to pyrefly executable
 
 ## Architecture: LSP + Tree-sitter for Complete Flowcharts
 
@@ -214,7 +214,7 @@ Source Code (Python)
               Intra-function control flow graph
     │
     ▼
-DAAD Diagram Generator
+DAD Diagram Generator
     │
     ▼
 React Flow Visualization

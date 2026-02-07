@@ -8,7 +8,7 @@ All conflicts have been resolved and the branch is fully up-to-date with `origin
 
 ### Merge 1: Preview API & Incremental Generation (73900ad)
 **Conflicts Resolved:**
-- `apps/cli/cmd/daad/main.go` - Combined generator + renderer imports
+- `apps/cli/cmd/dad/main.go` - Combined generator + renderer imports
 - `apps/workers/src/index.ts` - Combined render + preview routes
 
 ### Merge 2: Monitoring System (f24047f)
@@ -17,7 +17,7 @@ All conflicts have been resolved and the branch is fully up-to-date with `origin
 
 ### Merge 3: Batch Processing (3ec2054) ← Latest
 **Conflicts Resolved:**
-- `apps/cli/cmd/daad/main.go` - Combined export SVG flags + batch command flags
+- `apps/cli/cmd/dad/main.go` - Combined export SVG flags + batch command flags
 
 ## Current Branch Status
 
@@ -36,13 +36,13 @@ Conflicts: 0 ✅
 - ✅ D2 CLI integration
 - ✅ Mermaid CLI integration
 - ✅ SVGO optimization
-- ✅ CLI: `daad export --format svg --svg-format d2|mermaid --theme <theme> --layout <layout> --optimize`
+- ✅ CLI: `dad export --format svg --svg-format d2|mermaid --theme <theme> --layout <layout> --optimize`
 - ✅ Local storage for SVG files
 - ✅ Multiple themes and layouts
 
 ### 🔄 Batch Processing (Latest from Main)
 - ✅ POST `/api/batch/analyze` - Batch analyze endpoint
-- ✅ CLI: `daad batch analyze <directory>` - Batch directory analysis
+- ✅ CLI: `dad batch analyze <directory>` - Batch directory analysis
 - ✅ Progress tracking with progress bars
 - ✅ Timeout controls
 - ✅ Pattern matching for file selection
@@ -66,9 +66,9 @@ Conflicts: 0 ✅
 - ✅ Git integration utilities
 
 ### ⚡ Incremental Generation (From Previous Merge)
-- ✅ CLI: `daad generate --incremental` - Only changed files
-- ✅ CLI: `daad generate --base-branch <branch>` - Custom base
-- ✅ CLI: `daad generate --force` - Force regenerate
+- ✅ CLI: `dad generate --incremental` - Only changed files
+- ✅ CLI: `dad generate --base-branch <branch>` - Custom base
+- ✅ CLI: `dad generate --force` - Force regenerate
 - ✅ Local storage manifest system
 - ✅ Change detection via git
 
@@ -122,37 +122,37 @@ GET  /api/preview/:sha/:fileId  - Get diagram
 
 ### Core Commands
 ```bash
-daad version                  # Print version
-daad analyze <file>           # Analyze single file
+dad version                  # Print version
+dad analyze <file>           # Analyze single file
 ```
 
 ### Generation
 ```bash
-daad generate [path]                    # Standard generation
-daad generate --incremental             # Incremental mode
-daad generate --incremental --force     # Force regenerate
-daad generate --base-branch develop     # Custom base branch
+dad generate [path]                    # Standard generation
+dad generate --incremental             # Incremental mode
+dad generate --incremental --force     # Force regenerate
+dad generate --base-branch develop     # Custom base branch
 ```
 
 ### Export (SVG Support)
 ```bash
-daad export <input> --format svg                        # Export to SVG
-daad export <input> --format svg --svg-format d2        # Use D2
-daad export <input> --format svg --svg-format mermaid   # Use Mermaid
-daad export <input> --format svg --theme dark           # Dark theme
-daad export <input> --format svg --layout elk           # ELK layout
-daad export <input> --format svg --optimize             # Optimize
-daad export <input> --format svg -o output.svg          # Save to file
-daad export <input> --format svg -o -                   # Stdout
+dad export <input> --format svg                        # Export to SVG
+dad export <input> --format svg --svg-format d2        # Use D2
+dad export <input> --format svg --svg-format mermaid   # Use Mermaid
+dad export <input> --format svg --theme dark           # Dark theme
+dad export <input> --format svg --layout elk           # ELK layout
+dad export <input> --format svg --optimize             # Optimize
+dad export <input> --format svg -o output.svg          # Save to file
+dad export <input> --format svg -o -                   # Stdout
 ```
 
 ### Batch Processing (New)
 ```bash
-daad batch analyze <directory>              # Batch analyze
-daad batch analyze <dir> --pattern "*.go"   # Pattern matching
-daad batch analyze <dir> --progress         # Show progress
-daad batch analyze <dir> --timeout 300      # Set timeout
-daad batch analyze <dir> -o ./diagrams      # Output directory
+dad batch analyze <directory>              # Batch analyze
+dad batch analyze <dir> --pattern "*.go"   # Pattern matching
+dad batch analyze <dir> --progress         # Show progress
+dad batch analyze <dir> --timeout 300      # Set timeout
+dad batch analyze <dir> -o ./diagrams      # Output directory
 ```
 
 ## Package Dependencies (Final)
@@ -160,8 +160,8 @@ daad batch analyze <dir> -o ./diagrams      # Output directory
 ```json
 {
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*",
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*",
     "hono": "^3.12.8",
     "nanoid": "^5.0.0",   // ID generation (monitoring)
     "svgo": "^3.0.0",     // SVG optimization (this branch)
@@ -253,10 +253,10 @@ Before pushing, verify:
 - [ ] Health checks pass
 
 ### CLI Commands
-- [ ] `daad version` works
-- [ ] `daad generate --incremental` works
-- [ ] `daad export --format svg` works
-- [ ] `daad batch analyze` works
+- [ ] `dad version` works
+- [ ] `dad generate --incremental` works
+- [ ] `dad export --format svg` works
+- [ ] `dad batch analyze` works
 - [ ] All flags parse correctly
 
 ### Dependencies
@@ -276,8 +276,8 @@ pnpm run type-check
 
 # Go
 cd apps/cli
-go build -o daad cmd/daad/main.go
-./daad version
+go build -o dad cmd/dad/main.go
+./dad version
 ```
 
 ### 2. Push to Remote

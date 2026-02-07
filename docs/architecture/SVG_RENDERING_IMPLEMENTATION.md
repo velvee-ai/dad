@@ -1,6 +1,6 @@
 # SVG Rendering Implementation
 
-This document describes the server-side SVG rendering implementation for D2 and Mermaid diagrams in the DAAD (Diagram as a Delivery) project.
+This document describes the server-side SVG rendering implementation for D2 and Mermaid diagrams in the DAD (Diagram as a Delivery) project.
 
 ## Overview
 
@@ -122,7 +122,7 @@ interface SavedFlowChart {
 
 #### New Methods
 
-- `saveSVGOutput(id, svgContent, format)` - Save rendered SVG to .daad/ folder
+- `saveSVGOutput(id, svgContent, format)` - Save rendered SVG to .dad/ folder
 - `saveDiagramSource(id, sourceContent, format)` - Save D2/Mermaid source files
 - `getSVGPath(id, format)` - Get path to saved SVG
 - `loadSVGContent(id, format)` - Load SVG content
@@ -132,8 +132,8 @@ interface SavedFlowChart {
 #### File Storage Structure
 
 ```
-.daad/
-├── {id}.daad.json          # Diagram metadata
+.dad/
+├── {id}.dad.json          # Diagram metadata
 ├── {id}.d2.svg             # D2 rendered SVG
 ├── {id}.mermaid.svg        # Mermaid rendered SVG
 ├── {id}.d2                 # D2 source file
@@ -178,22 +178,22 @@ type RenderOptions struct {
 
 #### Updated Files
 
-**`apps/cli/cmd/daad/main.go`**
+**`apps/cli/cmd/dad/main.go`**
 
 Enhanced `export` command with SVG rendering:
 
 ```bash
 # Export to SVG using D2
-daad export diagram.json --format svg --svg-format d2 -o output.svg
+dad export diagram.json --format svg --svg-format d2 -o output.svg
 
 # Export to SVG using Mermaid with dark theme
-daad export diagram.json --format svg --svg-format mermaid --theme dark -o output.svg
+dad export diagram.json --format svg --svg-format mermaid --theme dark -o output.svg
 
 # Export with optimization
-daad export diagram.json --format svg --optimize -o output.svg
+dad export diagram.json --format svg --optimize -o output.svg
 
 # Output to stdout
-daad export diagram.json --format svg -o -
+dad export diagram.json --format svg -o -
 ```
 
 **Command Flags:**
@@ -287,16 +287,16 @@ const d2Source = await storage.loadDiagramSourceContent(diagramId, 'd2');
 
 ```bash
 # Render using D2 with dark theme
-daad export diagram.json --format svg --svg-format d2 --theme dark -o output.svg
+dad export diagram.json --format svg --svg-format d2 --theme dark -o output.svg
 
 # Render using Mermaid with forest theme
-daad export diagram.json --format svg --svg-format mermaid --theme forest -o diagram.svg
+dad export diagram.json --format svg --svg-format mermaid --theme forest -o diagram.svg
 
 # Render with custom layout and optimization
-daad export diagram.json --format svg --layout elk --optimize -o optimized.svg
+dad export diagram.json --format svg --layout elk --optimize -o optimized.svg
 
 # Print to stdout
-daad export diagram.json --format svg -o - > diagram.svg
+dad export diagram.json --format svg -o - > diagram.svg
 ```
 
 ## Rendering Strategies
@@ -481,4 +481,4 @@ When adding new features:
 
 ## License
 
-Part of the DAAD (Diagram as a Delivery) project.
+Part of the DAD (Diagram as a Delivery) project.

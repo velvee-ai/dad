@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PreviewPanel from './components/PreviewPanel';
-import { PreviewSession } from '@daad/shared-types';
+import { PreviewSession } from '@dad/shared-types';
 
 interface VSCode {
   postMessage(message: any): void;

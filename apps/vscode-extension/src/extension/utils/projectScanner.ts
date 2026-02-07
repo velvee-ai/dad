@@ -6,7 +6,7 @@ import type {
   ProjectSkeleton,
   SkeletonNode,
   SourceMapping,
-} from '@daad/shared-types';
+} from '@dad/shared-types';
 
 // File patterns that indicate a container (deployable service)
 const CONTAINER_INDICATORS = [
@@ -59,7 +59,6 @@ const COMPONENT_DIRS = new Set([
 const SKIP_DIRS = new Set([
   'node_modules',
   '.git',
-  '.daad',
   '.dad',
   'dist',
   'build',

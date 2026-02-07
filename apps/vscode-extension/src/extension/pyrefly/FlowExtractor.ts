@@ -38,7 +38,7 @@ export class FlowExtractor {
     private client: LanguageClient,
     outputChannel?: vscode.OutputChannel
   ) {
-    this.outputChannel = outputChannel ?? vscode.window.createOutputChannel('DAAD FlowExtractor');
+    this.outputChannel = outputChannel ?? vscode.window.createOutputChannel('DAD FlowExtractor');
   }
 
   /**

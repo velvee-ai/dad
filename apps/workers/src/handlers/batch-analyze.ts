@@ -7,7 +7,7 @@ import type {
   AnalyzeRequest,
   AnalyzeResponse,
   BatchManifest,
-} from '@daad/shared-types';
+} from '@dad/shared-types';
 import { processBatch, BatchItem, BatchResult, RateLimiter } from '../utils/batch';
 import { StorageManager } from '../utils/storage';
 import { analyzeHandler } from './analyze';
@@ -108,11 +108,11 @@ export async function batchAnalyzeHandler(c: Context) {
     };
 
     const env = c.env as any;
-    if (env?.DAAD_BUCKET) {
+    if (env?.DAD_BUCKET) {
       try {
         const storage = new StorageManager({
-          r2Bucket: env.DAAD_BUCKET,
-          kvNamespace: env.DAAD_KV,
+          r2Bucket: env.DAD_BUCKET,
+          kvNamespace: env.DAD_KV,
         });
 
         await storage.saveManifest(manifest);

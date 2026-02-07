@@ -117,7 +117,7 @@ describe('DadFileAssembler', () => {
 
     const meta = dadFileSet.combined.metadata;
     expect(meta.projectName).toBe('Velvee.ai, Inc');
-    expect(meta.generatedBy).toBe('daad-pipeline/0.0.1');
+    expect(meta.generatedBy).toBe('dad-pipeline/0.0.1');
     expect(meta.generatedAt).toBeDefined();
     expect(meta.totalNodes).toBeGreaterThan(0);
   });

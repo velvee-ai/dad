@@ -52,7 +52,7 @@ export class SavedChartItem extends vscode.TreeItem {
 
     // Add command to open the chart when clicked
     this.command = {
-      command: 'daad.loadChart',
+      command: 'dad.loadChart',
       title: 'Load Flow Chart',
       arguments: [chart]
     };

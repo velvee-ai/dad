@@ -1,5 +1,5 @@
 // ============================================================
-// Re-exported C4 types (from @daad/shared-types/src/c4.ts)
+// Re-exported C4 types (from @dad/shared-types/src/c4.ts)
 // These are defined here because shared-types doesn't expose c4.ts
 // via package exports. Keep in sync with the source.
 // ============================================================

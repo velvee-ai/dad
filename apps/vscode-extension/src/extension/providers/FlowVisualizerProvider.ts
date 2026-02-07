@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 
 export class FlowVisualizerProvider {
   public static currentPanel: FlowVisualizerProvider | undefined;
@@ -20,7 +20,7 @@ export class FlowVisualizerProvider {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      'daadVisualizer',
+      'dadVisualizer',
       'DAD - Code Flow Visualization',
       column,
       {

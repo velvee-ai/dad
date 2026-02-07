@@ -1,17 +1,17 @@
-# @daad/shared-types
+# @dad/shared-types
 
-Shared TypeScript types and interfaces used across all DAAD packages.
+Shared TypeScript types and interfaces used across all DAD packages.
 
 ## Installation
 
 ```bash
-pnpm add @daad/shared-types@workspace:*
+pnpm add @dad/shared-types@workspace:*
 ```
 
 ## Usage
 
 ```typescript
-import { DiagramNode, DiagramEdge, Diagram } from '@daad/shared-types';
+import { DiagramNode, DiagramEdge, Diagram } from '@dad/shared-types';
 
 const node: DiagramNode = {
   id: '1',

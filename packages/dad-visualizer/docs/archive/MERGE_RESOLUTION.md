@@ -33,7 +33,7 @@ export default {
 ### 2. apps/workers/wrangler.toml
 
 **Conflict:**
-- `HEAD` (cleanup worker): Added DAAD_BUCKET binding, DRY_RUN var, and cron triggers
+- `HEAD` (cleanup worker): Added DAD_BUCKET binding, DRY_RUN var, and cron triggers
 - `origin/main`: Added PREVIEW_DIAGRAMS binding with environment-specific configs
 
 **Resolution:**
@@ -43,11 +43,11 @@ Unified configuration with both R2 buckets and all features:
 # Both R2 buckets configured
 [[r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
-bucket_name = "daad-preview-diagrams"
+bucket_name = "dad-preview-diagrams"
 
 [[r2_buckets]]
-binding = "DAAD_BUCKET"
-bucket_name = "daad-diagrams"
+binding = "DAD_BUCKET"
+bucket_name = "dad-diagrams"
 
 # Combined environment variables
 [vars]
@@ -63,20 +63,20 @@ crons = ["0 2 * * *"]
 [env.production]
 [[env.production.r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
-bucket_name = "daad-preview-diagrams"
+bucket_name = "dad-preview-diagrams"
 
 [[env.production.r2_buckets]]
-binding = "DAAD_BUCKET"
-bucket_name = "daad-diagrams"
+binding = "DAD_BUCKET"
+bucket_name = "dad-diagrams"
 
 [env.development]
 [[env.development.r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
-bucket_name = "daad-preview-diagrams-dev"
+bucket_name = "dad-preview-diagrams-dev"
 
 [[env.development.r2_buckets]]
-binding = "DAAD_BUCKET"
-bucket_name = "daad-diagrams-preview"
+binding = "DAD_BUCKET"
+bucket_name = "dad-diagrams-preview"
 
 [env.development.vars]
 DRY_RUN = "true"  # Safe default for dev
@@ -90,7 +90,7 @@ Extended the Env interface to support both feature sets:
 ```typescript
 export interface Env {
   PREVIEW_DIAGRAMS: R2Bucket;      // From main
-  DAAD_BUCKET?: R2Bucket;          // From cleanup worker
+  DAD_BUCKET?: R2Bucket;          // From cleanup worker
   ENVIRONMENT?: string;            // From main
   CORS_ORIGINS?: string;           // From main
   DRY_RUN?: string;                // From cleanup worker
@@ -104,14 +104,14 @@ export interface Env {
 **Updated:**
 - Removed local Env interface
 - Imported shared Env type from '../types'
-- Added null check for DAAD_BUCKET binding
+- Added null check for DAD_BUCKET binding
 
 ```typescript
 import type { Env } from '../types';
 
 // In scheduled handler
-if (!env.DAAD_BUCKET) {
-  console.error('DAAD_BUCKET binding not configured. Skipping cleanup.');
+if (!env.DAD_BUCKET) {
+  console.error('DAD_BUCKET binding not configured. Skipping cleanup.');
   return;
 }
 ```
@@ -129,7 +129,7 @@ if (!env.DAAD_BUCKET) {
 
 ### From cleanup worker branch:
 ✅ Scheduled cleanup worker
-✅ DAAD_BUCKET R2 bucket binding
+✅ DAD_BUCKET R2 bucket binding
 ✅ Cron trigger configuration (daily at 2 AM UTC)
 ✅ Dry-run mode support
 ✅ Comprehensive cleanup statistics
@@ -140,7 +140,7 @@ if (!env.DAAD_BUCKET) {
 
 1. **Dual R2 Buckets:**
    - `PREVIEW_DIAGRAMS`: New storage system from main
-   - `DAAD_BUCKET`: Cleanup worker target (backward compatible)
+   - `DAD_BUCKET`: Cleanup worker target (backward compatible)
 
 2. **Environment Awareness:**
    - Production: Live cleanup, production buckets

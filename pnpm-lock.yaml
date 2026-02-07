@@ -28,15 +28,15 @@ importers:
 
   apps/vscode-extension:
     dependencies:
-      '@daad/diagram-schema':
+      '@dad/diagram-schema':
         specifier: workspace:*
         version: link:../../packages/diagram-schema
-      '@daad/shared-types':
-        specifier: workspace:*
-        version: link:../../packages/shared-types
       '@dad/generation':
         specifier: workspace:*
         version: link:../../packages/dad-generation
+      '@dad/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@dad/visualizer':
         specifier: workspace:*
         version: link:../../packages/dad-visualizer
@@ -119,10 +119,10 @@ importers:
 
   apps/workers:
     dependencies:
-      '@daad/diagram-schema':
+      '@dad/diagram-schema':
         specifier: workspace:*
         version: link:../../packages/diagram-schema
-      '@daad/shared-types':
+      '@dad/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
       hono:
@@ -155,16 +155,16 @@ importers:
 
   packages/dad-generation:
     dependencies:
-      '@daad/diagram-schema':
+      '@dad/diagram-schema':
         specifier: workspace:*
         version: link:../diagram-schema
-      '@daad/shared-types':
+      '@dad/shared-types':
         specifier: workspace:*
         version: link:../shared-types
 
   packages/dad-visualizer:
     dependencies:
-      '@daad/shared-types':
+      '@dad/shared-types':
         specifier: workspace:*
         version: link:../shared-types
       dagre:
@@ -195,7 +195,7 @@ importers:
 
   packages/diagram-schema:
     dependencies:
-      '@daad/shared-types':
+      '@dad/shared-types':
         specifier: workspace:*
         version: link:../shared-types
       zod:

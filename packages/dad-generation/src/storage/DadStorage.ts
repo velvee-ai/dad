@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { DadFile } from '@daad/shared-types';
-import { validateDadFile, validateDadFileIntegrity } from '@daad/diagram-schema';
+import type { DadFile } from '@dad/shared-types';
+import { validateDadFile, validateDadFileIntegrity } from '@dad/diagram-schema';
 
 const DAD_FOLDER = '.dad';
 const DAD_FILE = 'landscape.dad.json';

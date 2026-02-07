@@ -22,7 +22,7 @@ pnpm install
 ## Project Structure
 
 ```
-daad-monorepo/
+dad-monorepo/
 ├── apps/
 │   ├── vscode-extension/    # VSCode plugin (TypeScript + React)
 │   ├── cli/                  # CLI tool (Go + D2)
@@ -43,9 +43,9 @@ daad-monorepo/
 turbo dev
 
 # Run specific app
-turbo dev --filter=@daad/vscode-extension
-turbo dev --filter=@daad/cli
-turbo dev --filter=@daad/workers
+turbo dev --filter=@dad/vscode-extension
+turbo dev --filter=@dad/cli
+turbo dev --filter=@dad/workers
 
 # Watch mode for shared packages
 cd packages/shared-types && pnpm dev
@@ -58,10 +58,10 @@ cd packages/shared-types && pnpm dev
 turbo build
 
 # Build specific app
-turbo build --filter=@daad/vscode-extension
+turbo build --filter=@dad/vscode-extension
 
 # Build with dependencies
-turbo build --filter=@daad/workers...
+turbo build --filter=@dad/workers...
 ```
 
 ### Testing
@@ -71,10 +71,10 @@ turbo build --filter=@daad/workers...
 turbo test
 
 # Test specific package
-turbo test --filter=@daad/shared-types
+turbo test --filter=@dad/shared-types
 
 # Watch mode
-turbo test --filter=@daad/workers -- --watch
+turbo test --filter=@dad/workers -- --watch
 ```
 
 ### Linting & Formatting
@@ -96,14 +96,14 @@ turbo lint -- --fix
 
 ```bash
 # Add to specific package
-pnpm add <package> --filter=@daad/vscode-extension
+pnpm add <package> --filter=@dad/vscode-extension
 
 # Add to workspace root
 pnpm add -w <package>
 
 # Add workspace package as dependency
 cd apps/workers
-pnpm add @daad/shared-types@workspace:*
+pnpm add @dad/shared-types@workspace:*
 ```
 
 ### Creating New Package
@@ -136,7 +136,7 @@ pnpm compile
 pnpm package
 
 # Install locally
-code --install-extension daad-0.0.1.vsix
+code --install-extension dad-0.0.1.vsix
 ```
 
 ### CLI Tool
@@ -148,7 +148,7 @@ cd apps/cli
 make build
 
 # Run locally
-./bin/daad analyze <file>
+./bin/dad analyze <file>
 
 # Install globally
 make install
@@ -196,13 +196,13 @@ turbo link
 
 ```bash
 # Run command for package and its dependencies
-turbo build --filter=@daad/workers...
+turbo build --filter=@dad/workers...
 
 # Run command for package and its dependents
-turbo build --filter=...@daad/shared-types
+turbo build --filter=...@dad/shared-types
 
 # Multiple filters
-turbo build --filter=@daad/workers --filter=@daad/cli
+turbo build --filter=@dad/workers --filter=@dad/cli
 ```
 
 ### Parallel Execution
@@ -225,7 +225,7 @@ turbo build
 
 ```bash
 cd apps/cli
-dlv debug cmd/daad/main.go -- analyze <file>
+dlv debug cmd/dad/main.go -- analyze <file>
 ```
 
 ### Workers

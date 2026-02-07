@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FlowChartData } from '@daad/shared-types';
+import { FlowChartData } from '@dad/shared-types';
 
 export interface SavedFlowChart {
   id: string;
@@ -35,8 +35,8 @@ export interface SavedFlowChart {
 
 export class FlowChartStorage {
   private storageDir: string;
-  private readonly STORAGE_FOLDER = '.daad';
-  private readonly FILE_EXTENSION = '.daad.json';
+  private readonly STORAGE_FOLDER = '.dad';
+  private readonly FILE_EXTENSION = '.dad.json';
 
   constructor(private workspaceRoot: string) {
     this.storageDir = path.join(workspaceRoot, this.STORAGE_FOLDER);
@@ -46,10 +46,10 @@ export class FlowChartStorage {
   private ensureStorageDir(): void {
     if (!fs.existsSync(this.storageDir)) {
       fs.mkdirSync(this.storageDir, { recursive: true });
-      // Create a .gitignore file to optionally exclude .daad files from version control
+      // Create a .gitignore file to optionally exclude .dad files from version control
       const gitignorePath = path.join(this.storageDir, '.gitignore');
       if (!fs.existsSync(gitignorePath)) {
-        fs.writeFileSync(gitignorePath, '# Uncomment the next line to exclude saved flow charts from git\n# *.daad.json\n');
+        fs.writeFileSync(gitignorePath, '# Uncomment the next line to exclude saved flow charts from git\n# *.dad.json\n');
       }
     }
   }

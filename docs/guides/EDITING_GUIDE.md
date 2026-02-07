@@ -1,7 +1,7 @@
-# DAAD - Diagram Editing Guide
+# DAD - Diagram Editing Guide
 
 ## Overview
-DAAD (Diagram as a Delivery) now supports full diagram editing capabilities. You can modify, enhance, and reorganize the flow charts generated from your code.
+DAD (Diagram as a Delivery) now supports full diagram editing capabilities. You can modify, enhance, and reorganize the flow charts generated from your code.
 
 ## Features
 
@@ -65,7 +65,7 @@ Click the **"👁️ Viewing"** button in the toolbar to switch to **"📝 Editi
 #### **Save Changes** (💾)
 - Saves edited diagram to storage
 - Preserves both original and edited versions
-- Updates `.daad` folder with new version
+- Updates `.dad` folder with new version
 - Shows success notification
 
 #### **Reset Changes** (↩️)
@@ -161,7 +161,7 @@ Every diagram maintains:
 ### Changes Not Saving?
 - Ensure you're in edit mode
 - Check for unsaved indicator
-- Verify `.daad` folder permissions
+- Verify `.dad` folder permissions
 
 ### Layout Issues?
 - Try auto-layout button
