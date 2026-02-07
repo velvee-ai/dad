@@ -1,6 +1,6 @@
 import type { DadNode, DadFileSet, LLMProvider, ScanResult } from '../types';
 import { PromptBuilder } from './PromptBuilder';
-import { actorId } from '../assembler/IdGenerator';
+import { personId } from '../assembler/IdGenerator';
 
 /**
  * Stage 5: Enriches DadFile nodes with LLM-generated descriptions and designSpecs.
@@ -42,8 +42,8 @@ export class LLMEnricher {
       await this.enrichDesignSpec(node);
     }
 
-    // Detect and add actors
-    await this.detectAndAddActors(dadFileSet, scanResult);
+    // Detect and add persons
+    await this.detectAndAddPersons(dadFileSet, scanResult);
 
     // Update per-level files from combined
     this.syncFromCombined(dadFileSet);
@@ -52,7 +52,7 @@ export class LLMEnricher {
   }
 
   private async enrichNode(node: DadNode, scanResult: ScanResult): Promise<void> {
-    // Generate description
+    // Generate documentation
     let prompt: string;
     if (node.type === 'landscape') {
       prompt = this.promptBuilder.landscapeDescription(node, scanResult);
@@ -61,10 +61,10 @@ export class LLMEnricher {
     }
 
     try {
-      const description = await this.provider.analyze(prompt);
-      node.description = description;
+      const documentation = await this.provider.analyze(prompt);
+      node.documentation = documentation;
     } catch {
-      // Keep existing description on failure
+      // Keep existing documentation on failure
     }
 
     // Generate designSpec
@@ -81,14 +81,14 @@ export class LLMEnricher {
     }
   }
 
-  private async detectAndAddActors(
+  private async detectAndAddPersons(
     dadFileSet: DadFileSet,
     scanResult: ScanResult
   ): Promise<void> {
     const prompt = this.promptBuilder.detectActors(scanResult);
     try {
       const response = await this.provider.analyze(prompt);
-      const actors = JSON.parse(response) as Array<{
+      const persons = JSON.parse(response) as Array<{
         name: string;
         scope: 'internal' | 'external';
         description: string;
@@ -96,32 +96,32 @@ export class LLMEnricher {
 
       const landscapeNode = dadFileSet.combined.nodes.find(n => n.type === 'landscape');
 
-      for (const actor of actors) {
-        const id = actorId(actor.name);
+      for (const person of persons) {
+        const id = personId(person.name);
 
         // Skip if already exists
         if (dadFileSet.combined.nodes.some(n => n.id === id)) continue;
 
-        const actorNode: DadNode = {
+        const personNode: DadNode = {
           id,
           c4Level: 'context',
-          name: actor.name,
-          type: 'actor',
+          name: person.name,
+          type: 'person',
           designSpec: '',
-          description: actor.description,
+          documentation: person.description,
           parentId: landscapeNode?.id,
           childIds: [],
-          scope: actor.scope,
-          tags: [`${actor.scope}-actor`],
+          scope: person.scope,
+          tags: [`${person.scope}-person`],
         };
 
-        dadFileSet.combined.nodes.push(actorNode);
+        dadFileSet.combined.nodes.push(personNode);
         if (landscapeNode) {
           landscapeNode.childIds.push(id);
         }
       }
     } catch {
-      // Actor detection is optional
+      // Person detection is optional
     }
   }
 

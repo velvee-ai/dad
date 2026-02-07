@@ -34,8 +34,8 @@ export function codeUnitId(name: string): string {
   return `code:${slugify(name)}`;
 }
 
-export function actorId(name: string): string {
-  return `actor:${slugify(name)}`;
+export function personId(name: string): string {
+  return `person:${slugify(name)}`;
 }
 
 export function externalId(name: string): string {

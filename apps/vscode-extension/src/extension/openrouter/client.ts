@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { FlowChartData } from '../../shared/types';
+import { FlowChartData } from '@daad/shared-types';
 import { LayoutEngine } from '../utils/layoutEngine';
 
 interface OpenRouterMessage {
@@ -30,7 +30,7 @@ export class OpenRouterClient {
   private apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
 
   constructor() {
-    this.outputChannel = vscode.window.createOutputChannel('DAAD');
+    this.outputChannel = vscode.window.createOutputChannel('DAD');
 
     // Get configuration
     const config = vscode.workspace.getConfiguration('daad');
@@ -156,7 +156,7 @@ export class OpenRouterClient {
       'Authorization': `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://github.com/yourusername/daad', // Optional
-      'X-Title': 'DAAD - Diagram as a Delivery' // Optional
+      'X-Title': 'DAD - Diagram as a Delivery' // Optional
     };
 
     const body = {

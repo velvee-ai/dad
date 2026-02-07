@@ -6,7 +6,7 @@ import { FlowChartStorage } from './extension/storage/FlowChartStorage';
 import { SavedChartsProvider } from './extension/providers/SavedChartsProvider';
 import { CodeAnalyzer } from './extension/utils/codeAnalyzer';
 import { DexieCacheManager, CachedFlowChart } from './extension/storage/DexieCacheManager';
-import { FlowChartData } from './shared/types';
+import { FlowChartData } from '@daad/shared-types';
 import { VisualizeChangesCommand } from './extension/commands/visualizeChanges';
 import { PyreflyLanguageClient } from './extension/pyrefly/PyreflyLanguageClient';
 import { FlowExtractor } from './extension/pyrefly/FlowExtractor';
@@ -19,7 +19,7 @@ let pyreflyClient: PyreflyLanguageClient | undefined;
 let flowExtractor: FlowExtractor | undefined;
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('DAAD - Diagram as a Delivery extension is now active!');
+  console.log('DAD - Diagram as a Delivery extension is now active!');
 
   try {
     // Create status bar item to show API provider
@@ -34,18 +34,18 @@ export async function activate(context: vscode.ExtensionContext) {
       claudeClient = new OpenRouterClient();
       const model = config.get<string>('openRouterModel') || 'qwen/qwen-2.5-coder-32b-instruct';
       const modelShort = model.split('/')[1]?.split('-')[0] || model;
-      statusBarItem.text = `$(globe) DAAD: OpenRouter (${modelShort})`;
-      statusBarItem.tooltip = `DAAD using OpenRouter API\nModel: ${model}`;
+      statusBarItem.text = `$(globe) DAD: OpenRouter (${modelShort})`;
+      statusBarItem.tooltip = `DAD using OpenRouter API\nModel: ${model}`;
       statusBarItem.show();
-      console.log('DAAD: Using OpenRouter API for code analysis');
-      vscode.window.showInformationMessage(`DAAD: Using OpenRouter API (${model})`);
+      console.log('DAD: Using OpenRouter API for code analysis');
+      vscode.window.showInformationMessage(`DAD: Using OpenRouter API (${model})`);
     } else {
       claudeClient = new ClaudeClient();
-      statusBarItem.text = `$(terminal) DAAD: Claude CLI`;
-      statusBarItem.tooltip = 'DAAD using Claude Code CLI';
+      statusBarItem.text = `$(terminal) DAD: Claude CLI`;
+      statusBarItem.tooltip = 'DAD using Claude Code CLI';
       statusBarItem.show();
-      console.log('DAAD: Using Claude Code CLI for code analysis');
-      vscode.window.showInformationMessage('DAAD: Using Claude Code CLI');
+      console.log('DAD: Using Claude Code CLI for code analysis');
+      vscode.window.showInformationMessage('DAD: Using Claude Code CLI');
     }
 
     // Watch for configuration changes
@@ -57,7 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
         ) {
           vscode.window
             .showWarningMessage(
-              'DAAD: API provider settings changed. Please reload the window to apply changes.',
+              'DAD: API provider settings changed. Please reload the window to apply changes.',
               'Reload Window'
             )
             .then(selection => {
@@ -85,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext) {
       } catch (error) {
         console.error('Failed to initialize storage/cache:', error);
         vscode.window.showWarningMessage(
-          'DAAD: Failed to initialize cache. Extension will work without caching.'
+          'DAD: Failed to initialize cache. Extension will work without caching.'
         );
       }
 
@@ -811,6 +811,87 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // --- C4 Architecture Commands ---
+
+  const generateC4Command = vscode.commands.registerCommand(
+    'daad.generateC4',
+    async () => {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder open. Open a project folder first.');
+        return;
+      }
+
+      const panel = FlowVisualizerProvider.createOrShow(context.extensionUri);
+      panel.showLoading();
+
+      try {
+        const { C4Generator } = await import('./extension/c4/C4Generator');
+        const generator = new C4Generator();
+
+        const dadFile = await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: 'DAD: Generating Architecture Diagram',
+            cancellable: false,
+          },
+          async (progress) => {
+            return generator.generate(workspaceFolder.uri.fsPath, progress);
+          }
+        );
+
+        panel.updateC4View(dadFile);
+        vscode.window.showInformationMessage(
+          `DAD: Architecture diagram generated (${dadFile.nodes.length} nodes, ${dadFile.edges.length} edges)`
+        );
+
+        generator.dispose();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        panel.showError(`Architecture generation failed: ${msg}`);
+        vscode.window.showErrorMessage(`DAD generation error: ${msg}`);
+      }
+    }
+  );
+
+  const openC4Command = vscode.commands.registerCommand(
+    'daad.openC4',
+    async () => {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder open.');
+        return;
+      }
+
+      const { DadStorage } = await import('./extension/storage/DadStorage');
+      const dadStorage = new DadStorage(workspaceFolder.uri.fsPath);
+
+      if (!dadStorage.exists()) {
+        const generate = await vscode.window.showInformationMessage(
+          'No .dad file found. Generate architecture diagram first?',
+          'Generate',
+          'Cancel'
+        );
+        if (generate === 'Generate') {
+          vscode.commands.executeCommand('daad.generateC4');
+        }
+        return;
+      }
+
+      const dadFile = dadStorage.load();
+      if (!dadFile) {
+        vscode.window.showErrorMessage('Failed to load .dad file. It may be corrupted.');
+        return;
+      }
+
+      const panel = FlowVisualizerProvider.createOrShow(context.extensionUri);
+      panel.updateC4View(dadFile);
+      vscode.window.showInformationMessage(
+        `DAD: Loaded architecture diagram (${dadFile.nodes.length} nodes)`
+      );
+    }
+  );
+
   context.subscriptions.push(visualizeCommand);
   context.subscriptions.push(visualizeFileCommand);
   context.subscriptions.push(visualizeAllFunctionsCommand);
@@ -820,6 +901,8 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(loadChartCommand);
   context.subscriptions.push(openFolderCommand);
   context.subscriptions.push(visualizeChangesCommand);
+  context.subscriptions.push(generateC4Command);
+  context.subscriptions.push(openC4Command);
   context.subscriptions.push({
     dispose: () => {
       claudeClient.dispose();
@@ -829,8 +912,8 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   });
 } catch (error) {
-  console.error('DAAD activation error:', error);
-  vscode.window.showErrorMessage(`DAAD failed to activate: ${error}`);
+  console.error('DAD activation error:', error);
+  vscode.window.showErrorMessage(`DAD failed to activate: ${error}`);
   throw error;
 }
 }

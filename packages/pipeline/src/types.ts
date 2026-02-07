@@ -10,14 +10,14 @@ export type DadNodeType =
   | 'landscape'
   | 'group'
   | 'softwareSystem'
-  | 'actor'
+  | 'person'
   | 'externalSystem'
   | 'container'
   | 'dataStore'
   | 'component'
   | 'codeUnit';
 
-export type ActorScope = 'internal' | 'external';
+export type PersonScope = 'internal' | 'external';
 export type ContainerSubtype = 'server-side-application' | 'single-page-application' | 'mobile-application' | 'directory' | 'blob-store' | 'relational-database' | 'message-queue' | (string & {});
 export type CodeUnitKind = 'interface' | 'class' | 'abstract-class' | 'type' | 'enum' | 'function' | 'method';
 export type EdgeDirection = 'forward' | 'backward' | 'bidirectional' | 'none';
@@ -35,8 +35,7 @@ export interface DadNode {
   name: string;
   type: DadNodeType;
   designSpec: string;
-  description: string;
-  documentationLink?: SourceMapping;
+  documentation: string;
   sourceMapping?: SourceMapping;
   parentId?: string | null;
   childIds: string[];
@@ -44,7 +43,7 @@ export interface DadNode {
   collapsed?: boolean;
   technology?: string;
   tags?: string[];
-  scope?: ActorScope;
+  scope?: PersonScope;
   containerSubtype?: ContainerSubtype;
   codeUnitKind?: CodeUnitKind;
 }

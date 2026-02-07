@@ -13,16 +13,16 @@ export type DadNodeType =
   | 'landscape'        // Level 0: Org/workspace ecosystem
   | 'group'            // Any level: Visual grouping boundary
   | 'softwareSystem'   // Level 1: A complete software system
-  | 'actor'            // Level 1: A user/actor/persona
+  | 'person'           // Level 1: A user/actor/persona
   | 'externalSystem'   // Level 1: External dependency (Stripe, SendGrid, etc.)
   | 'container'        // Level 2: Deployable service/app
   | 'dataStore'        // Level 2: Database, cache, message queue
   | 'component'        // Level 3: Module, controller, service class
   | 'codeUnit';        // Level 4: Function, method, class
 
-// --- Actor Scope ---
+// --- Person Scope ---
 
-export type ActorScope = 'internal' | 'external';
+export type PersonScope = 'internal' | 'external';
 
 // --- Container Subtypes ---
 
@@ -70,8 +70,7 @@ export interface DadNode {
 
   // Embedded per-node content (hybrid format)
   designSpec: string;            // YAML string: C4-inspired design language
-  description: string;           // Short human-readable description
-  documentationLink?: SourceMapping; // Link to external markdown documentation file
+  documentation: string;         // Markdown string: human-readable description
 
   // Source code mapping (enables code-first round-tripping)
   sourceMapping?: SourceMapping;
@@ -88,8 +87,8 @@ export interface DadNode {
   technology?: string;           // e.g., "TypeScript/Express", "Python/FastAPI"
   tags?: string[];               // For styling: ["critical", "external", "database"]
 
-  // Actor-specific fields (when type === 'actor')
-  scope?: ActorScope;            // 'internal' (bank staff) or 'external' (customer)
+  // Person-specific fields (when type === 'person')
+  scope?: PersonScope;           // 'internal' (bank staff) or 'external' (customer)
 
   // Container-specific fields (when type === 'container' | 'dataStore')
   containerSubtype?: ContainerSubtype;
@@ -124,6 +123,63 @@ export interface DadFileMetadata {
   totalEdges: number;
 }
 
+// --- Views ---
+
+export interface DadView {
+  key: string;                // Unique view key
+  title: string;
+  description?: string;
+  scopeId: string;            // Node ID this view is scoped to
+  include: string[];          // Node IDs or "*" for all children
+  exclude?: string[];         // Node IDs to hide
+  autoLayout: {
+    direction: 'tb' | 'lr' | 'bt' | 'rl';
+    rankSeparation?: number;
+    nodeSeparation?: number;
+  };
+}
+
+export interface DadViews {
+  systemLandscape: DadView;
+  systemContext: DadView[];   // One per softwareSystem
+  container: DadView[];       // One per softwareSystem
+  component: DadView[];       // One per container
+}
+
+// --- Styles ---
+
+export type DadElementShape =
+  | 'Box' | 'RoundedBox' | 'Person' | 'Cylinder'
+  | 'Pipe' | 'WebBrowser' | 'Hexagon' | 'Component' | 'Folder';
+
+export interface DadElementStyle {
+  tag: string;                // Matches node type or tag
+  shape?: DadElementShape;
+  background?: string;        // Hex color
+  color?: string;             // Text color
+  stroke?: string;            // Border color
+  strokeWidth?: number;
+  border?: 'solid' | 'dashed' | 'dotted';
+  fontSize?: number;
+  opacity?: number;           // 0-100
+  icon?: string;              // Technology icon filename
+  width?: number;
+  height?: number;
+}
+
+export interface DadRelationshipStyle {
+  tag: string;                // "sync", "async", "data", "external"
+  color?: string;
+  dashed?: boolean;
+  strokeWidth?: number;
+  opacity?: number;
+}
+
+export interface DadStyles {
+  elements: DadElementStyle[];
+  relationships: DadRelationshipStyle[];
+}
+
 // --- Top-Level File ---
 
 export interface DadFile {
@@ -131,6 +187,8 @@ export interface DadFile {
   metadata: DadFileMetadata;
   nodes: DadNode[];
   edges: DadEdge[];
+  views?: DadViews;
+  styles?: DadStyles;
 }
 
 // --- Helper Types ---
@@ -138,7 +196,7 @@ export interface DadFile {
 /** Maps C4 level to the node types valid at that level */
 export const C4_LEVEL_NODE_TYPES: Record<C4Level, DadNodeType[]> = {
   landscape: ['landscape', 'group'],
-  context: ['softwareSystem', 'actor', 'externalSystem', 'group'],
+  context: ['softwareSystem', 'person', 'externalSystem', 'group'],
   container: ['container', 'dataStore', 'group'],
   component: ['component', 'group'],
   code: ['codeUnit', 'group'],
@@ -149,7 +207,7 @@ export const NODE_TYPE_TO_LEVEL: Record<DadNodeType, C4Level> = {
   landscape: 'landscape',
   group: 'landscape',
   softwareSystem: 'context',
-  actor: 'context',
+  person: 'context',
   externalSystem: 'context',
   container: 'container',
   dataStore: 'container',
@@ -191,7 +249,7 @@ export interface SkeletonNode {
 export interface C4AnalysisResult {
   nodeId: string;
   designSpec: string;            // YAML
-  description: string;           // Short description
+  documentation: string;         // Markdown
   relationships: Array<{
     targetId: string;
     label: string;

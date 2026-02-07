@@ -1,0 +1,20 @@
+{
+  "name": "@dad/generation",
+  "version": "0.0.1",
+  "description": "DAD/C4 generation logic - standalone package with no vscode dependencies",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@daad/shared-types": "workspace:*",
+    "@daad/diagram-schema": "workspace:*"
+  }
+}

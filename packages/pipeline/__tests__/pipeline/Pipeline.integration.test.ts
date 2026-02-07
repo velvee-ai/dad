@@ -112,7 +112,7 @@ describe('Pipeline (integration)', () => {
     const result = await pipeline.run();
 
     for (const node of result.combined.nodes) {
-      expect(node.id).toMatch(/^(landscape|system|container|datastore|component|code|actor|external):/);
+      expect(node.id).toMatch(/^(landscape|system|container|datastore|component|code|person|external):/);
     }
   });
 
@@ -206,7 +206,7 @@ describe('Pipeline (integration)', () => {
           expect(node.c4Level).toBe('landscape');
           break;
         case 'softwareSystem':
-        case 'actor':
+        case 'person':
         case 'externalSystem':
           expect(node.c4Level).toBe('context');
           break;

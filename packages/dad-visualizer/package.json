@@ -1,0 +1,32 @@
+{
+  "name": "@dad/visualizer",
+  "version": "0.0.1",
+  "description": "DAD Architecture Visualizer - standalone React component",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && cp src/*.css dist/ 2>/dev/null || true",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@daad/shared-types": "workspace:*",
+    "dagre": "^0.8.5"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "reactflow": ">=11"
+  },
+  "devDependencies": {
+    "@types/dagre": "^0.7.53",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "reactflow": "^11.11.4",
+    "typescript": "^5.0.0"
+  },
+  "files": ["dist"]
+}

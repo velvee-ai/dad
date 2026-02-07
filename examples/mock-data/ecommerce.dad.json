@@ -1,0 +1,268 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "ecommerce-platform",
+    "generatedAt": "2025-01-01T00:00:00.000Z",
+    "generatedBy": "dad-mock-data",
+    "totalNodes": 14,
+    "totalEdges": 10
+  },
+  "nodes": [
+    {
+      "id": "landscape:ecommerce-platform",
+      "c4Level": "landscape",
+      "name": "E-Commerce Platform",
+      "type": "landscape",
+      "designSpec": "element:\n  type: landscape\n  name: E-Commerce Platform\n  description: Full-stack e-commerce system",
+      "documentation": "# E-Commerce Platform\nA complete e-commerce system with multiple microservices, databases, and external integrations.",
+      "parentId": null,
+      "childIds": ["context:ecommerce-platform", "context:customer"],
+      "tags": []
+    },
+    {
+      "id": "context:customer",
+      "c4Level": "context",
+      "name": "Customer",
+      "type": "person",
+      "designSpec": "element:\n  type: person\n  name: Customer\n  description: End user who shops on the platform",
+      "documentation": "# Customer\nA person who browses products, manages their cart, and places orders.",
+      "parentId": "landscape:ecommerce-platform",
+      "childIds": [],
+      "tags": []
+    },
+    {
+      "id": "context:ecommerce-platform",
+      "c4Level": "context",
+      "name": "E-Commerce System",
+      "type": "softwareSystem",
+      "designSpec": "element:\n  type: softwareSystem\n  name: E-Commerce System\n  description: Core e-commerce platform",
+      "documentation": "# E-Commerce System\nThe core software system containing all e-commerce microservices.",
+      "parentId": "landscape:ecommerce-platform",
+      "childIds": ["container:api-gateway", "container:product-service", "container:order-service", "container:notification-service", "container:postgres-db", "container:redis-cache"],
+      "technology": "TypeScript/Node.js",
+      "tags": []
+    },
+    {
+      "id": "container:api-gateway",
+      "c4Level": "container",
+      "name": "API Gateway",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: API Gateway\n  description: Routes incoming requests to appropriate services\n  responsibilities:\n    - Request routing\n    - Authentication\n    - Rate limiting",
+      "documentation": "# API Gateway\nThe entry point for all client requests. Handles routing, authentication, and rate limiting before forwarding to backend services.",
+      "parentId": "context:ecommerce-platform",
+      "childIds": ["component:auth-middleware", "component:route-handler"],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:product-service",
+      "c4Level": "container",
+      "name": "Product Service",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: Product Service\n  description: Manages product catalog and inventory",
+      "documentation": "# Product Service\nManages the product catalog, search, and inventory levels.",
+      "parentId": "context:ecommerce-platform",
+      "childIds": ["component:product-controller", "component:product-repository"],
+      "technology": "TypeScript/NestJS",
+      "tags": []
+    },
+    {
+      "id": "container:order-service",
+      "c4Level": "container",
+      "name": "Order Service",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: Order Service\n  description: Processes and tracks orders",
+      "documentation": "# Order Service\nHandles order creation, payment processing, and order lifecycle management.",
+      "parentId": "context:ecommerce-platform",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:notification-service",
+      "c4Level": "container",
+      "name": "Notification Service",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: Notification Service\n  description: Sends emails and push notifications",
+      "documentation": "# Notification Service\nConsumes events from other services and sends email/push notifications to customers.",
+      "parentId": "context:ecommerce-platform",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": ["async"]
+    },
+    {
+      "id": "container:postgres-db",
+      "c4Level": "container",
+      "name": "PostgreSQL Database",
+      "type": "dataStore",
+      "designSpec": "element:\n  type: dataStore\n  name: PostgreSQL\n  description: Primary relational database",
+      "documentation": "# PostgreSQL Database\nThe primary relational database storing products, orders, and user data.",
+      "parentId": "context:ecommerce-platform",
+      "childIds": [],
+      "technology": "PostgreSQL",
+      "tags": ["database"]
+    },
+    {
+      "id": "container:redis-cache",
+      "c4Level": "container",
+      "name": "Redis Cache",
+      "type": "dataStore",
+      "designSpec": "element:\n  type: dataStore\n  name: Redis\n  description: Caching and session storage",
+      "documentation": "# Redis Cache\nUsed for session storage, product catalog caching, and rate limiting counters.",
+      "parentId": "context:ecommerce-platform",
+      "childIds": [],
+      "technology": "Redis",
+      "tags": ["cache"]
+    },
+    {
+      "id": "component:auth-middleware",
+      "c4Level": "component",
+      "name": "Auth Middleware",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: Auth Middleware\n  description: JWT token validation and user context injection",
+      "documentation": "# Auth Middleware\nValidates JWT tokens and injects user context into downstream requests.",
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": []
+    },
+    {
+      "id": "component:route-handler",
+      "c4Level": "component",
+      "name": "Route Handler",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: Route Handler\n  description: Maps incoming routes to backend services",
+      "documentation": "# Route Handler\nDetermines which backend service should handle each incoming request.",
+      "parentId": "container:api-gateway",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": []
+    },
+    {
+      "id": "component:product-controller",
+      "c4Level": "component",
+      "name": "Product Controller",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: Product Controller\n  description: REST endpoint handlers for product operations",
+      "documentation": "# Product Controller\nExposes REST endpoints for CRUD operations on products.",
+      "parentId": "container:product-service",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": []
+    },
+    {
+      "id": "component:product-repository",
+      "c4Level": "component",
+      "name": "Product Repository",
+      "type": "component",
+      "designSpec": "element:\n  type: component\n  name: Product Repository\n  description: Data access layer for products",
+      "documentation": "# Product Repository\nData access layer that queries PostgreSQL for product data.",
+      "parentId": "container:product-service",
+      "childIds": [],
+      "technology": "TypeScript",
+      "tags": []
+    },
+    {
+      "id": "context:stripe",
+      "c4Level": "context",
+      "name": "Stripe",
+      "type": "externalSystem",
+      "designSpec": "element:\n  type: externalSystem\n  name: Stripe\n  description: Payment processing provider",
+      "documentation": "# Stripe\nExternal payment processing service for handling credit card transactions.",
+      "parentId": "landscape:ecommerce-platform",
+      "childIds": [],
+      "technology": "REST/HTTPS",
+      "tags": ["external"]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": "context:customer",
+      "target": "context:ecommerce-platform",
+      "label": "Browses and purchases from",
+      "technology": "HTTPS",
+      "c4Level": "context",
+      "tags": []
+    },
+    {
+      "id": "edge-2",
+      "source": "context:ecommerce-platform",
+      "target": "context:stripe",
+      "label": "Processes payments via",
+      "technology": "REST/HTTPS",
+      "c4Level": "context",
+      "tags": ["external"]
+    },
+    {
+      "id": "edge-3",
+      "source": "container:api-gateway",
+      "target": "container:product-service",
+      "label": "Routes product requests to",
+      "technology": "REST/HTTPS",
+      "c4Level": "container",
+      "tags": []
+    },
+    {
+      "id": "edge-4",
+      "source": "container:api-gateway",
+      "target": "container:order-service",
+      "label": "Routes order requests to",
+      "technology": "REST/HTTPS",
+      "c4Level": "container",
+      "tags": []
+    },
+    {
+      "id": "edge-5",
+      "source": "container:order-service",
+      "target": "container:notification-service",
+      "label": "Publishes order events to",
+      "technology": "Kafka",
+      "c4Level": "container",
+      "tags": ["async"]
+    },
+    {
+      "id": "edge-6",
+      "source": "container:product-service",
+      "target": "container:postgres-db",
+      "label": "Reads/writes product data",
+      "technology": "PostgreSQL",
+      "c4Level": "container",
+      "tags": []
+    },
+    {
+      "id": "edge-7",
+      "source": "container:order-service",
+      "target": "container:postgres-db",
+      "label": "Reads/writes order data",
+      "technology": "PostgreSQL",
+      "c4Level": "container",
+      "tags": []
+    },
+    {
+      "id": "edge-8",
+      "source": "container:api-gateway",
+      "target": "container:redis-cache",
+      "label": "Caches sessions and rate limits",
+      "technology": "Redis",
+      "c4Level": "container",
+      "tags": []
+    },
+    {
+      "id": "edge-9",
+      "source": "component:product-controller",
+      "target": "component:product-repository",
+      "label": "Delegates data access to",
+      "c4Level": "component",
+      "tags": []
+    },
+    {
+      "id": "edge-10",
+      "source": "component:auth-middleware",
+      "target": "component:route-handler",
+      "label": "Passes validated request to",
+      "c4Level": "component",
+      "tags": []
+    }
+  ]
+}

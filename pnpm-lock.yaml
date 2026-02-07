@@ -28,6 +28,18 @@ importers:
 
   apps/vscode-extension:
     dependencies:
+      '@daad/diagram-schema':
+        specifier: workspace:*
+        version: link:../../packages/diagram-schema
+      '@daad/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      '@dad/generation':
+        specifier: workspace:*
+        version: link:../../packages/dad-generation
+      '@dad/visualizer':
+        specifier: workspace:*
+        version: link:../../packages/dad-visualizer
       '@integratorivan/react-flow-smart-edge':
         specifier: ^1.0.1
         version: 1.2.0(@xyflow/react@12.9.3(@types/react@19.2.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
@@ -141,6 +153,46 @@ importers:
 
   packages/config: {}
 
+  packages/dad-generation:
+    dependencies:
+      '@daad/diagram-schema':
+        specifier: workspace:*
+        version: link:../diagram-schema
+      '@daad/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+
+  packages/dad-visualizer:
+    dependencies:
+      '@daad/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      dagre:
+        specifier: ^0.8.5
+        version: 0.8.5
+    devDependencies:
+      '@types/dagre':
+        specifier: ^0.7.53
+        version: 0.7.53
+      '@types/react':
+        specifier: ^19.2.2
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: ^19.2.2
+        version: 19.2.3(@types/react@19.2.7)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      reactflow:
+        specifier: ^11.11.4
+        version: 11.11.4(@types/react@19.2.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/diagram-schema:
     dependencies:
       '@daad/shared-types':
@@ -156,9 +208,6 @@ importers:
 
   packages/pipeline:
     dependencies:
-      '@daad/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3
