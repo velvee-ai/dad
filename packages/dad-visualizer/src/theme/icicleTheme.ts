@@ -271,6 +271,26 @@ export const ICICLE_THEME: C4Theme = {
     flowLoopDuration: '2s',
   },
 
+  // --- Status Overlays (Author Mode) ---
+  statusOverlays: {
+    'user-proposed': {
+      surfaceOverride: 'linear-gradient(135deg, rgba(180,180,180,0.12), rgba(120,120,120,0.08))',
+      borderColorOverride: 'rgba(180,180,180,0.30)',
+      glowColor: 'rgba(180,180,180,0.15)',
+      badgeBackground: 'rgba(180,180,180,0.12)',
+      badgeTextColor: 'rgba(255,255,255,0.60)',
+      opacity: 0.85,
+    },
+    'agent-planned': {
+      surfaceOverride: 'linear-gradient(135deg, rgba(66,133,244,0.15), rgba(30,90,210,0.10))',
+      borderColorOverride: 'rgba(66,133,244,0.40)',
+      glowColor: 'rgba(66,133,244,0.20)',
+      badgeBackground: 'rgba(66,133,244,0.15)',
+      badgeTextColor: 'rgba(100,170,255,0.90)',
+      opacity: 1,
+    },
+  },
+
   // --- Boundary Box ---
   boundary: {
     borderColor: 'rgba(255,255,255,0.08)',

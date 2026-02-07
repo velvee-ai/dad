@@ -2,10 +2,10 @@
   "version": "1.0",
   "metadata": {
     "projectName": "ecommerce-platform",
-    "generatedAt": "2026-02-07T07:40:35.780Z",
+    "generatedAt": "2026-02-07T19:56:52.628Z",
     "generatedBy": "dad-pipeline/0.0.1",
-    "totalNodes": 29,
-    "totalEdges": 10
+    "totalNodes": 31,
+    "totalEdges": 32
   },
   "nodes": [
     {
@@ -168,7 +168,10 @@
         "language": "python"
       },
       "parentId": "system:ecommerce-platform",
-      "childIds": [],
+      "childIds": [
+        "component:email-handler",
+        "component:sms-handler"
+      ],
       "technology": "Python/Kafka",
       "tags": []
     },
@@ -503,6 +506,42 @@
       ]
     },
     {
+      "id": "component:email-handler",
+      "c4Level": "component",
+      "name": "Email Handler",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Email Handler component",
+      "sourceMapping": {
+        "filePath": "src/handlers/email_handler.py",
+        "language": "python"
+      },
+      "parentId": "container:notification-service",
+      "childIds": [],
+      "technology": "Python/Kafka",
+      "tags": [
+        "handler"
+      ]
+    },
+    {
+      "id": "component:sms-handler",
+      "c4Level": "component",
+      "name": "Sms Handler",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Sms Handler component",
+      "sourceMapping": {
+        "filePath": "src/handlers/sms_handler.py",
+        "language": "python"
+      },
+      "parentId": "container:notification-service",
+      "childIds": [],
+      "technology": "Python/Kafka",
+      "tags": [
+        "handler"
+      ]
+    },
+    {
       "id": "component:schemas",
       "c4Level": "component",
       "name": "Schemas",
@@ -633,6 +672,386 @@
         "async",
         "event-driven"
       ]
+    },
+    {
+      "id": "edge:auth-to-authmiddleware",
+      "source": "component:auth",
+      "target": "component:authmiddleware",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:auth-to-ratelimiter",
+      "source": "component:auth",
+      "target": "component:ratelimiter",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:orders-to-authmiddleware",
+      "source": "component:orders",
+      "target": "component:authmiddleware",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:orders-to-ratelimiter",
+      "source": "component:orders",
+      "target": "component:ratelimiter",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:products-to-authmiddleware",
+      "source": "component:products",
+      "target": "component:authmiddleware",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:products-to-ratelimiter",
+      "source": "component:products",
+      "target": "component:ratelimiter",
+      "label": "Uses for request processing",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:usercontroller-to-emailservice",
+      "source": "component:usercontroller",
+      "target": "component:emailservice",
+      "label": "Delegates business logic to",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:usercontroller-to-userservice",
+      "source": "component:usercontroller",
+      "target": "component:userservice",
+      "label": "Delegates business logic to",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:emailservice-to-userrepository",
+      "source": "component:emailservice",
+      "target": "component:userrepository",
+      "label": "Reads/writes data via",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:userservice-to-userrepository",
+      "source": "component:userservice",
+      "target": "component:userrepository",
+      "label": "Reads/writes data via",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:emailservice-to-user",
+      "source": "component:emailservice",
+      "target": "component:user",
+      "label": "Uses model types from",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:userservice-to-user",
+      "source": "component:userservice",
+      "target": "component:user",
+      "label": "Uses model types from",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:ordercontroller-to-orderservice",
+      "source": "component:ordercontroller",
+      "target": "component:orderservice",
+      "label": "Delegates business logic to",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:ordercontroller-to-paymentservice",
+      "source": "component:ordercontroller",
+      "target": "component:paymentservice",
+      "label": "Delegates business logic to",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:orderservice-to-order",
+      "source": "component:orderservice",
+      "target": "component:order",
+      "label": "Uses model types from",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:paymentservice-to-order",
+      "source": "component:paymentservice",
+      "target": "component:order",
+      "label": "Uses model types from",
+      "technology": "Internal call",
+      "c4Level": "component",
+      "tags": [
+        "internal"
+      ]
+    },
+    {
+      "id": "edge:orderservice-to-stripe",
+      "source": "component:orderservice",
+      "target": "external:stripe",
+      "label": "Uses Stripe",
+      "technology": "REST/HTTPS (Stripe API)",
+      "c4Level": "component",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:paymentservice-to-stripe",
+      "source": "component:paymentservice",
+      "target": "external:stripe",
+      "label": "Uses Stripe",
+      "technology": "REST/HTTPS (Stripe API)",
+      "c4Level": "component",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:email-handler-to-sendgrid",
+      "source": "component:email-handler",
+      "target": "external:sendgrid",
+      "label": "Uses SendGrid",
+      "technology": "REST/HTTPS (SendGrid API)",
+      "c4Level": "component",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:sms-handler-to-sendgrid",
+      "source": "component:sms-handler",
+      "target": "external:sendgrid",
+      "label": "Uses SendGrid",
+      "technology": "REST/HTTPS (SendGrid API)",
+      "c4Level": "component",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:email-handler-to-twilio",
+      "source": "component:email-handler",
+      "target": "external:twilio",
+      "label": "Uses Twilio",
+      "technology": "REST/HTTPS (Twilio API)",
+      "c4Level": "component",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:sms-handler-to-twilio",
+      "source": "component:sms-handler",
+      "target": "external:twilio",
+      "label": "Uses Twilio",
+      "technology": "REST/HTTPS (Twilio API)",
+      "c4Level": "component",
+      "tags": [
+        "external"
+      ]
     }
-  ]
+  ],
+  "views": {
+    "systemLandscape": {
+      "key": "landscape",
+      "title": "ecommerce-platform — System Landscape",
+      "scopeId": "landscape:ecommerce-platform",
+      "include": [
+        "*"
+      ],
+      "autoLayout": {
+        "direction": "tb",
+        "rankSeparation": 100,
+        "nodeSeparation": 80
+      }
+    },
+    "systemContext": [
+      {
+        "key": "context-ecommerce-platform",
+        "title": "Ecommerce Platform — Context",
+        "scopeId": "system:ecommerce-platform",
+        "include": [
+          "*"
+        ],
+        "autoLayout": {
+          "direction": "tb"
+        }
+      }
+    ],
+    "container": [
+      {
+        "key": "containers-ecommerce-platform",
+        "title": "Ecommerce Platform — Containers",
+        "scopeId": "system:ecommerce-platform",
+        "include": [
+          "*"
+        ],
+        "autoLayout": {
+          "direction": "tb",
+          "rankSeparation": 120,
+          "nodeSeparation": 60
+        }
+      }
+    ]
+  },
+  "styles": {
+    "elements": [
+      {
+        "tag": "Person",
+        "shape": "Person",
+        "background": "#08427B",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "Software System",
+        "shape": "RoundedBox",
+        "background": "#1168BD",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "External System",
+        "shape": "RoundedBox",
+        "background": "#777777",
+        "color": "#FFFFFF",
+        "border": "dashed"
+      },
+      {
+        "tag": "Container",
+        "shape": "RoundedBox",
+        "background": "#438DD5",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "Data Store",
+        "shape": "Cylinder",
+        "background": "#438DD5",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "Component",
+        "shape": "Component",
+        "background": "#85BBF0",
+        "color": "#1A1A1A"
+      },
+      {
+        "tag": "Code Unit",
+        "shape": "Box",
+        "background": "#B8D9F8",
+        "color": "#1A1A1A",
+        "fontSize": 11
+      },
+      {
+        "tag": "external",
+        "border": "dashed",
+        "opacity": 80
+      },
+      {
+        "tag": "critical",
+        "stroke": "#FF0000",
+        "strokeWidth": 3
+      },
+      {
+        "tag": "deprecated",
+        "opacity": 50,
+        "border": "dotted"
+      }
+    ],
+    "relationships": [
+      {
+        "tag": "sync",
+        "color": "#555555",
+        "dashed": false
+      },
+      {
+        "tag": "async",
+        "color": "#E67E22",
+        "dashed": true
+      },
+      {
+        "tag": "event-driven",
+        "color": "#E67E22",
+        "dashed": true
+      },
+      {
+        "tag": "data",
+        "color": "#3498DB",
+        "dashed": false
+      },
+      {
+        "tag": "cache",
+        "color": "#3498DB",
+        "dashed": false
+      },
+      {
+        "tag": "external",
+        "color": "#7F8C8D",
+        "dashed": true
+      }
+    ]
+  }
 }

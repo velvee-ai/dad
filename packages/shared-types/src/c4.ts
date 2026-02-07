@@ -47,6 +47,19 @@ export type CodeUnitKind =
   | 'function'
   | 'method';
 
+// --- Element Status (Author Mode) ---
+
+export type DadElementStatus = 'existing' | 'user-proposed' | 'agent-planned' | 'finalized';
+
+// --- Author Session ---
+
+export interface AuthorSession {
+  mode: 'view' | 'edit' | 'coalescing' | 'reviewing' | 'implementing' | 'finalized';
+  baselineSnapshot?: string;   // JSON of original DadFile before edits
+  agentPlan?: string;          // Markdown plan from the design agent
+  startedAt?: string;          // ISO 8601
+}
+
 // --- Edge Direction ---
 
 export type EdgeDirection = 'forward' | 'backward' | 'bidirectional' | 'none';
@@ -87,6 +100,9 @@ export interface DadNode {
   technology?: string;           // e.g., "TypeScript/Express", "Python/FastAPI"
   tags?: string[];               // For styling: ["critical", "external", "database"]
 
+  // Author mode status
+  status?: DadElementStatus;     // 'existing' | 'user-proposed' | 'agent-planned' | 'finalized'
+
   // Person-specific fields (when type === 'person')
   scope?: PersonScope;           // 'internal' (bank staff) or 'external' (customer)
 
@@ -110,6 +126,7 @@ export interface DadEdge {
   direction?: EdgeDirection;     // Arrow direction: 'forward', 'backward', 'bidirectional', 'none'
   strength?: string;             // Relationship strength: "full", "partial", "strong", "medium", etc.
   multiplicity?: string;         // Cardinality: "1", "1..*", "0..1", "1..20", etc.
+  status?: DadElementStatus;     // Author mode: 'existing' | 'user-proposed' | 'agent-planned' | 'finalized'
 }
 
 // --- File Metadata ---
@@ -189,6 +206,7 @@ export interface DadFile {
   edges: DadEdge[];
   views?: DadViews;
   styles?: DadStyles;
+  authorSession?: AuthorSession;
 }
 
 // --- Helper Types ---

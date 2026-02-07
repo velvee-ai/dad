@@ -106,6 +106,9 @@ export interface VisualNodeData {
   documentation: string;
   sourceFilePath?: string;
 
+  // Author mode status
+  status?: string;
+
   // Fully resolved visuals
   style: VisualNodeStyle;
 }
@@ -132,5 +135,6 @@ export interface VisualEdgeData {
   label: string;
   technology?: string;
   tags?: string[];
+  status?: string;
   style: VisualEdgeStyle;
 }

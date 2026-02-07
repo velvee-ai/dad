@@ -81,6 +81,17 @@ export interface ThemeFontSizes {
   chip: number;
 }
 
+// --- Status Overlay (Author Mode) ---
+
+export interface StatusOverlayConfig {
+  surfaceOverride?: string;
+  borderColorOverride?: string;
+  glowColor?: string;
+  badgeBackground?: string;
+  badgeTextColor?: string;
+  opacity?: number;
+}
+
 // --- C4 Theme ---
 
 export interface C4Theme {
@@ -133,6 +144,9 @@ export interface C4Theme {
     flowDashPattern: string;
     flowLoopDuration: string;
   };
+
+  // Status overlays (Author Mode — applied on top of base node variant)
+  statusOverlays?: Record<string, StatusOverlayConfig>;
 
   // Boundary box
   boundary: {

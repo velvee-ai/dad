@@ -82,7 +82,19 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  context.subscriptions.push(visualizeCommand, analyzeCommand);
+  const enableAuthorModeCommand = vscode.commands.registerCommand(
+    'dad.enableAuthorMode',
+    () => {
+      const panel = FlowVisualizerProvider.currentPanel;
+      if (!panel) {
+        vscode.window.showWarningMessage('DAD: No visualizer panel open. Open a .dad.json file first.');
+        return;
+      }
+      panel.enableAuthorMode();
+    }
+  );
+
+  context.subscriptions.push(visualizeCommand, analyzeCommand, enableAuthorModeCommand);
 }
 
 export function deactivate() {}

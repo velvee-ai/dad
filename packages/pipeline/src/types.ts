@@ -22,6 +22,15 @@ export type ContainerSubtype = 'server-side-application' | 'single-page-applicat
 export type CodeUnitKind = 'interface' | 'class' | 'abstract-class' | 'type' | 'enum' | 'function' | 'method';
 export type EdgeDirection = 'forward' | 'backward' | 'bidirectional' | 'none';
 
+export type DadElementStatus = 'existing' | 'user-proposed' | 'agent-planned' | 'finalized';
+
+export interface AuthorSession {
+  mode: 'view' | 'edit' | 'coalescing' | 'reviewing' | 'implementing' | 'finalized';
+  baselineSnapshot?: string;
+  agentPlan?: string;
+  startedAt?: string;
+}
+
 export interface SourceMapping {
   filePath: string;
   startLine?: number;
@@ -46,6 +55,7 @@ export interface DadNode {
   scope?: PersonScope;
   containerSubtype?: ContainerSubtype;
   codeUnitKind?: CodeUnitKind;
+  status?: DadElementStatus;
 }
 
 export interface DadEdge {
@@ -59,6 +69,7 @@ export interface DadEdge {
   direction?: EdgeDirection;
   strength?: string;
   multiplicity?: string;
+  status?: DadElementStatus;
 }
 
 export interface DadFileMetadata {
@@ -103,6 +114,7 @@ export interface DadFile {
   edges: DadEdge[];
   views?: DadViews;
   styles?: DadStyles;
+  authorSession?: AuthorSession;
 }
 
 export type DetectedBy = 'filesystem' | 'package-json' | 'dockerfile' | 'docker-compose' | 'directory-pattern' | 'source-file';

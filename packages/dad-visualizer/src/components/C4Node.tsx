@@ -127,6 +127,34 @@ const C4Node: React.FC<NodeProps<VisualNodeData>> = ({ data, selected }) => {
               {getTechBadgeIcon(data.technology, s.iconConfig.techIcon.size)}
             </span>
           )}
+
+          {/* Status pill (Author Mode) */}
+          {data.status === 'user-proposed' && (
+            <span style={{
+              fontSize: `${s.fontSizes.chip}px`,
+              fontWeight: 500,
+              padding: '1px 6px',
+              borderRadius: '4px',
+              background: 'rgba(180,180,180,0.12)',
+              color: 'rgba(255,255,255,0.60)',
+              lineHeight: 1.3,
+            }}>
+              Proposed
+            </span>
+          )}
+          {data.status === 'agent-planned' && (
+            <span style={{
+              fontSize: `${s.fontSizes.chip}px`,
+              fontWeight: 500,
+              padding: '1px 6px',
+              borderRadius: '4px',
+              background: 'rgba(66,133,244,0.15)',
+              color: 'rgba(100,170,255,0.90)',
+              lineHeight: 1.3,
+            }}>
+              AI Planned
+            </span>
+          )}
         </div>
 
         {/* Row 2: Title */}

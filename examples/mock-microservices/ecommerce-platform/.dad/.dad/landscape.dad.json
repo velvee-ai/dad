@@ -1,0 +1,179 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": ".dad",
+    "generatedAt": "2026-02-07T19:07:18.091Z",
+    "generatedBy": "dad-pipeline/0.0.1",
+    "totalNodes": 2,
+    "totalEdges": 0
+  },
+  "nodes": [
+    {
+      "id": "landscape:dad",
+      "c4Level": "landscape",
+      "name": ".dad",
+      "type": "landscape",
+      "designSpec": "",
+      "documentation": "All software systems in .dad",
+      "parentId": null,
+      "childIds": [
+        "system:dad"
+      ],
+      "technology": "Multi-system",
+      "tags": [
+        "root"
+      ]
+    },
+    {
+      "id": "system:dad",
+      "c4Level": "context",
+      "name": ".dad",
+      "type": "softwareSystem",
+      "designSpec": "",
+      "documentation": ".dad software system",
+      "parentId": "landscape:dad",
+      "childIds": [],
+      "technology": "Unknown",
+      "tags": []
+    }
+  ],
+  "edges": [],
+  "views": {
+    "systemLandscape": {
+      "key": "landscape",
+      "title": ".dad — System Landscape",
+      "scopeId": "landscape:dad",
+      "include": [
+        "*"
+      ],
+      "autoLayout": {
+        "direction": "tb",
+        "rankSeparation": 100,
+        "nodeSeparation": 80
+      }
+    },
+    "systemContext": [
+      {
+        "key": "context-dad",
+        "title": ".dad — Context",
+        "scopeId": "system:dad",
+        "include": [
+          "*"
+        ],
+        "autoLayout": {
+          "direction": "tb"
+        }
+      }
+    ],
+    "container": [
+      {
+        "key": "containers-dad",
+        "title": ".dad — Containers",
+        "scopeId": "system:dad",
+        "include": [
+          "*"
+        ],
+        "autoLayout": {
+          "direction": "tb",
+          "rankSeparation": 120,
+          "nodeSeparation": 60
+        }
+      }
+    ]
+  },
+  "styles": {
+    "elements": [
+      {
+        "tag": "Person",
+        "shape": "Person",
+        "background": "#08427B",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "Software System",
+        "shape": "RoundedBox",
+        "background": "#1168BD",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "External System",
+        "shape": "RoundedBox",
+        "background": "#777777",
+        "color": "#FFFFFF",
+        "border": "dashed"
+      },
+      {
+        "tag": "Container",
+        "shape": "RoundedBox",
+        "background": "#438DD5",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "Data Store",
+        "shape": "Cylinder",
+        "background": "#438DD5",
+        "color": "#FFFFFF"
+      },
+      {
+        "tag": "Component",
+        "shape": "Component",
+        "background": "#85BBF0",
+        "color": "#1A1A1A"
+      },
+      {
+        "tag": "Code Unit",
+        "shape": "Box",
+        "background": "#B8D9F8",
+        "color": "#1A1A1A",
+        "fontSize": 11
+      },
+      {
+        "tag": "external",
+        "border": "dashed",
+        "opacity": 80
+      },
+      {
+        "tag": "critical",
+        "stroke": "#FF0000",
+        "strokeWidth": 3
+      },
+      {
+        "tag": "deprecated",
+        "opacity": 50,
+        "border": "dotted"
+      }
+    ],
+    "relationships": [
+      {
+        "tag": "sync",
+        "color": "#555555",
+        "dashed": false
+      },
+      {
+        "tag": "async",
+        "color": "#E67E22",
+        "dashed": true
+      },
+      {
+        "tag": "event-driven",
+        "color": "#E67E22",
+        "dashed": true
+      },
+      {
+        "tag": "data",
+        "color": "#3498DB",
+        "dashed": false
+      },
+      {
+        "tag": "cache",
+        "color": "#3498DB",
+        "dashed": false
+      },
+      {
+        "tag": "external",
+        "color": "#7F8C8D",
+        "dashed": true
+      }
+    ]
+  }
+}
