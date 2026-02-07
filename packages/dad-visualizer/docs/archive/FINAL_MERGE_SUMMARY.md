@@ -8,7 +8,7 @@ Successfully merged all latest changes from `origin/main` into `vk/5e0d-add-svg-
 
 ### Merge 1: Previous Main (Commit 73900ad)
 Resolved conflicts in:
-- `apps/cli/cmd/daad/main.go` - Merged generator + renderer imports
+- `apps/cli/cmd/dad/main.go` - Merged generator + renderer imports
 - `apps/workers/src/index.ts` - Merged render + preview routes
 
 ### Merge 2: Latest Main (Commit f24047f)
@@ -58,8 +58,8 @@ Ready to push: ✅
 ```json
 {
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
-    "@daad/diagram-schema": "workspace:*",
+    "@dad/shared-types": "workspace:*",
+    "@dad/diagram-schema": "workspace:*",
     "hono": "^3.12.8",
     "nanoid": "^5.0.0",      // From main (ID generation)
     "svgo": "^3.0.0",        // From SVG branch (optimization)
@@ -99,27 +99,27 @@ Ready to push: ✅
 
 ### Analysis
 ```bash
-daad analyze <file>
+dad analyze <file>
 ```
 
 ### Generation
 ```bash
-daad generate [path]                    # Standard generation
-daad generate --incremental             # Only changed files
-daad generate --incremental --force     # Force regenerate
-daad generate --base-branch develop     # Custom base branch
+dad generate [path]                    # Standard generation
+dad generate --incremental             # Only changed files
+dad generate --incremental --force     # Force regenerate
+dad generate --base-branch develop     # Custom base branch
 ```
 
 ### Export
 ```bash
-daad export <input> --format svg                        # Export to SVG
-daad export <input> --format svg --svg-format d2        # Use D2 renderer
-daad export <input> --format svg --svg-format mermaid   # Use Mermaid renderer
-daad export <input> --format svg --theme dark           # Dark theme
-daad export <input> --format svg --layout elk           # ELK layout
-daad export <input> --format svg --optimize             # Optimize with SVGO
-daad export <input> --format svg -o output.svg          # Save to file
-daad export <input> --format svg -o -                   # Output to stdout
+dad export <input> --format svg                        # Export to SVG
+dad export <input> --format svg --svg-format d2        # Use D2 renderer
+dad export <input> --format svg --svg-format mermaid   # Use Mermaid renderer
+dad export <input> --format svg --theme dark           # Dark theme
+dad export <input> --format svg --layout elk           # ELK layout
+dad export <input> --format svg --optimize             # Optimize with SVGO
+dad export <input> --format svg -o output.svg          # Save to file
+dad export <input> --format svg -o -                   # Output to stdout
 ```
 
 ## File Structure
@@ -194,7 +194,7 @@ pnpm run type-check
 
 # Test Go compilation
 cd apps/cli
-go build -o daad cmd/daad/main.go
+go build -o dad cmd/dad/main.go
 ```
 
 ### 2. Push Changes

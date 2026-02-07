@@ -1,4 +1,4 @@
-import type { Diagram, DiagramNode, DiagramEdge } from '@daad/shared-types';
+import type { Diagram, DiagramNode, DiagramEdge } from '@dad/shared-types';
 
 /**
  * Convert diagram to D2 format

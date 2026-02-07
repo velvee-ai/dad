@@ -1,11 +1,11 @@
-# @daad/diagram-schema
+# @dad/diagram-schema
 
-Diagram schema validation and format conversion utilities for DAAD.
+Diagram schema validation and format conversion utilities for DAD.
 
 ## Installation
 
 ```bash
-pnpm add @daad/diagram-schema@workspace:*
+pnpm add @dad/diagram-schema@workspace:*
 ```
 
 ## Features
@@ -20,7 +20,7 @@ pnpm add @daad/diagram-schema@workspace:*
 ### Validation
 
 ```typescript
-import { validateDiagram, isDiagram } from '@daad/diagram-schema';
+import { validateDiagram, isDiagram } from '@dad/diagram-schema';
 
 const result = validateDiagram(data);
 if (result.success) {
@@ -38,7 +38,7 @@ if (isDiagram(data)) {
 ### Format Conversion
 
 ```typescript
-import { toD2, toMermaid, toJSON, fromJSON } from '@daad/diagram-schema';
+import { toD2, toMermaid, toJSON, fromJSON } from '@dad/diagram-schema';
 
 // Convert to D2 format
 const d2Code = toD2(diagram);

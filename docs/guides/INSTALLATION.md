@@ -1,8 +1,8 @@
-# DAAD Installation Guide
+# DAD Installation Guide
 
 > For complete system setup including CLI, Workers, and infrastructure, see [Complete Setup Guide](docs/setup/SETUP.md)
 
-This guide covers quick installation of the DAAD VSCode extension. For full monorepo setup, infrastructure configuration, and deployment, refer to the comprehensive setup guide.
+This guide covers quick installation of the DAD VSCode extension. For full monorepo setup, infrastructure configuration, and deployment, refer to the comprehensive setup guide.
 
 ## Quick Install: VSCode Extension
 
@@ -26,7 +26,7 @@ Download the latest `.vsix` file and install:
 
 #### Via Command Line:
 ```bash
-code --install-extension daad-0.0.1.vsix
+code --install-extension dad-0.0.1.vsix
 ```
 
 ### Option 2: Development Mode
@@ -60,7 +60,7 @@ cd apps/vscode-extension
 pnpm package
 
 # Install
-code --install-extension daad-0.0.1.vsix
+code --install-extension dad-0.0.1.vsix
 ```
 
 ## Verify Installation
@@ -90,7 +90,7 @@ code --install-extension daad-0.0.1.vsix
 
 ## Storage
 
-The extension automatically creates a `.daad/` folder in your workspace root for saved diagrams.
+The extension automatically creates a `.dad/` folder in your workspace root for saved diagrams.
 
 ## Troubleshooting
 
@@ -111,23 +111,23 @@ The extension automatically creates a `.daad/` folder in your workspace root for
 ### Performance Issues
 
 1. Large files: Use "Visualize All Functions" instead of entire file
-2. Clear saved diagrams: Delete `.daad/` folder
+2. Clear saved diagrams: Delete `.dad/` folder
 3. Check Output panel for specific errors
 
 ## Uninstalling
 
 ### Via VSCode:
-1. Extensions view → Find "DAAD" → Uninstall
+1. Extensions view → Find "DAD" → Uninstall
 
 ### Via Command Line:
 ```bash
-code --uninstall-extension daad
+code --uninstall-extension dad
 ```
 
 ### Clean Up Files:
 ```bash
 # Remove saved diagrams
-rm -rf .daad/
+rm -rf .dad/
 ```
 
 ## Updates

@@ -1,6 +1,6 @@
 import { Context } from 'hono';
 import { z } from 'zod';
-import type { Diagram } from '@daad/shared-types';
+import type { Diagram } from '@dad/shared-types';
 import { renderDiagramToSVG, type SVGRenderOptions } from '../renderers/svg';
 
 // Request validation schema

@@ -1,11 +1,11 @@
-# @daad/config
+# @dad/config
 
-Shared configuration files for DAAD monorepo.
+Shared configuration files for DAD monorepo.
 
 ## Installation
 
 ```bash
-pnpm add -D @daad/config@workspace:*
+pnpm add -D @dad/config@workspace:*
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ Create `tsconfig.json`:
 
 ```json
 {
-  "extends": "@daad/config/typescript/base.json",
+  "extends": "@dad/config/typescript/base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"
@@ -29,7 +29,7 @@ For React projects:
 
 ```json
 {
-  "extends": "@daad/config/typescript/react.json",
+  "extends": "@dad/config/typescript/react.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"
@@ -44,13 +44,13 @@ Create `.eslintrc.js`:
 
 ```javascript
 module.exports = {
-  extends: ['@daad/config/eslint'],
+  extends: ['@dad/config/eslint'],
   // Add project-specific rules
 };
 ```
 
 ## Available Configs
 
-- `@daad/config/typescript/base.json` - Base TypeScript config
-- `@daad/config/typescript/react.json` - React TypeScript config
-- `@daad/config/eslint` - ESLint config
+- `@dad/config/typescript/base.json` - Base TypeScript config
+- `@dad/config/typescript/react.json` - React TypeScript config
+- `@dad/config/eslint` - ESLint config

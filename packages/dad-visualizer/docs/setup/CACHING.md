@@ -43,9 +43,9 @@ The core caching logic with the following features:
 
 ```toml
 [[kv_namespaces]]
-binding = "DAAD_CACHE"
-id = "daad_cache_namespace"
-preview_id = "daad_cache_preview"
+binding = "DAD_CACHE"
+id = "dad_cache_namespace"
+preview_id = "dad_cache_preview"
 ```
 
 #### Environment Variables
@@ -178,10 +178,10 @@ Response:
 
 ```bash
 # Production namespace
-wrangler kv:namespace create "DAAD_CACHE"
+wrangler kv:namespace create "DAD_CACHE"
 
 # Preview namespace
-wrangler kv:namespace create "DAAD_CACHE" --preview
+wrangler kv:namespace create "DAD_CACHE" --preview
 ```
 
 ### 2. Update `wrangler.toml`
@@ -190,7 +190,7 @@ Replace the placeholder IDs with actual namespace IDs from step 1:
 
 ```toml
 [[kv_namespaces]]
-binding = "DAAD_CACHE"
+binding = "DAD_CACHE"
 id = "your-actual-namespace-id"
 preview_id = "your-actual-preview-id"
 ```

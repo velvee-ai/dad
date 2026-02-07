@@ -11,7 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@daad/shared-types": "workspace:*",
+    "@dad/shared-types": "workspace:*",
     "dagre": "^0.8.5"
   },
   "peerDependencies": {

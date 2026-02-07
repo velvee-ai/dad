@@ -1,4 +1,4 @@
-import type { SavedDiagram, Diagram } from '@daad/shared-types';
+import type { SavedDiagram, Diagram } from '@dad/shared-types';
 
 export interface CacheMetrics {
   hits: number;

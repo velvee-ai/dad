@@ -6,7 +6,7 @@ Successfully merged `origin/main` into `vk/5e0d-add-svg-renderin` branch, resolv
 
 ## Conflicts Resolved
 
-### 1. apps/cli/cmd/daad/main.go
+### 1. apps/cli/cmd/dad/main.go
 
 **Conflict:** Both branches added different imports and flags
 
@@ -20,12 +20,12 @@ Successfully merged `origin/main` into `vk/5e0d-add-svg-renderin` branch, resolv
 ```go
 // Added both imports
 import (
-    "github.com/velvee-ai/daad/apps/cli/internal/generator"
-    "github.com/velvee-ai/daad/apps/cli/internal/renderer"
+    "github.com/velvee-ai/dad/apps/cli/internal/generator"
+    "github.com/velvee-ai/dad/apps/cli/internal/renderer"
 )
 
 // Generate command flags (from main)
-generateCmd.Flags().StringP("output", "o", ".daad/diagrams", "Output directory")
+generateCmd.Flags().StringP("output", "o", ".dad/diagrams", "Output directory")
 generateCmd.Flags().Bool("incremental", false, "Enable incremental generation")
 generateCmd.Flags().String("base-branch", "main", "Base branch for changes")
 generateCmd.Flags().BoolP("force", "f", false, "Force regenerate all")
@@ -103,7 +103,7 @@ Date:   Today
     Merge origin/main into vk/5e0d-add-svg-renderin
 
     Resolved conflicts in:
-    - apps/cli/cmd/daad/main.go
+    - apps/cli/cmd/dad/main.go
     - apps/workers/src/index.ts
 
     Combined features from both branches
@@ -127,7 +127,7 @@ Date:   Today
 - And many more documentation files
 
 ### Modified Files (Both Branches)
-- `apps/cli/cmd/daad/main.go` - ✅ Resolved
+- `apps/cli/cmd/dad/main.go` - ✅ Resolved
 - `apps/workers/src/index.ts` - ✅ Resolved
 - `apps/vscode-extension/package.json` - Auto-merged
 - `apps/workers/wrangler.toml` - Auto-merged
@@ -148,8 +148,8 @@ Date:   Today
 ```bash
 # Test CLI
 cd apps/cli
-go build -o daad cmd/daad/main.go
-./daad export --help
+go build -o dad cmd/dad/main.go
+./dad export --help
 
 # Test Workers
 cd apps/workers
@@ -215,18 +215,18 @@ GET    /api/test/r2
 
 ```bash
 # Original commands
-daad version
-daad analyze <file>
+dad version
+dad analyze <file>
 
 # Generate with incremental support (main branch)
-daad generate [path]
-daad generate --incremental
-daad generate --incremental --force
+dad generate [path]
+dad generate --incremental
+dad generate --incremental --force
 
 # Export with SVG support (SVG branch)
-daad export <input> --format svg
-daad export <input> --format svg --svg-format d2 --theme dark
-daad export <input> --format svg --optimize
+dad export <input> --format svg
+dad export <input> --format svg --svg-format d2 --theme dark
+dad export <input> --format svg --optimize
 ```
 
 ## Resolution Strategy

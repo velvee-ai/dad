@@ -1,4 +1,4 @@
-import type { ProjectSkeleton, SkeletonNode } from '@daad/shared-types';
+import type { ProjectSkeleton, SkeletonNode } from '@dad/shared-types';
 
 /**
  * Prompt templates for each C4 level.

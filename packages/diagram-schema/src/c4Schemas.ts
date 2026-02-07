@@ -11,6 +11,7 @@ export const C4LevelSchema = z.enum(['landscape', 'context', 'container', 'compo
 
 export const DadNodeTypeSchema = z.enum([
   'landscape',
+  'group',
   'softwareSystem',
   'person',
   'externalSystem',

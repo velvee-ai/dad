@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import type { C4AnalysisResult } from '@daad/shared-types';
+import type { C4AnalysisResult } from '@dad/shared-types';
 import type { GenerationLogger, LLMProviderConfig } from '../types';
 
 interface ChatMessage {
@@ -78,7 +78,7 @@ export class C4AnalysisClient {
 
   private async callOpenRouter(systemPrompt: string, userPrompt: string): Promise<string> {
     if (!this.openRouterApiKey) {
-      throw new Error('OpenRouter API key not configured. Set daad.openRouterApiKey in settings.');
+      throw new Error('OpenRouter API key not configured. Set dad.openRouterApiKey in settings.');
     }
 
     const messages: ChatMessage[] = [

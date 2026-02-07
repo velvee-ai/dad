@@ -1,8 +1,8 @@
-# DAAD - Diagram as a Delivery
+# DAD - Diagram as a Delivery
 
 > Transform code into understanding. Instantly.
 
-**DAAD** brings AI-powered diagram generation to your IDE. Select any piece of code and watch it transform into an interactive flow chart, powered by Claude AI and visualized with React Flow.
+**DAD** brings AI-powered diagram generation to your IDE. Select any piece of code and watch it transform into an interactive flow chart, powered by Claude AI and visualized with React Flow.
 
 ### 🎯 Philosophy
 - **D**iagram **a**s **a** **D**elivery - Ship understanding, not just code
@@ -31,7 +31,7 @@
 1. Download the latest `.vsix` file from releases
 2. Install via command line:
    ```bash
-   code --install-extension daad-x.x.x.vsix
+   code --install-extension dad-x.x.x.vsix
    ```
    Or install through VSCode:
    - Open Command Palette (Cmd/Ctrl+Shift+P)
@@ -42,8 +42,8 @@
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/velvee-ai/daad.git
-   cd daad
+   git clone https://github.com/velvee-ai/dad.git
+   cd dad
    ```
 
 2. Install dependencies:
@@ -88,7 +88,7 @@
 - **Explorer Sidebar**: Look for "Saved Flow Charts" section in the Explorer panel
 - **Command Palette**: Use "Claude Flow: Open Saved Flow Charts" command
 - **Click to Load**: Click any saved chart in the sidebar to instantly load it
-- **Auto-save**: All charts are automatically saved to `.daad` folder
+- **Auto-save**: All charts are automatically saved to `.dad` folder
 
 ### Smart Features
 - **Auto-detection**: Intelligently finds functions, classes, and methods
@@ -97,8 +97,8 @@
 - **VSCode integration**: Uses VSCode's built-in symbol detection for accuracy
 
 ### Storage Location
-All flow charts are saved in the `.daad` folder in your workspace root:
-- Each chart is saved as a `.daad.json` file
+All flow charts are saved in the `.dad` folder in your workspace root:
+- Each chart is saved as a `.dad.json` file
 - Files include the flow chart data, code snippet, and metadata
 - Charts are automatically named based on the code content and timestamp
 
@@ -135,7 +135,7 @@ Claude can analyze code in any language it understands, including:
 ### Project Structure
 
 ```
-daad/
+dad/
 ├── src/
 │   ├── extension.ts           # Main extension entry
 │   ├── extension/
@@ -188,4 +188,4 @@ Built with ❤️ using:
 
 ---
 
-**DAAD** - Making code visual, one diagram at a time.
+**DAD** - Making code visual, one diagram at a time.

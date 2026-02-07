@@ -1,8 +1,8 @@
 .PHONY: build test clean install run
 
-BINARY_NAME=daad
+BINARY_NAME=dad
 BUILD_DIR=bin
-MAIN_PATH=cmd/daad/main.go
+MAIN_PATH=cmd/dad/main.go
 
 build:
 	@echo "Building ${BINARY_NAME}..."

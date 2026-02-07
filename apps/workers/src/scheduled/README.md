@@ -76,7 +76,7 @@ DRY_RUN=false wrangler dev --test-scheduled --env=production
 Trigger manually via API:
 
 ```bash
-curl -X POST "https://daad-workers.your-account.workers.dev/__scheduled?cron=0+2+*+*+*"
+curl -X POST "https://dad-workers.your-account.workers.dev/__scheduled?cron=0+2+*+*+*"
 ```
 
 ### Monitoring

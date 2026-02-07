@@ -1,7 +1,7 @@
 /**
  * Metrics Collection System
  *
- * Tracks performance and operational metrics for the DAAD Workers API.
+ * Tracks performance and operational metrics for the DAD Workers API.
  * Integrates with Cloudflare Analytics and provides custom metrics collection.
  */
 

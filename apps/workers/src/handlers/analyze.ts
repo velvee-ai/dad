@@ -1,5 +1,5 @@
 import { Context } from 'hono';
-import type { AnalyzeRequest, AnalyzeResponse } from '@daad/shared-types';
+import type { AnalyzeRequest, AnalyzeResponse } from '@dad/shared-types';
 import { getMetrics } from '../monitoring/metrics';
 import { PerformanceTimer } from '../monitoring/logger';
 

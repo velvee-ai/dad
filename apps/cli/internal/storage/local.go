@@ -15,7 +15,7 @@ import (
 const (
 	DefaultStorageDir = ".dad"
 	ManifestFileName  = "manifest.json"
-	GitIgnoreContent  = "# DAAD local storage\n*.tmp\n"
+	GitIgnoreContent  = "# DAD local storage\n*.tmp\n"
 )
 
 // LocalStorage implements the Storage interface for local file system storage

@@ -1,7 +1,7 @@
 const path = require('path');
 
 // Configuration for extension code
-// Workspace packages (@daad/*, @dad/*) are bundled automatically
+// Workspace packages (@dad/*) are bundled automatically
 const extensionConfig = {
   target: 'node',
   mode: 'none',
@@ -21,7 +21,7 @@ const extensionConfig = {
     rules: [
       {
         test: /\.ts$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /_archived/],
         use: [
           {
             loader: 'ts-loader',
@@ -55,7 +55,7 @@ const webviewConfig = {
     rules: [
       {
         test: /\.tsx?$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /_archived/],
         use: [
           {
             loader: 'ts-loader',

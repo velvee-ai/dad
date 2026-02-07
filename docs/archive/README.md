@@ -1,6 +1,6 @@
 # Archived Documentation
 
-This folder contains historical planning and migration documents that were created during the development of the DAAD monorepo. These documents are kept for reference but do not reflect the current state of the project.
+This folder contains historical planning and migration documents that were created during the development of the DAD monorepo. These documents are kept for reference but do not reflect the current state of the project.
 
 ## Contents
 

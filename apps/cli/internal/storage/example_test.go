@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/velvee-ai/daad/apps/cli/internal/storage"
+	"github.com/velvee-ai/dad/apps/cli/internal/storage"
 )
 
 // Example_basicUsage demonstrates basic storage operations

@@ -1,8 +1,8 @@
-# DAAD Monorepo - Diagram as a Delivery
+# DAD Monorepo - Diagram as a Delivery
 
 > Transform code into understanding. Instantly.
 
-A monorepo containing all DAAD tools for AI-powered code visualization and diagram generation.
+A monorepo containing all DAD tools for AI-powered code visualization and diagram generation.
 
 **[📋 View Complete Feature List](./FEATURES.md)** - Detailed implementation status of all features
 
@@ -16,26 +16,26 @@ A monorepo containing all DAAD tools for AI-powered code visualization and diagr
 
 ### Applications
 
-- **[@daad/vscode-extension](./apps/vscode-extension)** - VSCode extension for interactive code visualization
+- **[@dad/vscode-extension](./apps/vscode-extension)** - VSCode extension for interactive code visualization
   - AI-powered flow chart generation
   - React Flow visualization
   - Works with any language
 
-- **[@daad/cli](./apps/cli)** - Command-line tool for diagram generation (Go + D2)
+- **[@dad/cli](./apps/cli)** - Command-line tool for diagram generation (Go + D2)
   - Analyze code from terminal
   - Generate D2 diagrams
   - Export to multiple formats
 
-- **[@daad/workers](./apps/workers)** - Cloudflare Workers backend API
+- **[@dad/workers](./apps/workers)** - Cloudflare Workers backend API
   - Code analysis API
   - Diagram storage
   - Export services
 
 ### Shared Packages
 
-- **[@daad/shared-types](./packages/shared-types)** - TypeScript types and interfaces
-- **[@daad/diagram-schema](./packages/diagram-schema)** - Schema validation & format conversion
-- **[@daad/config](./packages/config)** - Shared configuration files
+- **[@dad/shared-types](./packages/shared-types)** - TypeScript types and interfaces
+- **[@dad/diagram-schema](./packages/diagram-schema)** - Schema validation & format conversion
+- **[@dad/config](./packages/config)** - Shared configuration files
 
 ## 🚀 Quick Start
 
@@ -117,7 +117,7 @@ Archived planning and migration documents can be found in [docs/archive](./docs/
 ## 🏗️ Project Structure
 
 ```
-daad-monorepo/
+dad-monorepo/
 ├── apps/
 │   ├── vscode-extension/    # VSCode plugin (TypeScript + React) - PRODUCTION READY ✅
 │   ├── cli/                  # CLI tool (Go + D2) - PARTIAL (SVG export works)
@@ -142,7 +142,7 @@ daad-monorepo/
 
 ```bash
 # Add to specific package
-pnpm add <package> --filter=@daad/vscode-extension
+pnpm add <package> --filter=@dad/vscode-extension
 
 # Add to workspace root
 pnpm add -w <package>
@@ -152,13 +152,13 @@ pnpm add -w <package>
 
 ```bash
 # Build VSCode extension
-turbo build --filter=@daad/vscode-extension
+turbo build --filter=@dad/vscode-extension
 
 # Build CLI
-turbo build --filter=@daad/cli
+turbo build --filter=@dad/cli
 
 # Run Workers in dev mode
-turbo dev --filter=@daad/workers
+turbo dev --filter=@dad/workers
 ```
 
 ## 🎯 Benefits
@@ -186,4 +186,4 @@ Built with ❤️ using:
 
 ---
 
-**DAAD** - Making code visual, one diagram at a time.
+**DAD** - Making code visual, one diagram at a time.

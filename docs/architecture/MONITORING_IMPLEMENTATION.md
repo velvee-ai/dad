@@ -2,7 +2,7 @@
 
 ## Summary
 
-Comprehensive monitoring and performance tracking system has been successfully implemented for the DAAD Workers API.
+Comprehensive monitoring and performance tracking system has been successfully implemented for the DAD Workers API.
 
 ## What Was Implemented
 
@@ -221,7 +221,7 @@ curl https://your-worker.workers.dev/metrics
 ### Custom Alert Rules
 
 ```typescript
-import { getAlertManager, AlertSeverity } from '@daad/workers/monitoring';
+import { getAlertManager, AlertSeverity } from '@dad/workers/monitoring';
 
 const alertManager = getAlertManager();
 alertManager.addRule({
@@ -236,8 +236,8 @@ alertManager.addRule({
 ### Using Logger in New Handlers
 
 ```typescript
-import { createRequestLogger, PerformanceTimer } from '@daad/workers/monitoring';
-import { getMetrics } from '@daad/workers/monitoring';
+import { createRequestLogger, PerformanceTimer } from '@dad/workers/monitoring';
+import { getMetrics } from '@dad/workers/monitoring';
 
 export async function myHandler(c: Context) {
   const logger = c.get('logger'); // From middleware

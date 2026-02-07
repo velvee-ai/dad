@@ -15,7 +15,7 @@ Resolved conflicts in 4 key files by carefully merging both feature sets:
 ```toml
 # KV for caching
 [[kv_namespaces]]
-binding = "DAAD_CACHE"
+binding = "DAD_CACHE"
 
 # Analytics for metrics
 [[analytics_engine_datasets]]
@@ -38,7 +38,7 @@ initializeMetrics(c.env.ANALYTICS);
 cors()
 
 // Cache middleware
-createCacheManager(c.env.DAAD_CACHE)
+createCacheManager(c.env.DAD_CACHE)
 
 // Analytics middleware
 analyticsMiddleware
@@ -211,7 +211,7 @@ GET /
 
 Response:
 {
-  "name": "DAAD Workers API",
+  "name": "DAD Workers API",
   "version": "0.0.1",
   "status": "healthy",
   "uptime": 3600,
@@ -245,8 +245,8 @@ DRY_RUN = "false"
 ```toml
 # KV for caching
 [[kv_namespaces]]
-binding = "DAAD_CACHE"
-id = "daad_cache_namespace"
+binding = "DAD_CACHE"
+id = "dad_cache_namespace"
 
 # Analytics for metrics
 [[analytics_engine_datasets]]
@@ -255,7 +255,7 @@ binding = "ANALYTICS"
 # R2 for storage
 [[r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
-bucket_name = "daad-preview-diagrams"
+bucket_name = "dad-preview-diagrams"
 ```
 
 ## Testing the Integration
@@ -331,7 +331,7 @@ Before deploying:
 1. **Create Resources**:
    ```bash
    # KV namespace for caching
-   wrangler kv:namespace create "DAAD_CACHE"
+   wrangler kv:namespace create "DAD_CACHE"
 
    # Analytics Engine is auto-created
    ```

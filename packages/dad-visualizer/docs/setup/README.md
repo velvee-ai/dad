@@ -1,6 +1,6 @@
 # Setup Documentation
 
-This directory contains all setup and deployment guides for the DAAD monorepo.
+This directory contains all setup and deployment guides for the DAD monorepo.
 
 ## Getting Started
 
@@ -71,7 +71,7 @@ pnpm install -g turbo wrangler
 ```bash
 # Clone and install
 git clone <repo-url>
-cd daad-monorepo
+cd dad-monorepo
 pnpm install
 ```
 
@@ -89,7 +89,7 @@ Choose what you need:
 ```bash
 cd apps/vscode-extension
 pnpm package
-code --install-extension daad-0.0.1.vsix
+code --install-extension dad-0.0.1.vsix
 ```
 
 **CLI Tool:**
@@ -164,7 +164,7 @@ pnpm build
 pnpm dev
 
 # Run specific app
-turbo dev --filter=@daad/workers
+turbo dev --filter=@dad/workers
 
 # Watch mode for package
 cd packages/shared-types && pnpm dev

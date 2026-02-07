@@ -1,13 +1,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { FlowChartData } from '@daad/shared-types';
+import type { DadFile } from '@dad/shared-types';
 
 export class FlowVisualizerProvider {
   public static currentPanel: FlowVisualizerProvider | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
-  private _onSaveDiagram?: (data: FlowChartData) => void;
   private _isReady = false;
   private _pendingMessages: any[] = [];
 
@@ -20,8 +19,8 @@ export class FlowVisualizerProvider {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      'daadVisualizer',
-      'DAD - Code Flow Visualization',
+      'dadVisualizer',
+      'DAD - Visualizer',
       column,
       {
         enableScripts: true,
@@ -50,26 +49,34 @@ export class FlowVisualizerProvider {
         switch (message.command) {
           case 'ready':
             this._isReady = true;
-            // Flush any messages that were queued before webview was ready
             for (const msg of this._pendingMessages) {
               this._panel.webview.postMessage(msg);
             }
             this._pendingMessages = [];
             break;
           case 'error':
-            vscode.window.showErrorMessage(`Flow visualizer error: ${message.text}`);
-            break;
-          case 'saveEditedDiagram':
-            if (this._onSaveDiagram) {
-              this._onSaveDiagram(message.data);
-            }
+            vscode.window.showErrorMessage(`DAD Visualizer: ${message.text}`);
             break;
           case 'openSourceFile':
             if (message.filePath) {
-              const workspaceFolders = vscode.workspace.workspaceFolders;
-              if (workspaceFolders) {
-                const fullPath = vscode.Uri.joinPath(workspaceFolders[0].uri, message.filePath);
-                vscode.window.showTextDocument(fullPath);
+              try {
+                const filePath = message.filePath as string;
+                let fileUri: vscode.Uri;
+
+                if (path.isAbsolute(filePath)) {
+                  fileUri = vscode.Uri.file(filePath);
+                } else {
+                  const workspaceFolders = vscode.workspace.workspaceFolders;
+                  if (!workspaceFolders) {
+                    vscode.window.showWarningMessage('No workspace folder open to resolve relative path.');
+                    return;
+                  }
+                  fileUri = vscode.Uri.joinPath(workspaceFolders[0].uri, filePath);
+                }
+
+                await vscode.window.showTextDocument(fileUri);
+              } catch {
+                vscode.window.showWarningMessage(`Could not open file: ${message.filePath}`);
               }
             }
             break;
@@ -80,9 +87,6 @@ export class FlowVisualizerProvider {
     );
   }
 
-  /**
-   * Send a message to the webview, buffering if it hasn't signaled 'ready' yet.
-   */
   private _postMessage(message: any) {
     if (this._isReady) {
       this._panel.webview.postMessage(message);
@@ -91,28 +95,12 @@ export class FlowVisualizerProvider {
     }
   }
 
-  public updateFlowChart(data: FlowChartData) {
-    this._postMessage({ command: 'updateFlow', data });
-  }
-
-  public updateHierarchicalFlowChart(data: any) {
-    this._postMessage({ command: 'updateHierarchicalFlow', data });
-  }
-
-  public updateC4View(data: any) {
-    this._postMessage({ command: 'updateC4View', data });
+  public updateDadFile(data: DadFile) {
+    this._postMessage({ command: 'updateDadFile', data });
   }
 
   public showError(error: string) {
     this._postMessage({ command: 'showError', error });
-  }
-
-  public showLoading() {
-    this._postMessage({ command: 'showLoading' });
-  }
-
-  public setSaveHandler(handler: (data: FlowChartData) => void) {
-    this._onSaveDiagram = handler;
   }
 
   private _getHtmlForWebview() {
@@ -137,7 +125,7 @@ export class FlowVisualizerProvider {
       <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${this._panel.webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${this._panel.webview.cspSource} data:; font-src ${this._panel.webview.cspSource};">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link href="${styleUri}" rel="stylesheet">
-      <title>Code Flow Visualization</title>
+      <title>DAD Visualizer</title>
       <style>
         body {
           padding: 0;
@@ -158,21 +146,11 @@ export class FlowVisualizerProvider {
           font-family: var(--vscode-font-family);
           color: var(--vscode-foreground);
         }
-        .error {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          font-family: var(--vscode-font-family);
-          color: var(--vscode-errorForeground);
-          padding: 20px;
-          text-align: center;
-        }
       </style>
     </head>
     <body>
       <div id="root">
-        <div class="loading">Initializing flow visualizer...</div>
+        <div class="loading">Initializing DAD Visualizer...</div>
       </div>
       <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();

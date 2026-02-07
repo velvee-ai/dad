@@ -2,7 +2,7 @@
 
 ## What Was Implemented
 
-Server-side SVG rendering for D2 and Mermaid diagrams across the entire DAAD stack.
+Server-side SVG rendering for D2 and Mermaid diagrams across the entire DAD stack.
 
 ## Files Created
 
@@ -28,7 +28,7 @@ Server-side SVG rendering for D2 and Mermaid diagrams across the entire DAAD sta
 - `apps/vscode-extension/src/extension/storage/FlowChartStorage.ts` - Extended with SVG storage methods
 
 ### CLI Tool
-- `apps/cli/cmd/daad/main.go` - Enhanced export command with SVG rendering
+- `apps/cli/cmd/dad/main.go` - Enhanced export command with SVG rendering
 
 ## New API Endpoints
 
@@ -41,13 +41,13 @@ GET    /api/render/formats  - Get available rendering formats
 
 ```bash
 # Render to SVG using D2
-daad export diagram.json --format svg --svg-format d2 -o output.svg
+dad export diagram.json --format svg --svg-format d2 -o output.svg
 
 # Render to SVG using Mermaid
-daad export diagram.json --format svg --svg-format mermaid -o output.svg
+dad export diagram.json --format svg --svg-format mermaid -o output.svg
 
 # With optimization
-daad export diagram.json --format svg --optimize -o output.svg
+dad export diagram.json --format svg --optimize -o output.svg
 ```
 
 ## Key Features
@@ -57,7 +57,7 @@ daad export diagram.json --format svg --optimize -o output.svg
 ✅ **SVG Optimization** - SVGO integration for file size reduction
 ✅ **Multiple Themes** - Support for dark, light, and custom themes
 ✅ **Layout Algorithms** - Dagre and ELK layout support
-✅ **Local Storage** - Save SVG files in .daad/ folder
+✅ **Local Storage** - Save SVG files in .dad/ folder
 ✅ **Cloud Storage Ready** - Prepared for R2 integration
 ✅ **REST API** - HTTP endpoints for SVG rendering
 ✅ **CLI Tool** - Command-line SVG generation
@@ -93,9 +93,9 @@ Use mermaid.ink public service:
 
 ## Storage Structure
 
-Files saved in `.daad/` folder:
+Files saved in `.dad/` folder:
 ```
-{id}.daad.json       # Diagram metadata
+{id}.dad.json       # Diagram metadata
 {id}.d2.svg          # D2 rendered SVG
 {id}.mermaid.svg     # Mermaid rendered SVG
 {id}.d2              # D2 source file
@@ -138,7 +138,7 @@ const result = await renderDiagramToSVG(diagram, 'd2', {
 
 ### Go CLI
 ```go
-import "github.com/velvee-ai/daad/apps/cli/internal/renderer"
+import "github.com/velvee-ai/dad/apps/cli/internal/renderer"
 
 svg, err := renderer.RenderToSVG(diagram, "d2", renderer.RenderOptions{
   Theme: "dark",
@@ -164,7 +164,7 @@ curl -X POST http://localhost:8787/api/render/svg \
 ✅ Can render Mermaid diagrams to SVG
 ✅ SVGs are optimized for size (SVGO integration)
 ✅ SVG generation doesn't block main flow (async implementation)
-✅ Rendered SVGs stored in local storage (.daad/ folder)
+✅ Rendered SVGs stored in local storage (.dad/ folder)
 ⏳ Cloud storage (R2) - Code prepared, needs configuration
 ⏳ VSCode webview preview - Pending implementation
 

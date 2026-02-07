@@ -1,4 +1,4 @@
-module github.com/velvee-ai/daad/apps/cli
+module github.com/velvee-ai/dad/apps/cli
 
 go 1.21
 

@@ -31,7 +31,7 @@ Successfully merged `origin/main` into `vk/9b82-add-monitoring-a` branch, resolv
 **Resolution:**
 - ✅ Combined bindings:
   - Analytics Engine (`ANALYTICS`) for metrics
-  - R2 buckets (`PREVIEW_DIAGRAMS`, `DAAD_BUCKET`) for storage
+  - R2 buckets (`PREVIEW_DIAGRAMS`, `DAD_BUCKET`) for storage
 - ✅ Merged environment variables:
   - Monitoring: `LOG_LEVEL`, `ALERT_WEBHOOK_URL`
   - Main: `DRY_RUN`, `CORS_ORIGINS`

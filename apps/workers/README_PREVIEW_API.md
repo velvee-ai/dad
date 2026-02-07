@@ -166,8 +166,8 @@ The Preview API requires R2 bucket configuration in `wrangler.toml`:
 ```toml
 [[r2_buckets]]
 binding = "PREVIEW_BUCKET"
-bucket_name = "daad-previews"
-preview_bucket_name = "daad-previews-dev"
+bucket_name = "dad-previews"
+preview_bucket_name = "dad-previews-dev"
 ```
 
 ## Development
@@ -176,7 +176,7 @@ To test the endpoints locally:
 
 ```bash
 # Start the development server
-pnpm --filter @daad/workers dev
+pnpm --filter @dad/workers dev
 
 # Create a preview session
 curl -X POST http://localhost:8787/api/preview/analyze \

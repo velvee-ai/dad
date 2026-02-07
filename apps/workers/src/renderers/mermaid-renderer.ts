@@ -1,5 +1,5 @@
-import type { Diagram } from '@daad/shared-types';
-import { toMermaid } from '@daad/diagram-schema';
+import type { Diagram } from '@dad/shared-types';
+import { toMermaid } from '@dad/diagram-schema';
 
 export interface MermaidRenderOptions {
   theme?: 'default' | 'dark' | 'forest' | 'neutral';

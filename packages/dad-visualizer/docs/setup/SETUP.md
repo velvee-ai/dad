@@ -1,6 +1,6 @@
-# Complete Setup Guide for DAAD Monorepo
+# Complete Setup Guide for DAD Monorepo
 
-This guide walks you through setting up the entire DAAD monorepo from scratch, including all applications and infrastructure.
+This guide walks you through setting up the entire DAD monorepo from scratch, including all applications and infrastructure.
 
 ## Table of Contents
 
@@ -55,7 +55,7 @@ This guide walks you through setting up the entire DAAD monorepo from scratch, i
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd daad-monorepo
+cd dad-monorepo
 
 # Install all dependencies
 pnpm install
@@ -108,7 +108,7 @@ pnpm compile
 pnpm package
 
 # Install locally
-code --install-extension daad-0.0.1.vsix
+code --install-extension dad-0.0.1.vsix
 ```
 
 #### 4. Verify Installation
@@ -132,7 +132,7 @@ make build
 make build-all
 ```
 
-The binary will be in `apps/cli/bin/daad`
+The binary will be in `apps/cli/bin/dad`
 
 #### 2. Install Globally (Optional)
 
@@ -155,10 +155,10 @@ CLAUDE_API_KEY=your_claude_key_here
 
 ```bash
 # Test with a sample file
-./bin/daad analyze examples/sample.js
+./bin/dad analyze examples/sample.js
 
 # Check version
-./bin/daad version
+./bin/dad version
 ```
 
 ### Cloudflare Workers Setup
@@ -226,10 +226,10 @@ R2 is used for storing diagram previews and exports.
 
 ```bash
 # Production bucket
-wrangler r2 bucket create daad-diagrams
+wrangler r2 bucket create dad-diagrams
 
 # Development bucket
-wrangler r2 bucket create daad-diagrams-dev
+wrangler r2 bucket create dad-diagrams-dev
 ```
 
 #### 2. Configure CORS
@@ -252,16 +252,16 @@ Apply CORS policy:
 
 ```bash
 # Production
-wrangler r2 bucket cors put daad-diagrams --file=cors-policy.json
+wrangler r2 bucket cors put dad-diagrams --file=cors-policy.json
 
 # Development
-wrangler r2 bucket cors put daad-diagrams-dev --file=cors-policy.json
+wrangler r2 bucket cors put dad-diagrams-dev --file=cors-policy.json
 ```
 
 #### 3. Verify CORS
 
 ```bash
-wrangler r2 bucket cors get daad-diagrams
+wrangler r2 bucket cors get dad-diagrams
 ```
 
 #### 4. Update wrangler.toml
@@ -270,9 +270,9 @@ Ensure `apps/workers/wrangler.toml` has the correct bucket bindings:
 
 ```toml
 [[r2_buckets]]
-binding = "DAAD_DIAGRAMS"
-bucket_name = "daad-diagrams"
-preview_bucket_name = "daad-diagrams-dev"
+binding = "DAD_DIAGRAMS"
+bucket_name = "dad-diagrams"
+preview_bucket_name = "dad-diagrams-dev"
 ```
 
 ### Cloudflare KV Cache
@@ -283,16 +283,16 @@ KV is used for caching diagram data and exports.
 
 ```bash
 # Production namespace
-wrangler kv:namespace create "DAAD_CACHE"
+wrangler kv:namespace create "DAD_CACHE"
 
 # Preview namespace
-wrangler kv:namespace create "DAAD_CACHE" --preview
+wrangler kv:namespace create "DAD_CACHE" --preview
 ```
 
 Wrangler will output namespace IDs like:
 ```
-{ binding = "DAAD_CACHE", id = "abc123..." }
-{ binding = "DAAD_CACHE", preview_id = "xyz789..." }
+{ binding = "DAD_CACHE", id = "abc123..." }
+{ binding = "DAD_CACHE", preview_id = "xyz789..." }
 ```
 
 #### 2. Update wrangler.toml
@@ -301,7 +301,7 @@ Replace the placeholder IDs in `apps/workers/wrangler.toml`:
 
 ```toml
 [[kv_namespaces]]
-binding = "DAAD_CACHE"
+binding = "DAD_CACHE"
 id = "abc123..."  # Use the ID from step 1
 preview_id = "xyz789..."  # Use the preview_id from step 1
 ```
@@ -366,12 +366,12 @@ Each application has its own environment configuration:
 turbo build
 
 # Should build:
-# - @daad/shared-types
-# - @daad/diagram-schema
-# - @daad/config
-# - @daad/vscode-extension
-# - @daad/cli
-# - @daad/workers
+# - @dad/shared-types
+# - @dad/diagram-schema
+# - @dad/config
+# - @dad/vscode-extension
+# - @dad/cli
+# - @dad/workers
 ```
 
 ### 2. Verify VSCode Extension
@@ -388,10 +388,10 @@ turbo build
 cd apps/cli
 
 # Should show help
-./bin/daad --help
+./bin/dad --help
 
 # Should show version
-./bin/daad version
+./bin/dad version
 ```
 
 ### 4. Verify Workers Locally
@@ -412,8 +412,8 @@ curl http://localhost:8787/health
 wrangler r2 bucket list
 
 # Should show:
-# - daad-diagrams
-# - daad-diagrams-dev
+# - dad-diagrams
+# - dad-diagrams-dev
 ```
 
 ### 6. Verify KV Cache
@@ -422,7 +422,7 @@ wrangler r2 bucket list
 # List namespaces
 wrangler kv:namespace list
 
-# Should show DAAD_CACHE namespace
+# Should show DAD_CACHE namespace
 ```
 
 ### 7. Verify Workers Deployment
@@ -519,10 +519,10 @@ wrangler dev --log-level debug
 wrangler r2 bucket list
 
 # Check CORS configuration
-wrangler r2 bucket cors get daad-diagrams
+wrangler r2 bucket cors get dad-diagrams
 
 # List objects in bucket
-wrangler r2 object list daad-diagrams
+wrangler r2 object list dad-diagrams
 ```
 
 ### KV Namespace Issues
@@ -623,4 +623,4 @@ Use this checklist to track your setup progress:
 - [ ] R2 storage accessible
 - [ ] KV cache functional
 
-Congratulations! Your DAAD monorepo is now fully set up.
+Congratulations! Your DAD monorepo is now fully set up.

@@ -1,6 +1,6 @@
 # Guides
 
-Development and usage guides for the DAAD monorepo.
+Development and usage guides for the DAD monorepo.
 
 ## Available Guides
 

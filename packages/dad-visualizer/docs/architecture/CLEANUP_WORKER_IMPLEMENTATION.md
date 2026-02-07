@@ -69,8 +69,8 @@ Interactive test script with:
 **Key Additions:**
 ```toml
 [[r2_buckets]]
-binding = "DAAD_BUCKET"
-bucket_name = "daad-diagrams"
+binding = "DAD_BUCKET"
+bucket_name = "dad-diagrams"
 
 [vars]
 DRY_RUN = "false"

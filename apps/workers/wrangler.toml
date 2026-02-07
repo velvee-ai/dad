@@ -1,12 +1,12 @@
-name = "daad-workers"
+name = "dad-workers"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
 # Bind a KV Namespace for caching
 [[kv_namespaces]]
-binding = "DAAD_CACHE"
-id = "daad_cache_namespace"
-preview_id = "daad_cache_preview"
+binding = "DAD_CACHE"
+id = "dad_cache_namespace"
+preview_id = "dad_cache_preview"
 
 # Cloudflare Analytics Engine binding for metrics
 [[analytics_engine_datasets]]
@@ -16,14 +16,14 @@ binding = "ANALYTICS"
 # R2 Buckets for preview diagram storage
 [[r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
-bucket_name = "daad-preview-diagrams"
-preview_bucket_name = "daad-preview-diagrams-dev"
+bucket_name = "dad-preview-diagrams"
+preview_bucket_name = "dad-preview-diagrams-dev"
 
 # R2 Bucket for general storage (cleanup worker target)
 [[r2_buckets]]
-binding = "DAAD_BUCKET"
-bucket_name = "daad-diagrams"
-preview_bucket_name = "daad-diagrams-preview"
+binding = "DAD_BUCKET"
+bucket_name = "dad-diagrams"
+preview_bucket_name = "dad-diagrams-preview"
 
 # Environment variables
 # Use `wrangler secret put OPENROUTER_API_KEY` for production
@@ -46,18 +46,18 @@ crons = ["0 2 * * *"]
 
 # Environment-specific configurations
 [env.production]
-name = "daad-workers"
+name = "dad-workers"
 [[env.production.kv_namespaces]]
-binding = "DAAD_CACHE"
-id = "daad_cache_namespace"
+binding = "DAD_CACHE"
+id = "dad_cache_namespace"
 
 [[env.production.r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
-bucket_name = "daad-preview-diagrams"
+bucket_name = "dad-preview-diagrams"
 
 [[env.production.r2_buckets]]
-binding = "DAAD_BUCKET"
-bucket_name = "daad-diagrams"
+binding = "DAD_BUCKET"
+bucket_name = "dad-diagrams"
 
 [[env.production.analytics_engine_datasets]]
 binding = "ANALYTICS"
@@ -70,18 +70,18 @@ CACHE_DEFAULT_TTL = "604800"
 LOG_LEVEL = "INFO"
 
 [env.development]
-name = "daad-workers-dev"
+name = "dad-workers-dev"
 [[env.development.kv_namespaces]]
-binding = "DAAD_CACHE"
-preview_id = "daad_cache_preview"
+binding = "DAD_CACHE"
+preview_id = "dad_cache_preview"
 
 [[env.development.r2_buckets]]
 binding = "PREVIEW_DIAGRAMS"
-bucket_name = "daad-preview-diagrams-dev"
+bucket_name = "dad-preview-diagrams-dev"
 
 [[env.development.r2_buckets]]
-binding = "DAAD_BUCKET"
-bucket_name = "daad-diagrams-preview"
+binding = "DAD_BUCKET"
+bucket_name = "dad-diagrams-preview"
 
 [[env.development.analytics_engine_datasets]]
 binding = "ANALYTICS"

@@ -39,7 +39,7 @@ Successfully implemented batch diagram generation with parallel processing, rate
 ### Modified Files (3 files)
 10. `packages/shared-types/src/index.ts` - Added batch types
 11. `apps/workers/src/index.ts` - Added batch route
-12. `apps/cli/cmd/daad/main.go` - Added batch command
+12. `apps/cli/cmd/dad/main.go` - Added batch command
 
 ## Quick Start
 
@@ -57,7 +57,7 @@ Content-Type: application/json
 
 ### CLI
 ```bash
-daad batch analyze ./src -p "*.ts" -o ./diagrams
+dad batch analyze ./src -p "*.ts" -o ./diagrams
 ```
 
 ## Key Features
@@ -86,7 +86,7 @@ pnpm test apps/workers/src/utils/__tests__/batch.test.ts
 cd apps/cli && go test ./internal/batch/...
 
 # Integration test
-daad batch analyze ./test-files -p "*.js"
+dad batch analyze ./test-files -p "*.js"
 ```
 
 ## Next Steps

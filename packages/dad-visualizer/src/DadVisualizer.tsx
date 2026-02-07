@@ -14,7 +14,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './icicle.css';
-import type { DadFile } from '@daad/shared-types';
+import type { DadFile } from '@dad/shared-types';
 import C4Node from './components/C4Node';
 import C4Edge from './components/C4Edge';
 import C4Breadcrumbs, { C4Breadcrumb } from './components/C4Breadcrumbs';

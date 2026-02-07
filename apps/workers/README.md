@@ -1,6 +1,6 @@
-# @daad/workers
+# @dad/workers
 
-Cloudflare Workers backend API for DAAD.
+Cloudflare Workers backend API for DAD.
 
 ## Features
 
@@ -153,10 +153,10 @@ The worker requires an R2 bucket for preview sessions:
 
 ```bash
 # Create R2 bucket
-wrangler r2 bucket create daad-diagrams
+wrangler r2 bucket create dad-diagrams
 
 # For preview environment
-wrangler r2 bucket create daad-diagrams-preview
+wrangler r2 bucket create dad-diagrams-preview
 ```
 
 Update `wrangler.toml` with your bucket names.

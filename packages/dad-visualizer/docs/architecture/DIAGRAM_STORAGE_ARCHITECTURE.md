@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the architecture for the DAAD diagram storage service, supporting two distinct use cases:
+This document outlines the architecture for the DAD diagram storage service, supporting two distinct use cases:
 1. **CI/CD Pipeline Storage**: Local `.dad` folder storage for merged code
 2. **IDE Preview Storage**: Cloudflare R2 storage for uncommitted changes
 
@@ -33,7 +33,7 @@ This document outlines the architecture for the DAAD diagram storage service, su
                   │
                   ▼
 ┌─────────────────────────────────────────────────────────┐
-│                   DAAD CLI Process                       │
+│                   DAD CLI Process                       │
 │                                                           │
 │  1. Scan codebase for supported files                    │
 │  2. Generate diagrams for changed/new files              │
@@ -119,22 +119,22 @@ jobs:
         with:
           fetch-depth: 0  # Full history for git diff
 
-      - name: Install DAAD CLI
+      - name: Install DAD CLI
         run: |
           # Download/install CLI binary
-          curl -L https://releases.daad.dev/cli/latest/daad-linux -o /usr/local/bin/daad
-          chmod +x /usr/local/bin/daad
+          curl -L https://releases.dad.dev/cli/latest/dad-linux -o /usr/local/bin/dad
+          chmod +x /usr/local/bin/dad
 
       - name: Generate Diagrams
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
-          daad generate --output .dad --format all --incremental
+          dad generate --output .dad --format all --incremental
 
       - name: Commit Diagrams
         run: |
-          git config user.name "DAAD Bot"
-          git config user.email "bot@daad.dev"
+          git config user.name "DAD Bot"
+          git config user.email "bot@dad.dev"
           git add .dad/
           git diff --quiet && git diff --staged --quiet || \
             git commit -m "chore: update diagrams [skip ci]"
@@ -256,7 +256,7 @@ func (g *IncrementalGenerator) GenerateChanges(
 ### R2 Storage Structure
 
 ```
-Bucket: daad-preview-diagrams
+Bucket: dad-preview-diagrams
 ├── {commit_sha_1}/
 │   ├── manifest.json           # Index for this preview session
 │   ├── metadata.json           # Session metadata
@@ -290,7 +290,7 @@ Bucket: daad-preview-diagrams
       "id": "file_hash_abc",
       "file_path": "src/services/auth.ts",
       "language": "typescript",
-      "preview_url": "https://r2.daad.dev/preview/abc123/file_hash_abc.json",
+      "preview_url": "https://r2.dad.dev/preview/abc123/file_hash_abc.json",
       "formats": ["json", "d2", "mermaid"]
     }
   ]
@@ -363,7 +363,7 @@ app.post('/api/preview/analyze', async (c) => {
 
   // 3. Store in R2
   const session = await storePreviewSession(
-    c.env.DAAD_PREVIEW_BUCKET,
+    c.env.DAD_PREVIEW_BUCKET,
     commitSha,
     diagrams
   );
@@ -387,7 +387,7 @@ app.get('/api/preview/:sha/:fileId', async (c) => {
 
   // 1. Fetch from R2
   const key = `${sha}/diagrams/${fileId}.${format}`;
-  const object = await c.env.DAAD_PREVIEW_BUCKET.get(key);
+  const object = await c.env.DAD_PREVIEW_BUCKET.get(key);
 
   if (!object) {
     return c.json({ error: 'Not found' }, 404);
@@ -479,10 +479,10 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ) {
-    const storage = new R2PreviewStorage(env.DAAD_PREVIEW_BUCKET);
+    const storage = new R2PreviewStorage(env.DAD_PREVIEW_BUCKET);
 
     // List all objects
-    const listed = await env.DAAD_PREVIEW_BUCKET.list();
+    const listed = await env.DAD_PREVIEW_BUCKET.list();
     const now = new Date();
 
     for (const object of listed.objects) {
@@ -491,7 +491,7 @@ export default {
       if (expiresAt && new Date(expiresAt) < now) {
         // Delete entire folder
         const commitSha = object.key.split('/')[0];
-        await deleteFolder(env.DAAD_PREVIEW_BUCKET, commitSha);
+        await deleteFolder(env.DAD_PREVIEW_BUCKET, commitSha);
       }
     }
   }
@@ -516,7 +516,7 @@ async function deleteFolder(bucket: R2Bucket, prefix: string) {
 # For CLI (GitHub Actions)
 OPENROUTER_API_KEY=sk-or-v1-...
 CLAUDE_API_KEY=sk-ant-...
-DAAD_OUTPUT_DIR=.dad
+DAD_OUTPUT_DIR=.dad
 
 # For Workers (Cloudflare)
 OPENROUTER_API_KEY=sk-or-v1-...
@@ -526,17 +526,17 @@ CLAUDE_API_KEY=sk-ant-...
 ### wrangler.toml Updates
 
 ```toml
-name = "daad-workers"
+name = "dad-workers"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
 [env.production]
-name = "daad-workers-prod"
+name = "dad-workers-prod"
 
 [[r2_buckets]]
-binding = "DAAD_PREVIEW_BUCKET"
-bucket_name = "daad-preview-diagrams"
-preview_bucket_name = "daad-preview-diagrams-dev"
+binding = "DAD_PREVIEW_BUCKET"
+bucket_name = "dad-preview-diagrams"
+preview_bucket_name = "dad-preview-diagrams-dev"
 
 [triggers]
 crons = ["0 2 * * *"]  # Daily at 2 AM UTC for cleanup

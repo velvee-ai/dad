@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-This directory contains architectural documentation for the DAAD monorepo.
+This directory contains architectural documentation for the DAD monorepo.
 
 ## Documents
 
@@ -36,7 +36,7 @@ This directory contains architectural documentation for the DAAD monorepo.
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  DAAD Monorepo                      │
+│                  DAD Monorepo                      │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐ │

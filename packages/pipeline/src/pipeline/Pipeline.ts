@@ -1,0 +1,113 @@
+import type {
+  PipelineConfig,
+  DadFileSet,
+  ScanResult,
+  AnalyzedFile,
+  ComponentGroup,
+} from '../types';
+import { FilesystemScanner } from '../scanner/FilesystemScanner';
+import { CodeAnalyzer } from '../analyzer/CodeAnalyzer';
+import { ComponentGrouper } from '../grouper/ComponentGrouper';
+import { DadFileAssembler } from '../assembler/DadFileAssembler';
+import { LLMEnricher } from '../enrichment/LLMEnricher';
+
+/**
+ * Main pipeline orchestrator: scan → analyze → group → assemble → enrich.
+ */
+export class Pipeline {
+  private config: PipelineConfig;
+
+  constructor(config: PipelineConfig) {
+    this.config = config;
+  }
+
+  /**
+   * Run the full pipeline and produce a DadFileSet.
+   */
+  async run(): Promise<DadFileSet> {
+    // Stage 1: Scan filesystem
+    this.progress('scan', 'Scanning project filesystem...', 0);
+    const scanner = new FilesystemScanner();
+    const scanResult = await scanner.scan(this.config.rootPath);
+
+    if (this.config.projectName) {
+      scanResult.projectName = this.config.projectName;
+    }
+
+    this.progress('scan', `Found ${scanResult.containerMeta.length} containers, ${scanResult.dataStores.length} data stores, ${scanResult.externalServices.length} external services`, 20);
+
+    // Stage 2: Analyze code (if language service adapter is provided)
+    let analyzedFiles: AnalyzedFile[] = [];
+    if (this.config.languageServiceAdapter) {
+      this.progress('analyze', 'Analyzing source code via language services...', 20);
+      const analyzer = new CodeAnalyzer(this.config.languageServiceAdapter);
+
+      for (const container of scanResult.containerMeta) {
+        const files = await analyzer.analyzeContainer(container, this.config.rootPath);
+        analyzedFiles.push(...files);
+      }
+
+      this.progress('analyze', `Analyzed ${analyzedFiles.length} source files`, 40);
+    } else {
+      this.progress('analyze', 'Skipping code analysis (no language service adapter)', 40);
+    }
+
+    // Stage 3: Group into components
+    this.progress('group', 'Grouping code into components...', 40);
+    const grouper = new ComponentGrouper();
+    let components: ComponentGroup[] = [];
+
+    if (analyzedFiles.length > 0) {
+      // Group from analyzed files (rich mode)
+      for (const container of scanResult.containerMeta) {
+        const containerFiles = analyzedFiles.filter(f => f.containerId === container.id);
+        const containerComponents = grouper.group(containerFiles, container.id, container.technology);
+        components.push(...containerComponents);
+      }
+    } else {
+      // Group from file paths only (scanner-only mode)
+      for (const container of scanResult.containerMeta) {
+        const containerComponents = grouper.groupFromPaths(
+          container.sourceFiles,
+          container.id,
+          container.technology
+        );
+        components.push(...containerComponents);
+      }
+    }
+
+    this.progress('group', `Created ${components.length} component groups`, 60);
+
+    // Stage 4: Assemble DadFiles
+    this.progress('assemble', 'Assembling C4 model files...', 60);
+    const assembler = new DadFileAssembler();
+    const dadFileSet = assembler.assemble(scanResult, components, analyzedFiles);
+    assembler.linkComponentsToContainers(dadFileSet);
+
+    this.progress('assemble', 'Assembly complete', 80);
+
+    // Stage 5: LLM enrichment (if provider is available)
+    if (this.config.llmProvider) {
+      this.progress('enrich', 'Enriching with LLM descriptions...', 80);
+      const enricher = new LLMEnricher(this.config.llmProvider);
+      await enricher.enrich(dadFileSet, scanResult);
+      this.progress('enrich', 'Enrichment complete', 100);
+    } else {
+      this.progress('enrich', 'Skipping LLM enrichment (no provider)', 100);
+    }
+
+    return dadFileSet;
+  }
+
+  /**
+   * Run only the scanner stage (useful for quick previews).
+   */
+  async scanOnly(): Promise<ScanResult> {
+    const scanner = new FilesystemScanner();
+    return scanner.scan(this.config.rootPath);
+  }
+
+  private progress(stage: string, message: string, percent: number): void {
+    this.config.onProgress?.(stage, message, percent);
+  }
+}

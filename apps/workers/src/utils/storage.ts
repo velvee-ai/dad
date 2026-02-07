@@ -3,7 +3,7 @@
  * Handles diagram and manifest storage with optimized batch operations
  */
 
-import type { BatchManifest, SavedDiagram, Diagram } from '@daad/shared-types';
+import type { BatchManifest, SavedDiagram, Diagram } from '@dad/shared-types';
 
 export interface StorageConfig {
   r2Bucket?: R2Bucket;

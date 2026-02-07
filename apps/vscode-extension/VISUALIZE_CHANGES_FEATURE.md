@@ -8,7 +8,7 @@ The "Visualize Changes" command allows developers to visualize uncommitted and s
 
 ### Command Palette
 1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
-2. Type "DAAD: Visualize Changes"
+2. Type "DAD: Visualize Changes"
 3. Press Enter
 
 ### Keyboard Shortcut
@@ -20,7 +20,7 @@ The "Visualize Changes" command allows developers to visualize uncommitted and s
 - **Automatic Change Detection**: Detects both staged and unstaged changes
 - **Code Snippet Extraction**: Extracts changed code regions with context
 - **Temp Commit SHA**: Generates a temporary commit SHA for uncommitted changes
-- **Workers API Integration**: Optional integration with DAAD Workers API
+- **Workers API Integration**: Optional integration with DAD Workers API
 - **Fallback to Local Analysis**: Uses Claude/OpenRouter if Workers API is not available
 
 ## Configuration
@@ -29,7 +29,7 @@ Add the Workers API URL in VSCode settings (optional):
 
 ```json
 {
-  "daad.workersApiUrl": "https://your-worker.workers.dev"
+  "dad.workersApiUrl": "https://your-worker.workers.dev"
 }
 ```
 
@@ -86,7 +86,7 @@ Add the Workers API URL in VSCode settings (optional):
 - Git repository
 - Uncommitted or staged changes
 - Claude Code CLI or OpenRouter API key (for local analysis)
-- Optional: DAAD Workers API endpoint
+- Optional: DAD Workers API endpoint
 
 ## Limitations
 
@@ -118,7 +118,7 @@ The command handles various error scenarios:
 To test the feature:
 
 1. Make some changes to files in your git repository
-2. Run the "DAAD: Visualize Changes" command
+2. Run the "DAD: Visualize Changes" command
 3. Verify that the changes are visualized correctly
 4. Test with both staged and unstaged changes
 5. Test with different file types
@@ -127,4 +127,4 @@ To test the feature:
 ## See Also
 
 - [VSCode Extension README](./README.md)
-- [DAAD Workers API](../workers/README.md)
+- [DAD Workers API](../workers/README.md)
