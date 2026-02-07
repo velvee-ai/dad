@@ -8,11 +8,15 @@ import { CodeAnalyzer } from './extension/utils/codeAnalyzer';
 import { DexieCacheManager, CachedFlowChart } from './extension/storage/DexieCacheManager';
 import { FlowChartData } from './shared/types';
 import { VisualizeChangesCommand } from './extension/commands/visualizeChanges';
+import { PyreflyLanguageClient } from './extension/pyrefly/PyreflyLanguageClient';
+import { FlowExtractor } from './extension/pyrefly/FlowExtractor';
 
 let claudeClient: ClaudeClient | OpenRouterClient;
 let storage: FlowChartStorage;
 let cacheManager: DexieCacheManager | undefined;
 let statusBarItem: vscode.StatusBarItem;
+let pyreflyClient: PyreflyLanguageClient | undefined;
+let flowExtractor: FlowExtractor | undefined;
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('DAAD - Diagram as a Delivery extension is now active!');
@@ -110,6 +114,27 @@ export async function activate(context: vscode.ExtensionContext) {
 
       context.subscriptions.push(fileWatcher);
     }
+
+  // Initialize Pyrefly language server for Python files
+  const pyreflyEnabled = config.get<boolean>('pyrefly.enabled') ?? true;
+  if (pyreflyEnabled) {
+    try {
+      pyreflyClient = new PyreflyLanguageClient();
+      await pyreflyClient.start();
+      const lspClient = pyreflyClient.getClient();
+      if (lspClient) {
+        flowExtractor = new FlowExtractor(lspClient);
+      }
+      console.log('DAAD: Pyrefly language server started');
+    } catch (error) {
+      console.error('DAAD: Failed to start Pyrefly language server:', error);
+      vscode.window.showWarningMessage(
+        'DAAD: Pyrefly language server failed to start. LSP-based analysis will be unavailable. Ensure pyrefly is installed (pip install pyrefly).'
+      );
+      pyreflyClient = undefined;
+      flowExtractor = undefined;
+    }
+  }
 
   // Register the visualize command
   const visualizeCommand = vscode.commands.registerCommand(
@@ -799,6 +824,8 @@ export async function activate(context: vscode.ExtensionContext) {
     dispose: () => {
       claudeClient.dispose();
       void cacheManager?.close();
+      void pyreflyClient?.stop();
+      pyreflyClient?.dispose();
     }
   });
 } catch (error) {
@@ -810,6 +837,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export async function deactivate() {
   claudeClient?.dispose();
+  if (pyreflyClient) {
+    await pyreflyClient.stop();
+    pyreflyClient.dispose();
+  }
   if (cacheManager) {
     await cacheManager.close();
   }

@@ -180,6 +180,16 @@
           "type": "string",
           "default": "",
           "description": "DAAD Workers API URL for preview generation (optional). Example: https://your-worker.workers.dev"
+        },
+        "daad.pyrefly.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Pyrefly language server for Python code analysis (call hierarchy, symbol resolution)"
+        },
+        "daad.pyrefly.path": {
+          "type": "string",
+          "default": "pyrefly",
+          "description": "Path to the pyrefly executable. Defaults to 'pyrefly' (must be in PATH)"
         }
       }
     }
@@ -222,6 +232,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "reactflow": "^11.11.4",
-    "use-undoable": "^5.0.0"
+    "use-undoable": "^5.0.0",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5"
   }
 }
