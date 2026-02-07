@@ -1,0 +1,18 @@
+{
+  "name": "Velvee.ai, Inc",
+  "description": "AI Native E-commerce Platform",
+  "systems": [
+    {
+      "name": "ecommerce-platform",
+      "path": "./ecommerce-platform",
+      "description": "Chat with Shopping Assistant to find products and place orders",
+      "team": "Platform Team"
+    },
+    {
+      "name": "internal-tools",
+      "path": "./internal-tools",
+      "description": "Internal admin and operations tools",
+      "team": "Internal Tools Team"
+    }
+  ]
+}
