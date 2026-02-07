@@ -1,0 +1,85 @@
+/**
+ * Icicle Design System — Canvas & Component Overrides
+ *
+ * Dark glassmorphic theme for the DAD Visualizer.
+ * Overrides ReactFlow defaults for dark background,
+ * controls, minimap, and edge flow animation.
+ */
+
+/* --- Canvas Background --- */
+.react-flow {
+  background: #070B10 !important;
+}
+
+/* --- Edge Flow Animation --- */
+@keyframes c4EdgeFlow {
+  from {
+    stroke-dashoffset: 32;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* --- ReactFlow Controls (dark glass) --- */
+.react-flow__controls {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+  overflow: hidden;
+}
+
+.react-flow__controls button {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  color: rgba(255,255,255,0.72) !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.react-flow__controls button:hover {
+  background: rgba(255,255,255,0.10) !important;
+  color: rgba(255,255,255,0.92) !important;
+}
+
+.react-flow__controls button:last-child {
+  border-bottom: none !important;
+}
+
+.react-flow__controls button svg {
+  fill: currentColor !important;
+}
+
+/* --- MiniMap (dark glass) --- */
+.react-flow__minimap {
+  background: #0B1220 !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+
+/* --- Background Dots --- */
+.react-flow__background pattern circle {
+  fill: rgba(255,255,255,0.06) !important;
+}
+
+/* --- Attribution (hide or dim) --- */
+.react-flow__attribution {
+  opacity: 0.3 !important;
+}
+.react-flow__attribution a {
+  color: rgba(255,255,255,0.4) !important;
+}
+
+/* --- Selection Box --- */
+.react-flow__selection {
+  background: rgba(79,233,255,0.08) !important;
+  border: 1px solid rgba(79,233,255,0.3) !important;
+}
+
+/* --- Edge markers (arrow color) --- */
+.react-flow__edge-path {
+  stroke-linecap: round;
+}

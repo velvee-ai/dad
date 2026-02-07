@@ -41,7 +41,7 @@ export class C4Generator {
 
   constructor() {
     this.client = new C4AnalysisClient();
-    this.outputChannel = vscode.window.createOutputChannel('DAAD C4 Generator');
+    this.outputChannel = vscode.window.createOutputChannel('DAD C4 Generator');
   }
 
   /**

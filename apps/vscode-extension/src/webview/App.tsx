@@ -18,7 +18,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import './icicle.css';
 import useUndoable from 'use-undoable';
-import { FlowChartData } from '../shared/types';
+import { FlowChartData } from '@daad/shared-types';
 import CustomNode from './components/CustomNode';
 import CustomEdge from './components/CustomEdge';
 import SmartEdge from './components/SmartEdge';

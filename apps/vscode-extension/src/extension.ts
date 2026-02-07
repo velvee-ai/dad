@@ -6,7 +6,7 @@ import { FlowChartStorage } from './extension/storage/FlowChartStorage';
 import { SavedChartsProvider } from './extension/providers/SavedChartsProvider';
 import { CodeAnalyzer } from './extension/utils/codeAnalyzer';
 import { DexieCacheManager, CachedFlowChart } from './extension/storage/DexieCacheManager';
-import { FlowChartData } from './shared/types';
+import { FlowChartData } from '@daad/shared-types';
 import { VisualizeChangesCommand } from './extension/commands/visualizeChanges';
 
 let claudeClient: ClaudeClient | OpenRouterClient;
@@ -15,7 +15,7 @@ let cacheManager: DexieCacheManager | undefined;
 let statusBarItem: vscode.StatusBarItem;
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('DAAD - Diagram as a Delivery extension is now active!');
+  console.log('DAD - Diagram as a Delivery extension is now active!');
 
   try {
     // Create status bar item to show API provider
@@ -30,18 +30,18 @@ export async function activate(context: vscode.ExtensionContext) {
       claudeClient = new OpenRouterClient();
       const model = config.get<string>('openRouterModel') || 'qwen/qwen-2.5-coder-32b-instruct';
       const modelShort = model.split('/')[1]?.split('-')[0] || model;
-      statusBarItem.text = `$(globe) DAAD: OpenRouter (${modelShort})`;
-      statusBarItem.tooltip = `DAAD using OpenRouter API\nModel: ${model}`;
+      statusBarItem.text = `$(globe) DAD: OpenRouter (${modelShort})`;
+      statusBarItem.tooltip = `DAD using OpenRouter API\nModel: ${model}`;
       statusBarItem.show();
-      console.log('DAAD: Using OpenRouter API for code analysis');
-      vscode.window.showInformationMessage(`DAAD: Using OpenRouter API (${model})`);
+      console.log('DAD: Using OpenRouter API for code analysis');
+      vscode.window.showInformationMessage(`DAD: Using OpenRouter API (${model})`);
     } else {
       claudeClient = new ClaudeClient();
-      statusBarItem.text = `$(terminal) DAAD: Claude CLI`;
-      statusBarItem.tooltip = 'DAAD using Claude Code CLI';
+      statusBarItem.text = `$(terminal) DAD: Claude CLI`;
+      statusBarItem.tooltip = 'DAD using Claude Code CLI';
       statusBarItem.show();
-      console.log('DAAD: Using Claude Code CLI for code analysis');
-      vscode.window.showInformationMessage('DAAD: Using Claude Code CLI');
+      console.log('DAD: Using Claude Code CLI for code analysis');
+      vscode.window.showInformationMessage('DAD: Using Claude Code CLI');
     }
 
     // Watch for configuration changes
@@ -53,7 +53,7 @@ export async function activate(context: vscode.ExtensionContext) {
         ) {
           vscode.window
             .showWarningMessage(
-              'DAAD: API provider settings changed. Please reload the window to apply changes.',
+              'DAD: API provider settings changed. Please reload the window to apply changes.',
               'Reload Window'
             )
             .then(selection => {
@@ -81,7 +81,7 @@ export async function activate(context: vscode.ExtensionContext) {
       } catch (error) {
         console.error('Failed to initialize storage/cache:', error);
         vscode.window.showWarningMessage(
-          'DAAD: Failed to initialize cache. Extension will work without caching.'
+          'DAD: Failed to initialize cache. Extension will work without caching.'
         );
       }
 
@@ -885,8 +885,8 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   });
 } catch (error) {
-  console.error('DAAD activation error:', error);
-  vscode.window.showErrorMessage(`DAAD failed to activate: ${error}`);
+  console.error('DAD activation error:', error);
+  vscode.window.showErrorMessage(`DAD failed to activate: ${error}`);
   throw error;
 }
 }

@@ -12,7 +12,7 @@ import { Blob } from 'buffer';
 import Dexie, { Table } from 'dexie';
 import { exportDB, importInto } from 'dexie-export-import';
 
-import { FlowChartData } from '../../shared/types';
+import { FlowChartData } from '@daad/shared-types';
 
 export interface CachedFlowChart {
   id: string;
@@ -55,7 +55,7 @@ interface FlowCacheRecord {
   accessCount: number;
 }
 
-class DaadCacheDB extends Dexie {
+class DadCacheDB extends Dexie {
   flowCache!: Table<FlowCacheRecord, string>;
 
   constructor() {
@@ -73,7 +73,7 @@ class DaadCacheDB extends Dexie {
 export class DexieCacheManager {
   private static readonly CACHE_FILE = 'cache.dexie.json';
 
-  private readonly db: DaadCacheDB;
+  private readonly db: DadCacheDB;
   private readonly cacheFilePath: string;
   private cacheHits = 0;
   private cacheMisses = 0;
@@ -110,7 +110,7 @@ export class DexieCacheManager {
     return path.normalize(path.join(this.workspaceRoot, filePath));
   };
 
-  private constructor(private readonly workspaceRoot: string, db: DaadCacheDB, cacheFilePath: string) {
+  private constructor(private readonly workspaceRoot: string, db: DadCacheDB, cacheFilePath: string) {
     this.db = db;
     this.cacheFilePath = cacheFilePath;
   }
@@ -124,7 +124,7 @@ export class DexieCacheManager {
     await fs.mkdir(cacheDir, { recursive: true });
     const cacheFilePath = path.join(cacheDir, DexieCacheManager.CACHE_FILE);
 
-    const db = new DaadCacheDB();
+    const db = new DadCacheDB();
     await db.open();
 
     const manager = new DexieCacheManager(workspaceRoot, db, cacheFilePath);

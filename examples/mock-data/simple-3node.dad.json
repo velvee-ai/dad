@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "simple-app",
+    "generatedAt": "2025-01-01T00:00:00.000Z",
+    "generatedBy": "dad-mock-data",
+    "totalNodes": 3,
+    "totalEdges": 1
+  },
+  "nodes": [
+    {
+      "id": "landscape:simple-app",
+      "c4Level": "landscape",
+      "name": "Simple App",
+      "type": "landscape",
+      "designSpec": "element:\n  type: landscape\n  name: Simple App\n  description: A minimal example application",
+      "documentation": "# Simple App\nA minimal 3-node example for testing the DAD visualizer.",
+      "parentId": null,
+      "childIds": ["context:web-app"],
+      "tags": []
+    },
+    {
+      "id": "context:web-app",
+      "c4Level": "context",
+      "name": "Web Application",
+      "type": "softwareSystem",
+      "designSpec": "element:\n  type: softwareSystem\n  name: Web Application\n  description: Main web application",
+      "documentation": "# Web Application\nThe primary web application that users interact with.",
+      "parentId": "landscape:simple-app",
+      "childIds": ["container:api"],
+      "technology": "TypeScript/React",
+      "tags": []
+    },
+    {
+      "id": "container:api",
+      "c4Level": "container",
+      "name": "API Server",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: API Server\n  description: REST API backend",
+      "documentation": "# API Server\nHandles all API requests from the frontend.",
+      "parentId": "context:web-app",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": "context:web-app",
+      "target": "container:api",
+      "label": "Makes API calls to",
+      "technology": "REST/HTTPS",
+      "c4Level": "context",
+      "tags": []
+    }
+  ]
+}

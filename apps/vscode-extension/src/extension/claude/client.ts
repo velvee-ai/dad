@@ -1,13 +1,13 @@
 import { spawn } from 'child_process';
 import * as vscode from 'vscode';
-import { FlowChartData } from '../../shared/types';
+import { FlowChartData } from '@daad/shared-types';
 import { LayoutEngine } from '../utils/layoutEngine';
 
 export class ClaudeClient {
   private outputChannel: vscode.OutputChannel;
 
   constructor() {
-    this.outputChannel = vscode.window.createOutputChannel('DAAD');
+    this.outputChannel = vscode.window.createOutputChannel('DAD');
   }
 
   async analyzeCode(code: string, language: string): Promise<FlowChartData> {

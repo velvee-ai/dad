@@ -23,7 +23,7 @@ export class C4AnalysisClient {
   private openRouterModel: string;
 
   constructor() {
-    this.outputChannel = vscode.window.createOutputChannel('DAAD C4');
+    this.outputChannel = vscode.window.createOutputChannel('DAD C4');
 
     const config = vscode.workspace.getConfiguration('daad');
     this.provider = (config.get<string>('apiProvider') || 'claude') as 'claude' | 'openrouter';
@@ -92,7 +92,7 @@ export class C4AnalysisClient {
       headers: {
         'Authorization': `Bearer ${this.openRouterApiKey}`,
         'Content-Type': 'application/json',
-        'X-Title': 'DAAD - Diagram as a Delivery',
+        'X-Title': 'DAD - Diagram as a Delivery',
       },
       body: JSON.stringify({
         model: this.openRouterModel,
