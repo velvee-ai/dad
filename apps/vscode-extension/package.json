@@ -1,5 +1,5 @@
 {
-  "name": "@dad/vscode-extension",
+  "name": "dad-vscode-extension",
   "displayName": "DAD - Diagram as a Delivery",
   "description": "Visualize code flow and architecture using AI (OpenRouter/Claude) and React Flow",
   "version": "0.0.1",
@@ -215,7 +215,7 @@
     "dev": "webpack --mode development --watch",
     "compile": "NODE_ENV=production webpack --mode production",
     "watch": "webpack --mode development --watch",
-    "package": "vsce package",
+    "package": "vsce package --no-dependencies",
     "install-extension": "code --install-extension dad-0.0.1.vsix",
     "pretest": "pnpm run compile",
     "test": "node ./out/test/runTest.js",
