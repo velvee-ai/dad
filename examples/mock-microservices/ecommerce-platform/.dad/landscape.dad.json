@@ -2,7 +2,7 @@
   "version": "1.0",
   "metadata": {
     "projectName": "ecommerce-platform",
-    "generatedAt": "2026-02-07T07:36:47.202Z",
+    "generatedAt": "2026-02-07T07:40:35.780Z",
     "generatedBy": "dad-pipeline/0.0.1",
     "totalNodes": 29,
     "totalEdges": 10
@@ -37,8 +37,8 @@
       "parentId": "landscape:ecommerce-platform",
       "childIds": [
         "container:api-gateway",
-        "container:order-service",
         "container:user-service",
+        "container:order-service",
         "container:notification-service",
         "container:shared",
         "datastore:postgresql",
@@ -113,28 +113,6 @@
       "tags": []
     },
     {
-      "id": "container:order-service",
-      "c4Level": "container",
-      "name": "Order Service",
-      "type": "container",
-      "designSpec": "",
-      "documentation": "Order Service container",
-      "sourceMapping": {
-        "filePath": "ecommerce-platform/services/order-service",
-        "language": "typescript"
-      },
-      "parentId": "system:ecommerce-platform",
-      "childIds": [
-        "component:ordercontroller",
-        "component:orderevents",
-        "component:order",
-        "component:orderservice",
-        "component:paymentservice"
-      ],
-      "technology": "TypeScript/Express",
-      "tags": []
-    },
-    {
       "id": "container:user-service",
       "c4Level": "container",
       "name": "User Service",
@@ -152,6 +130,28 @@
         "component:userrepository",
         "component:emailservice",
         "component:userservice"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
+    {
+      "id": "container:order-service",
+      "c4Level": "container",
+      "name": "Order Service",
+      "type": "container",
+      "designSpec": "",
+      "documentation": "Order Service container",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/order-service",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:ordercontroller",
+        "component:orderevents",
+        "component:order",
+        "component:orderservice",
+        "component:paymentservice"
       ],
       "technology": "TypeScript/Express",
       "tags": []
@@ -323,96 +323,6 @@
       ]
     },
     {
-      "id": "component:ordercontroller",
-      "c4Level": "component",
-      "name": "Order Controller",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Order Controller component",
-      "sourceMapping": {
-        "filePath": "src/controllers/orderController.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:order-service",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "controller"
-      ]
-    },
-    {
-      "id": "component:orderevents",
-      "c4Level": "component",
-      "name": "Order Events",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Order Events component",
-      "sourceMapping": {
-        "filePath": "src/events/orderEvents.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:order-service",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "event"
-      ]
-    },
-    {
-      "id": "component:order",
-      "c4Level": "component",
-      "name": "Order",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Order component",
-      "sourceMapping": {
-        "filePath": "src/models/order.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:order-service",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "model"
-      ]
-    },
-    {
-      "id": "component:orderservice",
-      "c4Level": "component",
-      "name": "Order Service",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Order Service component",
-      "sourceMapping": {
-        "filePath": "src/services/orderService.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:order-service",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "service"
-      ]
-    },
-    {
-      "id": "component:paymentservice",
-      "c4Level": "component",
-      "name": "Payment Service",
-      "type": "component",
-      "designSpec": "",
-      "documentation": "Payment Service component",
-      "sourceMapping": {
-        "filePath": "src/services/paymentService.ts",
-        "language": "typescript"
-      },
-      "parentId": "container:order-service",
-      "childIds": [],
-      "technology": "TypeScript/Express",
-      "tags": [
-        "service"
-      ]
-    },
-    {
       "id": "component:usercontroller",
       "c4Level": "component",
       "name": "User Controller",
@@ -503,6 +413,96 @@
       ]
     },
     {
+      "id": "component:ordercontroller",
+      "c4Level": "component",
+      "name": "Order Controller",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order Controller component",
+      "sourceMapping": {
+        "filePath": "src/controllers/orderController.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "controller"
+      ]
+    },
+    {
+      "id": "component:orderevents",
+      "c4Level": "component",
+      "name": "Order Events",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order Events component",
+      "sourceMapping": {
+        "filePath": "src/events/orderEvents.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "event"
+      ]
+    },
+    {
+      "id": "component:order",
+      "c4Level": "component",
+      "name": "Order",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order component",
+      "sourceMapping": {
+        "filePath": "src/models/order.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "model"
+      ]
+    },
+    {
+      "id": "component:orderservice",
+      "c4Level": "component",
+      "name": "Order Service",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Order Service component",
+      "sourceMapping": {
+        "filePath": "src/services/orderService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "service"
+      ]
+    },
+    {
+      "id": "component:paymentservice",
+      "c4Level": "component",
+      "name": "Payment Service",
+      "type": "component",
+      "designSpec": "",
+      "documentation": "Payment Service component",
+      "sourceMapping": {
+        "filePath": "src/services/paymentService.ts",
+        "language": "typescript"
+      },
+      "parentId": "container:order-service",
+      "childIds": [],
+      "technology": "TypeScript/Express",
+      "tags": [
+        "service"
+      ]
+    },
+    {
       "id": "component:schemas",
       "c4Level": "component",
       "name": "Schemas",
@@ -556,6 +556,17 @@
       ]
     },
     {
+      "id": "edge:user-service-to-postgresql",
+      "source": "container:user-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
+      ]
+    },
+    {
       "id": "edge:order-service-to-postgresql",
       "source": "container:order-service",
       "target": "datastore:postgresql",
@@ -575,17 +586,6 @@
       "c4Level": "container",
       "tags": [
         "external"
-      ]
-    },
-    {
-      "id": "edge:user-service-to-postgresql",
-      "source": "container:user-service",
-      "target": "datastore:postgresql",
-      "label": "Reads/writes data",
-      "technology": "PostgreSQL protocol",
-      "c4Level": "container",
-      "tags": [
-        "data"
       ]
     },
     {
@@ -611,8 +611,8 @@
       ]
     },
     {
-      "id": "edge:order-service-to-notification-service",
-      "source": "container:order-service",
+      "id": "edge:user-service-to-notification-service",
+      "source": "container:user-service",
       "target": "container:notification-service",
       "label": "Publishes events to",
       "technology": "Kafka events",
@@ -623,8 +623,8 @@
       ]
     },
     {
-      "id": "edge:user-service-to-notification-service",
-      "source": "container:user-service",
+      "id": "edge:order-service-to-notification-service",
+      "source": "container:order-service",
       "target": "container:notification-service",
       "label": "Publishes events to",
       "technology": "Kafka events",
