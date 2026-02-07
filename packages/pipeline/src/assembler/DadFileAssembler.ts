@@ -9,8 +9,10 @@ import type {
   AnalyzedFile,
   DadFileSet,
 } from '../types';
-import { landscapeId } from './IdGenerator';
+import { landscapeId, codeUnitId } from './IdGenerator';
 import { EdgeInference } from './EdgeInference';
+import { PersonDetector } from './PersonDetector';
+import { ViewsStylesGenerator } from './ViewsStylesGenerator';
 
 /**
  * Stage 4: Assembles DadFile structures from scan results, component groups,
@@ -18,6 +20,8 @@ import { EdgeInference } from './EdgeInference';
  */
 export class DadFileAssembler {
   private edgeInference = new EdgeInference();
+  private personDetector = new PersonDetector();
+  private viewsStylesGenerator = new ViewsStylesGenerator();
 
   /**
    * Assemble DadFiles from pipeline data.
@@ -34,8 +38,16 @@ export class DadFileAssembler {
     const componentNodes = this.buildComponentNodes(components);
     const codeNodes = this.buildCodeNodes(analyzedFiles, components);
 
+    // Detect persons heuristically
+    const detectedPersons = this.personDetector.detect(scanResult, landscapeNode.id);
+    const personNodes = detectedPersons.map(p => p.node);
+    const personEdges = detectedPersons.flatMap(p => p.edges);
+
     // Update childIds for landscape and context nodes
-    landscapeNode.childIds = contextNodes.map(n => n.id);
+    landscapeNode.childIds = [
+      ...contextNodes.map(n => n.id),
+      ...personNodes.map(n => n.id),
+    ];
 
     for (const sys of scanResult.systems) {
       const sysNode = contextNodes.find(n => n.id === sys.id);
@@ -49,13 +61,28 @@ export class DadFileAssembler {
 
     // Build edges
     const containerEdges = this.edgeInference.inferContainerEdges(scanResult);
-    const componentEdges = this.edgeInference.inferComponentEdges(analyzedFiles, components);
+    // Use LSP-based import edges when imports are available; fall back to role-based heuristics
+    const hasImports = analyzedFiles.some(f => f.imports.length > 0);
+    const importEdges = hasImports
+      ? this.edgeInference.inferComponentEdges(analyzedFiles, components)
+      : [];
+    const roleEdges = this.edgeInference.inferComponentEdgesFromRoles(components, containerEdges);
+    // Merge: import edges take priority, add role edges for pairs not covered
+    const importEdgeKeys = new Set(importEdges.map(e => `${e.source}->${e.target}`));
+    const componentEdges = [
+      ...importEdges,
+      ...roleEdges.filter(e => !importEdgeKeys.has(`${e.source}->${e.target}`)),
+    ];
     const contextEdges = this.edgeInference.inferContextEdges(scanResult);
 
-    const allNodes = [landscapeNode, ...contextNodes, ...containerNodes, ...componentNodes, ...codeNodes];
-    const allEdges = [...contextEdges, ...containerEdges, ...componentEdges];
+    const allNodes = [landscapeNode, ...contextNodes, ...personNodes, ...containerNodes, ...componentNodes, ...codeNodes];
+    const allEdges = [...contextEdges, ...personEdges, ...containerEdges, ...componentEdges];
 
     const metadata = this.buildMetadata(scanResult.projectName, allNodes.length, allEdges.length);
+
+    // Generate views and styles
+    const views = this.viewsStylesGenerator.generateViews(allNodes);
+    const styles = this.viewsStylesGenerator.generateStyles();
 
     return {
       landscape: this.filterByLevel('landscape', allNodes, allEdges, metadata),
@@ -68,6 +95,8 @@ export class DadFileAssembler {
         metadata: { ...metadata, totalNodes: allNodes.length, totalEdges: allEdges.length },
         nodes: allNodes,
         edges: allEdges,
+        views,
+        styles,
       },
     };
   }
@@ -194,6 +223,7 @@ export class DadFileAssembler {
     components: ComponentGroup[]
   ): DadNode[] {
     const nodes: DadNode[] = [];
+    const seen = new Set<string>();
 
     for (const file of files) {
       for (const symbol of file.symbols) {
@@ -202,8 +232,12 @@ export class DadFileAssembler {
           c.sourceFiles.includes(file.filePath)
         );
 
+        const id = codeUnitId(symbol.name);
+        if (seen.has(id)) continue;
+        seen.add(id);
+
         nodes.push({
-          id: `code:${symbol.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          id,
           c4Level: 'code',
           name: symbol.kind === 'function' || symbol.kind === 'method'
             ? `${symbol.name}()`
@@ -223,6 +257,37 @@ export class DadFileAssembler {
           technology: file.language === 'typescript' ? 'TypeScript' : file.language,
           tags: [symbol.kind],
         });
+
+        // Also create nodes for class members (methods)
+        if (symbol.members) {
+          for (const member of symbol.members) {
+            const memberId = codeUnitId(`${symbol.name}-${member.name}`);
+            if (seen.has(memberId)) continue;
+            seen.add(memberId);
+
+            nodes.push({
+              id: memberId,
+              c4Level: 'code',
+              name: member.kind === 'function' || member.kind === 'method'
+                ? `${member.name}()`
+                : member.name,
+              type: 'codeUnit',
+              codeUnitKind: member.kind,
+              designSpec: '',
+              documentation: member.docComment || `${member.kind}: ${symbol.name}.${member.name}`,
+              sourceMapping: {
+                filePath: file.filePath,
+                startLine: member.startLine,
+                endLine: member.endLine,
+                language: file.language,
+              },
+              parentId: parentComponent?.id,
+              childIds: [],
+              technology: file.language === 'typescript' ? 'TypeScript' : file.language,
+              tags: [member.kind],
+            });
+          }
+        }
       }
     }
 

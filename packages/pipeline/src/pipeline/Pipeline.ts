@@ -5,8 +5,10 @@ import type {
   AnalyzedFile,
   ComponentGroup,
 } from '../types';
+import * as path from 'path';
 import { FilesystemScanner } from '../scanner/FilesystemScanner';
 import { CodeAnalyzer } from '../analyzer/CodeAnalyzer';
+import { LightweightSymbolExtractor } from '../analyzer/LightweightSymbolExtractor';
 import { ComponentGrouper } from '../grouper/ComponentGrouper';
 import { DadFileAssembler } from '../assembler/DadFileAssembler';
 import { LLMEnricher } from '../enrichment/LLMEnricher';
@@ -49,7 +51,23 @@ export class Pipeline {
 
       this.progress('analyze', `Analyzed ${analyzedFiles.length} source files`, 40);
     } else {
-      this.progress('analyze', 'Skipping code analysis (no language service adapter)', 40);
+      // Fallback: lightweight symbol extraction (parse-only, no type checking)
+      this.progress('analyze', 'Extracting symbols via lightweight parser...', 20);
+      const extractor = new LightweightSymbolExtractor();
+
+      for (const container of scanResult.containerMeta) {
+        for (const relFile of container.sourceFiles) {
+          const absPath = path.resolve(this.config.rootPath, container.path, relFile);
+          const result = extractor.extractFromFile(absPath, container.id);
+          if (result) {
+            // Store relative filePath for consistency with CodeAnalyzer
+            result.filePath = relFile;
+            analyzedFiles.push(result);
+          }
+        }
+      }
+
+      this.progress('analyze', `Extracted symbols from ${analyzedFiles.length} files`, 40);
     }
 
     // Stage 3: Group into components

@@ -297,7 +297,10 @@ export class ContainerDetector {
   }
 
   private findSourceFiles(dir: string, extensions: string[]): string[] {
-    const pattern = `**/*.{${extensions.join(',')}}`;
+    // fast-glob requires at least 2 items for brace expansion; use plain glob for single ext
+    const pattern = extensions.length === 1
+      ? `**/*.${extensions[0]}`
+      : `**/*.{${extensions.join(',')}}`;
     try {
       return fg.sync(pattern, {
         cwd: dir,

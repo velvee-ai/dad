@@ -223,4 +223,107 @@ describe('Pipeline (integration)', () => {
       }
     }
   });
+
+  // ============================================================
+  // New tests for Gap implementations
+  // ============================================================
+
+  it('should detect person nodes heuristically (Gap 6)', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    const persons = result.combined.nodes.filter(n => n.type === 'person');
+    expect(persons.length).toBeGreaterThanOrEqual(1);
+
+    // Customer should be detected (React frontend exists)
+    const customer = persons.find(p => p.name === 'Customer');
+    expect(customer).toBeDefined();
+    expect(customer!.scope).toBe('external');
+
+    // Admin should be detected (admin-dashboard exists)
+    const admin = persons.find(p => p.name === 'Admin User');
+    expect(admin).toBeDefined();
+    expect(admin!.scope).toBe('internal');
+  });
+
+  it('should produce person→container edges (Gap 6)', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    const personEdges = result.combined.edges.filter(
+      e => e.source.startsWith('person:')
+    );
+    expect(personEdges.length).toBeGreaterThan(0);
+  });
+
+  it('should produce component-level edges from role heuristics (Gap 2)', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    const componentEdges = result.combined.edges.filter(e => e.c4Level === 'component');
+    expect(componentEdges.length).toBeGreaterThan(0);
+
+    // Should have controller→service or route→middleware edges
+    const internalEdges = componentEdges.filter(e => e.tags?.includes('internal'));
+    expect(internalEdges.length).toBeGreaterThan(0);
+  });
+
+  it('should produce code unit nodes via lightweight extraction (Gap 3)', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    const codeUnits = result.combined.nodes.filter(n => n.type === 'codeUnit');
+    expect(codeUnits.length).toBeGreaterThan(0);
+
+    // Should have Python class code units from notification-service
+    const pythonUnits = codeUnits.filter(n =>
+      n.technology === 'python'
+    );
+    expect(pythonUnits.length).toBeGreaterThan(0);
+  });
+
+  it('should include views and styles in combined output (Gap 5)', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    // Views
+    expect(result.combined.views).toBeDefined();
+    expect(result.combined.views!.systemLandscape).toBeDefined();
+    expect(result.combined.views!.systemContext).toBeDefined();
+    expect(result.combined.views!.systemContext!.length).toBeGreaterThan(0);
+    expect(result.combined.views!.container).toBeDefined();
+    expect(result.combined.views!.container!.length).toBeGreaterThan(0);
+
+    // Styles
+    expect(result.combined.styles).toBeDefined();
+    expect(result.combined.styles!.elements.length).toBeGreaterThan(0);
+    expect(result.combined.styles!.relationships.length).toBeGreaterThan(0);
+  });
+
+  it('should produce notification-service handler components (Gap 1)', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    const notificationContainer = result.combined.nodes.find(
+      n => n.id === 'container:notification-service'
+    );
+    expect(notificationContainer).toBeDefined();
+    expect(notificationContainer!.childIds.length).toBeGreaterThan(0);
+
+    // Should have handler components
+    const handlerComponents = result.combined.nodes.filter(
+      n => n.type === 'component' && n.parentId === 'container:notification-service' && n.tags?.includes('handler')
+    );
+    expect(handlerComponents.length).toBeGreaterThan(0);
+  });
+
+  it('should produce overall node/edge counts closer to reference', async () => {
+    const pipeline = new Pipeline({ rootPath: MOCK_ROOT });
+    const result = await pipeline.run();
+
+    // Reference has 40 nodes and 28 edges
+    // We should be significantly closer now
+    expect(result.combined.nodes.length).toBeGreaterThanOrEqual(30);
+    expect(result.combined.edges.length).toBeGreaterThanOrEqual(15);
+  });
 });
