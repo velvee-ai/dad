@@ -4,15 +4,15 @@
 
 A monorepo containing all DAD tools for AI-powered code visualization and diagram generation.
 
-**[📋 View Complete Feature List](./FEATURES.md)** - Detailed implementation status of all features
+**[View Complete Feature List](./FEATURES.md)** - Detailed implementation status of all features
 
-## 🎯 Philosophy
+## Philosophy
 
 - **D**iagram **a**s **a** **D**elivery - Ship understanding, not just code
 - **D**esign **a**s **a** **D**iagram - Think visually, code better
 - **D**ata **a**s **a** **D**iagram - See the flow, grasp the logic
 
-## 📦 Packages
+## Packages
 
 ### Applications
 
@@ -21,29 +21,20 @@ A monorepo containing all DAD tools for AI-powered code visualization and diagra
   - React Flow visualization
   - Works with any language
 
-- **[@dad/cli](./apps/cli)** - Command-line tool for diagram generation (Go + D2)
-  - Analyze code from terminal
-  - Generate D2 diagrams
-  - Export to multiple formats
-
-- **[@dad/workers](./apps/workers)** - Cloudflare Workers backend API
-  - Code analysis API
-  - Diagram storage
-  - Export services
-
 ### Shared Packages
 
 - **[@dad/shared-types](./packages/shared-types)** - TypeScript types and interfaces
 - **[@dad/diagram-schema](./packages/diagram-schema)** - Schema validation & format conversion
+- **[@dad/generation](./packages/generation)** - DadStorage, C4Generator, ProjectScanner
+- **[@dad/pipeline](./packages/pipeline)** - LSP/AST analysis engine
+- **[@dad/visualizer](./packages/visualizer)** - React Flow visualization components
 - **[@dad/config](./packages/config)** - Shared configuration files
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and PNPM 8+
-- Go 1.21+ (for CLI)
-- Cloudflare Wrangler CLI (for Workers)
 
 ### Installation
 
@@ -74,30 +65,13 @@ pnpm lint
 pnpm format
 ```
 
-## 📚 Documentation
+## Documentation
 
 ### Getting Started
 
-- **[Complete Setup Guide](./docs/setup/SETUP.md)** - Full system setup (CLI, Workers, R2, KV, Secrets)
+- **[Complete Setup Guide](./docs/setup/SETUP.md)** - Full system setup
 - **[Quick Start Guide](./docs/guides/QUICK_START.md)** - Get up and running quickly
 - **[Installation Guide](./docs/guides/INSTALLATION.md)** - VSCode extension installation
-- **[Deployment Checklist](./docs/guides/DEPLOYMENT_CHECKLIST.md)** - Production deployment guide
-
-### Infrastructure & Setup
-
-- **[R2 Storage Setup](./docs/setup/R2_SETUP.md)** - Cloudflare R2 bucket configuration
-- **[KV Cache Setup](./docs/setup/CACHING.md)** - Cache layer configuration
-- **[Monitoring Setup](./docs/setup/MONITORING.md)** - Metrics and alerting setup
-
-### Architecture & Implementation
-
-- **[Batch Processing](./docs/BATCH_PROCESSING.md)** - Batch diagram generation architecture
-- **[SVG Rendering Implementation](./docs/architecture/SVG_RENDERING_IMPLEMENTATION.md)** - SVG export system
-- **[Monitoring Implementation](./docs/architecture/MONITORING_IMPLEMENTATION.md)** - Metrics and alerting
-- **[Caching Integration](./docs/architecture/CACHING_INTEGRATION.md)** - KV cache layer
-- **[Diagram Storage Architecture](./docs/architecture/DIAGRAM_STORAGE_ARCHITECTURE.md)** - R2 storage system
-- **[Cleanup Worker Implementation](./docs/architecture/CLEANUP_WORKER_IMPLEMENTATION.md)** - Scheduled cleanup
-- **[Preview Panel Implementation](./docs/architecture/PREVIEW_PANEL_IMPLEMENTATION.md)** - VSCode preview panel
 
 ### Development Guides
 
@@ -107,36 +81,34 @@ pnpm format
 ### Package-Specific Documentation
 
 - [VSCode Extension README](./apps/vscode-extension/README.md)
-- [CLI README](./apps/cli/README.md)
-- [Workers README](./apps/workers/README.md)
 
 ### Historical Documentation
 
 Archived planning and migration documents can be found in [docs/archive](./docs/archive/)
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 dad-monorepo/
 ├── apps/
-│   ├── vscode-extension/    # VSCode plugin (TypeScript + React) - PRODUCTION READY ✅
-│   ├── cli/                  # CLI tool (Go + D2) - PARTIAL (SVG export works)
-│   └── workers/              # Backend API (TypeScript + Cloudflare) - PRODUCTION READY ✅
+│   └── vscode-extension/    # VSCode plugin (TypeScript + React)
 ├── packages/
 │   ├── shared-types/        # Shared TypeScript types
 │   ├── diagram-schema/      # Schema validation & format conversion
+│   ├── generation/          # DadStorage, C4Generator, ProjectScanner
+│   ├── pipeline/            # LSP/AST analysis engine
+│   ├── visualizer/          # React Flow visualization components
 │   └── config/              # Shared ESLint and TypeScript configs
 ├── docs/
 │   ├── guides/              # User guides and tutorials
 │   ├── architecture/        # Implementation and architecture docs
 │   └── archive/             # Historical planning documents
-├── examples/                # Example code and usage patterns
 ├── turbo.json               # Turborepo build pipeline config
 ├── pnpm-workspace.yaml      # PNPM workspace configuration
 └── package.json             # Root package.json
 ```
 
-## 🛠️ Development Workflow
+## Development Workflow
 
 ### Adding Dependencies
 
@@ -154,14 +126,11 @@ pnpm add -w <package>
 # Build VSCode extension
 turbo build --filter=@dad/vscode-extension
 
-# Build CLI
-turbo build --filter=@dad/cli
-
-# Run Workers in dev mode
-turbo dev --filter=@dad/workers
+# Build all shared packages
+turbo build --filter=./packages/*
 ```
 
-## 🎯 Benefits
+## Benefits
 
 1. **Code Reuse** - Share types and schemas across all projects
 2. **Unified Versioning** - Coordinate releases across packages
@@ -179,7 +148,7 @@ ISC
 
 ## Credits
 
-Built with ❤️ using:
+Built with:
 - [Claude AI](https://claude.ai) for code analysis
 - [React Flow](https://reactflow.dev) for visualization
 - [VSCode Extension API](https://code.visualstudio.com/api)
