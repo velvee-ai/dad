@@ -106,6 +106,9 @@ export interface VisualNodeData {
   documentation: string;
   sourceFilePath?: string;
 
+  // Cross-file navigation (landscape drill-down)
+  contextFilePath?: string;
+
   // Author mode status
   status?: string;
 

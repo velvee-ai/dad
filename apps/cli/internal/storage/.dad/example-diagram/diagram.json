@@ -1,7 +1,7 @@
 {
   "id": "example-diagram",
   "name": "Example Flow",
-  "timestamp": 1764139375486,
+  "timestamp": 1770491289275,
   "sourceFile": "example.go",
   "codeSnippet": "func example() {}",
   "language": "go",

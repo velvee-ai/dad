@@ -84,6 +84,10 @@ export function DadVisualizerWebview() {
     vscode.postMessage({ command: 'dadFileChanged', dadFile: updatedDad });
   }, []);
 
+  const handleNavigate = useCallback((filePath: string) => {
+    vscode.postMessage({ command: 'navigateDadFile', filePath });
+  }, []);
+
   if (error) {
     return (
       <div style={{
@@ -125,6 +129,7 @@ export function DadVisualizerWebview() {
       onApproveDesign={handleApproveDesign}
       onRejectDesign={handleRejectDesign}
       onDadFileChange={handleDadFileChange}
+      onNavigate={handleNavigate}
       style={{ width: '100%', height: '100vh' }}
     />
   );

@@ -11,7 +11,7 @@ interface DetectedPerson {
  * Runs in the assembler so persons exist even without LLM enrichment.
  */
 export class PersonDetector {
-  detect(scanResult: ScanResult, landscapeNodeId: string): DetectedPerson[] {
+  detect(scanResult: ScanResult): DetectedPerson[] {
     const results: DetectedPerson[] = [];
     const seenNames = new Set<string>();
 
@@ -36,7 +36,7 @@ export class PersonDetector {
         type: 'person',
         designSpec: '',
         documentation: 'End user who interacts with the system through a web browser or mobile app.',
-        parentId: landscapeNodeId,
+        parentId: null,
         childIds: [],
         scope: 'external',
         tags: ['external-person'],
@@ -105,7 +105,7 @@ export class PersonDetector {
         type: 'person',
         designSpec: '',
         documentation: 'Internal administrator who manages the platform via admin tools.',
-        parentId: landscapeNodeId,
+        parentId: null,
         childIds: [],
         scope: 'internal',
         tags: ['internal-person'],

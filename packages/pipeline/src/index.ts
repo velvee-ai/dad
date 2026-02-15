@@ -22,10 +22,23 @@ export { PersonDetector } from './assembler/PersonDetector';
 export { ViewsStylesGenerator } from './assembler/ViewsStylesGenerator';
 export * from './assembler/IdGenerator';
 
-// Enrichment (Stage 5)
+// Enrichment (Stage 4.5 + Stage 5)
+export { StaticEnricher } from './enrichment/StaticEnricher';
 export { LLMEnricher } from './enrichment/LLMEnricher';
 export { PromptBuilder } from './enrichment/PromptBuilder';
 export { MockLLMProvider, ClaudeProvider, OpenRouterProvider } from './enrichment/LLMProvider';
+
+// Landscape Aggregator
+export { LandscapeAggregator } from './landscape/LandscapeAggregator';
+export { CrossSystemEdgeInference } from './landscape/CrossSystemEdgeInference';
+export type {
+  LandscapeWorkspaceConfig,
+  LandscapeSystemEntry,
+  DeclaredRelationship,
+  LandscapeAggregatorConfig,
+  LandscapeResult,
+  SystemSummary,
+} from './landscape/types';
 
 // Types
 export type {

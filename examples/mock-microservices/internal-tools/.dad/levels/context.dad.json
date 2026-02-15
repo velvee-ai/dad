@@ -1,0 +1,77 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "projectName": "internal-tools",
+    "generatedAt": "2026-02-07T20:38:44.496Z",
+    "generatedBy": "dad-pipeline/0.0.1",
+    "totalNodes": 4,
+    "totalEdges": 1
+  },
+  "nodes": [
+    {
+      "id": "system:internal-tools",
+      "c4Level": "context",
+      "name": "Internal Tools",
+      "type": "softwareSystem",
+      "designSpec": "",
+      "documentation": "Internal Tools software system",
+      "parentId": null,
+      "childIds": [
+        "container:admin-dashboard"
+      ],
+      "technology": "TypeScript/React",
+      "tags": []
+    },
+    {
+      "id": "person:customer",
+      "c4Level": "context",
+      "name": "Customer",
+      "type": "person",
+      "designSpec": "",
+      "documentation": "End user who interacts with the system through a web browser or mobile app.",
+      "parentId": null,
+      "childIds": [],
+      "scope": "external",
+      "tags": [
+        "external-person"
+      ]
+    },
+    {
+      "id": "person:admin-user",
+      "c4Level": "context",
+      "name": "Admin User",
+      "type": "person",
+      "designSpec": "",
+      "documentation": "Internal administrator who manages the platform via admin tools.",
+      "parentId": null,
+      "childIds": [],
+      "scope": "internal",
+      "tags": [
+        "internal-person"
+      ]
+    },
+    {
+      "id": "container:admin-dashboard",
+      "name": "Admin Dashboard",
+      "type": "container",
+      "c4Level": "container",
+      "designSpec": "",
+      "documentation": "",
+      "childIds": [],
+      "boundary": true
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:admin-to-admin-dashboard",
+      "source": "person:admin-user",
+      "target": "container:admin-dashboard",
+      "label": "Manages platform via",
+      "technology": "HTTPS",
+      "c4Level": "context",
+      "tags": [
+        "internal"
+      ]
+    }
+  ]
+}

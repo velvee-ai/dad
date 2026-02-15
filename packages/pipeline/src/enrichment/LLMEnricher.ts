@@ -189,14 +189,13 @@ export class LLMEnricher {
   private syncFromCombined(dadFileSet: DadFileSet): void {
     const combined = dadFileSet.combined;
 
-    dadFileSet.landscape.nodes = combined.nodes.filter(n => n.c4Level === 'landscape');
     dadFileSet.context.nodes = combined.nodes.filter(n => n.c4Level === 'context');
     dadFileSet.container.nodes = combined.nodes.filter(n => n.c4Level === 'container');
     dadFileSet.component.nodes = combined.nodes.filter(n => n.c4Level === 'component');
     dadFileSet.code.nodes = combined.nodes.filter(n => n.c4Level === 'code');
 
     // Update metadata counts
-    for (const level of ['landscape', 'context', 'container', 'component', 'code'] as const) {
+    for (const level of ['context', 'container', 'component', 'code'] as const) {
       dadFileSet[level].metadata.totalNodes = dadFileSet[level].nodes.length;
     }
   }

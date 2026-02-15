@@ -71,6 +71,7 @@ function translateNode(node: any, theme: C4Theme): Node<VisualNodeData> {
     designSpec: node.designSpec || '',
     documentation: node.documentation || '',
     sourceFilePath: node.sourceMapping?.filePath || undefined,
+    contextFilePath: node.contextFilePath || undefined,
     status,
     style,
   };

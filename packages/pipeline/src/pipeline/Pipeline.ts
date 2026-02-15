@@ -12,6 +12,7 @@ import { LightweightSymbolExtractor } from '../analyzer/LightweightSymbolExtract
 import { ComponentGrouper } from '../grouper/ComponentGrouper';
 import { DadFileAssembler } from '../assembler/DadFileAssembler';
 import { LLMEnricher } from '../enrichment/LLMEnricher';
+import { StaticEnricher } from '../enrichment/StaticEnricher';
 
 /**
  * Main pipeline orchestrator: scan → analyze → group → assemble → enrich.
@@ -102,7 +103,13 @@ export class Pipeline {
     const dadFileSet = assembler.assemble(scanResult, components, analyzedFiles);
     assembler.linkComponentsToContainers(dadFileSet);
 
-    this.progress('assemble', 'Assembly complete', 80);
+    this.progress('assemble', 'Assembly complete', 70);
+
+    // Stage 4.5: Static enrichment (always runs)
+    this.progress('static-enrich', 'Generating designSpec and documentation...', 70);
+    const staticEnricher = new StaticEnricher();
+    staticEnricher.enrich(dadFileSet, scanResult, components);
+    this.progress('static-enrich', 'Static enrichment complete', 80);
 
     // Stage 5: LLM enrichment (if provider is available)
     if (this.config.llmProvider) {

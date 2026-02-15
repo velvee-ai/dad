@@ -19,7 +19,8 @@
   "activationEvents": [
     "onCommand:dad.visualizeDadFile",
     "onCommand:dad.analyzeProject",
-    "onCommand:dad.enableAuthorMode"
+    "onCommand:dad.enableAuthorMode",
+    "onCommand:dad.generateLandscape"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -35,6 +36,10 @@
       {
         "command": "dad.enableAuthorMode",
         "title": "DAD: Enable Author Mode"
+      },
+      {
+        "command": "dad.generateLandscape",
+        "title": "DAD: Generate Landscape"
       }
     ],
     "menus": {
@@ -46,6 +51,11 @@
         },
         {
           "command": "dad.analyzeProject",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        },
+        {
+          "command": "dad.generateLandscape",
           "when": "explorerResourceIsFolder",
           "group": "navigation"
         }
@@ -82,6 +92,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.74.0",
+    "@dad/generation": "workspace:*",
     "@dad/pipeline": "workspace:*",
     "@dad/shared-types": "workspace:*",
     "@dad/visualizer": "workspace:*",

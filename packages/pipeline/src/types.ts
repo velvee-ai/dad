@@ -56,6 +56,8 @@ export interface DadNode {
   containerSubtype?: ContainerSubtype;
   codeUnitKind?: CodeUnitKind;
   status?: DadElementStatus;
+  boundary?: boolean;            // true = reference copy from another level
+  contextFilePath?: string;      // Relative path to this system's context .dad.json
 }
 
 export interface DadEdge {
@@ -241,7 +243,6 @@ export interface DadFileSet {
   component: DadFile;
   container: DadFile;
   context: DadFile;
-  landscape: DadFile;
   combined: DadFile;
 }
 

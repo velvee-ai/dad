@@ -1,6 +1,7 @@
 export { C4Generator } from './generator/C4Generator';
 export { ProjectScanner } from './scanner/projectScanner';
 export { DadStorage } from './storage/DadStorage';
+export type { DadFileSetInput, DadManifest } from './storage/DadStorage';
 export {
   buildLandscapePrompt,
   buildContainerPrompt,

@@ -33,13 +33,13 @@ describe('PersonDetector', () => {
       ],
     });
 
-    const results = detector.detect(scanResult, 'landscape:test');
+    const results = detector.detect(scanResult);
     const customer = results.find(r => r.node.name === 'Customer');
 
     expect(customer).toBeDefined();
     expect(customer!.node.type).toBe('person');
     expect(customer!.node.scope).toBe('external');
-    expect(customer!.node.parentId).toBe('landscape:test');
+    expect(customer!.node.parentId).toBeNull();
     expect(customer!.edges.length).toBeGreaterThan(0);
     expect(customer!.edges[0].target).toBe('container:web-frontend');
   });
@@ -60,7 +60,7 @@ describe('PersonDetector', () => {
       ],
     });
 
-    const results = detector.detect(scanResult, 'landscape:test');
+    const results = detector.detect(scanResult);
     const admin = results.find(r => r.node.name === 'Admin User');
 
     expect(admin).toBeDefined();
@@ -96,7 +96,7 @@ describe('PersonDetector', () => {
       ],
     });
 
-    const results = detector.detect(scanResult, 'landscape:test');
+    const results = detector.detect(scanResult);
     expect(results.length).toBe(2);
     expect(results.map(r => r.node.name).sort()).toEqual(['Admin User', 'Customer']);
   });
@@ -117,7 +117,7 @@ describe('PersonDetector', () => {
       ],
     });
 
-    const results = detector.detect(scanResult, 'landscape:test');
+    const results = detector.detect(scanResult);
     const customer = results.find(r => r.node.name === 'Customer');
 
     // Customer is detected because React exists, but edge should go to gateway (none exists)
@@ -144,7 +144,7 @@ describe('PersonDetector', () => {
       ],
     });
 
-    const results = detector.detect(scanResult, 'landscape:test');
+    const results = detector.detect(scanResult);
     expect(results.length).toBe(0);
   });
 
@@ -164,7 +164,7 @@ describe('PersonDetector', () => {
       ],
     });
 
-    const results = detector.detect(scanResult, 'landscape:test');
+    const results = detector.detect(scanResult);
     const customer = results.find(r => r.node.name === 'Customer');
     expect(customer).toBeDefined();
   });
