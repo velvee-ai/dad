@@ -3,7 +3,9 @@ import type {
   AnalyzedFile,
   ComponentGroup,
   ScanResult,
+  C4Level,
 } from '../types';
+import { personId } from './IdGenerator';
 import { ExternalServiceRegistry } from '../scanner/ExternalServiceRegistry';
 
 /**
@@ -11,6 +13,87 @@ import { ExternalServiceRegistry } from '../scanner/ExternalServiceRegistry';
  */
 export class EdgeInference {
   private externalRegistry = new ExternalServiceRegistry();
+
+  /**
+   * Create edges from LLM profile relationships.
+   * Resolves source/target names to node IDs and assigns appropriate c4Level.
+   */
+  inferEdgesFromProfile(scanResult: ScanResult): DadEdge[] {
+    if (!scanResult.profileRelationships?.length) return [];
+
+    const edges: DadEdge[] = [];
+    const seen = new Set<string>();
+
+    // Build name→id lookup maps
+    const nameToId = new Map<string, string>();
+    for (const c of scanResult.containerMeta) {
+      nameToId.set(c.name.toLowerCase(), c.id);
+    }
+    for (const ds of scanResult.dataStores) {
+      nameToId.set(ds.name.toLowerCase(), ds.id);
+    }
+    for (const ext of scanResult.externalServices) {
+      nameToId.set(ext.name.toLowerCase(), ext.id);
+    }
+    if (scanResult.profileActors) {
+      for (const actor of scanResult.profileActors) {
+        nameToId.set(actor.name.toLowerCase(), personId(actor.name));
+      }
+    }
+
+    for (const rel of scanResult.profileRelationships) {
+      const sourceId = this.resolveNameToId(rel.source, nameToId);
+      const targetId = this.resolveNameToId(rel.target, nameToId);
+
+      if (!sourceId || !targetId) continue;
+      if (sourceId === targetId) continue;
+
+      const edgeKey = `${sourceId}->${targetId}`;
+      if (seen.has(edgeKey)) continue;
+      seen.add(edgeKey);
+
+      // Determine c4Level based on source/target types
+      const c4Level = this.determineEdgeLevel(sourceId);
+
+      edges.push({
+        id: `edge:${this.slug(sourceId)}-to-${this.slug(targetId)}`,
+        source: sourceId,
+        target: targetId,
+        label: rel.label,
+        technology: rel.technology,
+        c4Level,
+        tags: rel.tags,
+      });
+    }
+
+    return edges;
+  }
+
+  private resolveNameToId(name: string, nameToId: Map<string, string>): string | null {
+    // Exact match (case-insensitive)
+    const lower = name.toLowerCase();
+    const exact = nameToId.get(lower);
+    if (exact) return exact;
+
+    // Fuzzy match: check if any key contains the name or vice versa
+    for (const [key, id] of nameToId) {
+      if (key.includes(lower) || lower.includes(key)) {
+        return id;
+      }
+    }
+
+    return null;
+  }
+
+  private determineEdgeLevel(sourceId: string): C4Level {
+    if (sourceId.startsWith('person:') || sourceId.startsWith('system:') || sourceId.startsWith('external:')) {
+      return 'context';
+    }
+    if (sourceId.startsWith('component:')) {
+      return 'component';
+    }
+    return 'container';
+  }
 
   /**
    * Infer container-level edges from docker-compose dependencies, env vars, and shared infrastructure.

@@ -132,6 +132,22 @@ export interface ScanResult {
   containerMeta: ContainerMeta[];
   dataStores: DataStoreMeta[];
   externalServices: ExternalServiceMeta[];
+  profileRelationships?: ProfileRelationship[];  // from LLM profile
+  profileActors?: ProfileActor[];                // from LLM profile
+}
+
+export interface ProfileRelationship {
+  source: string;
+  target: string;
+  label: string;
+  technology: string;
+  tags: string[];
+}
+
+export interface ProfileActor {
+  name: string;
+  scope: 'internal' | 'external';
+  description: string;
 }
 
 export interface SystemMeta {

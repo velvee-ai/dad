@@ -13,6 +13,8 @@ import { ComponentGrouper } from '../grouper/ComponentGrouper';
 import { DadFileAssembler } from '../assembler/DadFileAssembler';
 import { LLMEnricher } from '../enrichment/LLMEnricher';
 import { StaticEnricher } from '../enrichment/StaticEnricher';
+import { ProjectProfiler } from '../profiler/ProjectProfiler';
+import { ProfileToScanResult } from '../profiler/ProfileToScanResult';
 
 /**
  * Main pipeline orchestrator: scan → analyze → group → assemble → enrich.
@@ -28,10 +30,31 @@ export class Pipeline {
    * Run the full pipeline and produce a DadFileSet.
    */
   async run(): Promise<DadFileSet> {
-    // Stage 1: Scan filesystem
-    this.progress('scan', 'Scanning project filesystem...', 0);
-    const scanner = new FilesystemScanner();
-    const scanResult = await scanner.scan(this.config.rootPath);
+    let scanResult: ScanResult;
+
+    // Stage 0: LLM-driven project profiling (when provider available)
+    if (this.config.llmProvider) {
+      this.progress('profile', 'Analyzing project structure with LLM...', 0);
+      const profiler = new ProjectProfiler(this.config.llmProvider);
+      const profile = await profiler.profile(this.config.rootPath);
+
+      if (profile) {
+        this.progress('profile', 'Converting profile to scan result...', 10);
+        const converter = new ProfileToScanResult();
+        scanResult = await converter.convert(profile, this.config.rootPath);
+        this.progress('profile', `Profile: ${scanResult.containerMeta.length} containers, ${scanResult.dataStores.length} data stores`, 15);
+      } else {
+        // LLM profiling failed — fall back to heuristic scan
+        this.progress('scan', 'Profile failed, falling back to heuristic scan...', 0);
+        const scanner = new FilesystemScanner();
+        scanResult = await scanner.scan(this.config.rootPath);
+      }
+    } else {
+      // No LLM — use heuristic scan
+      this.progress('scan', 'Scanning project filesystem...', 0);
+      const scanner = new FilesystemScanner();
+      scanResult = await scanner.scan(this.config.rootPath);
+    }
 
     if (this.config.projectName) {
       scanResult.projectName = this.config.projectName;
