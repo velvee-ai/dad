@@ -12,7 +12,7 @@ pnpm add @dad/diagram-schema@workspace:*
 
 - Zod schemas for runtime validation
 - Type-safe validators
-- Format converters (D2, Mermaid, JSON)
+- Format converters (JSON)
 - Type guards
 
 ## Usage
@@ -38,13 +38,7 @@ if (isDiagram(data)) {
 ### Format Conversion
 
 ```typescript
-import { toD2, toMermaid, toJSON, fromJSON } from '@dad/diagram-schema';
-
-// Convert to D2 format
-const d2Code = toD2(diagram);
-
-// Convert to Mermaid format
-const mermaidCode = toMermaid(diagram);
+import { toJSON, fromJSON } from '@dad/diagram-schema';
 
 // Convert to JSON
 const json = toJSON(diagram);
@@ -61,7 +55,5 @@ const diagram = fromJSON(jsonString);
 - `isDiagram(data)` - Type guard for Diagram
 - `isNode(data)` - Type guard for DiagramNode
 - `isEdge(data)` - Type guard for DiagramEdge
-- `toD2(diagram)` - Convert to D2 format
-- `toMermaid(diagram)` - Convert to Mermaid format
 - `toJSON(diagram)` - Convert to JSON string
 - `fromJSON(json)` - Parse from JSON string
