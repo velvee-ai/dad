@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { Pipeline, LandscapeAggregator, ClaudeProvider } from '@dad/pipeline';
-import type { LLMProvider } from '@dad/pipeline';
 import { DadStorage, type DadFileSetInput } from '@dad/generation';
 import { FlowVisualizerProvider } from './extension/providers/FlowVisualizerProvider';
 import type { DadFile } from '@dad/shared-types';
@@ -69,18 +68,10 @@ export function activate(context: vscode.ExtensionContext) {
         },
         async (progress) => {
           try {
-            // Create LLM provider for Stage 0 profiling + Stage 5 enrichment
-            const config = vscode.workspace.getConfiguration('dad');
-            const apiKey = config.get<string>('anthropicApiKey');
-            let llmProvider: LLMProvider | undefined;
-            if (apiKey) {
-              llmProvider = new ClaudeProvider(apiKey, 'claude-sonnet-4-5-20250929', 16384);
-            }
-
             const pipeline = new Pipeline({
               rootPath,
               projectName,
-              llmProvider,
+              llmProvider: new ClaudeProvider(undefined, 'claude-sonnet-4-5-20250929', 16384),
               onProgress: (_stage, message, percent) => {
                 progress.report({ message, increment: percent });
               },

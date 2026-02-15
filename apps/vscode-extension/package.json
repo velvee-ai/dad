@@ -42,16 +42,6 @@
         "title": "DAD: Generate Landscape"
       }
     ],
-    "configuration": {
-      "title": "DAD - Diagram as a Delivery",
-      "properties": {
-        "dad.anthropicApiKey": {
-          "type": "string",
-          "default": "",
-          "description": "Anthropic API key for LLM-driven project profiling (Stage 0) and enrichment (Stage 5). Leave empty to use heuristic-only analysis."
-        }
-      }
-    },
     "menus": {
       "explorer/context": [
         {
