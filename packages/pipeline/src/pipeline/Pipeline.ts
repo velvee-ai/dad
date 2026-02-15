@@ -31,6 +31,7 @@ export class Pipeline {
    */
   async run(): Promise<DadFileSet> {
     let scanResult: ScanResult;
+    let profileSucceeded = false;
 
     // Stage 0: LLM-driven project profiling (when provider available)
     if (this.config.llmProvider) {
@@ -39,6 +40,7 @@ export class Pipeline {
       const profile = await profiler.profile(this.config.rootPath);
 
       if (profile) {
+        profileSucceeded = true;
         this.progress('profile', 'Converting profile to scan result...', 10);
         const converter = new ProfileToScanResult();
         scanResult = await converter.convert(profile, this.config.rootPath);
@@ -134,14 +136,14 @@ export class Pipeline {
     staticEnricher.enrich(dadFileSet, scanResult, components);
     this.progress('static-enrich', 'Static enrichment complete', 80);
 
-    // Stage 5: LLM enrichment (if provider is available)
-    if (this.config.llmProvider) {
+    // Stage 5: LLM enrichment (only when profile was NOT used — profile already provides descriptions)
+    if (this.config.llmProvider && !profileSucceeded) {
       this.progress('enrich', 'Enriching with LLM descriptions...', 80);
       const enricher = new LLMEnricher(this.config.llmProvider);
       await enricher.enrich(dadFileSet, scanResult);
       this.progress('enrich', 'Enrichment complete', 100);
     } else {
-      this.progress('enrich', 'Skipping LLM enrichment (no provider)', 100);
+      this.progress('enrich', profileSucceeded ? 'Skipping LLM enrichment (profile provided descriptions)' : 'Skipping LLM enrichment (no provider)', 100);
     }
 
     return dadFileSet;
