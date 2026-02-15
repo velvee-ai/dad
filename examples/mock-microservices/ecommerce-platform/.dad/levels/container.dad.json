@@ -2,19 +2,41 @@
   "version": "1.0",
   "metadata": {
     "projectName": "ecommerce-platform",
-    "generatedAt": "2026-02-07T20:41:20.338Z",
+    "generatedAt": "2026-02-15T06:00:46.618Z",
     "generatedBy": "dad-pipeline/0.0.1",
-    "totalNodes": 11,
+    "totalNodes": 8,
     "totalEdges": 10
   },
   "nodes": [
+    {
+      "id": "container:api-gateway",
+      "c4Level": "container",
+      "name": "Api Gateway",
+      "type": "container",
+      "designSpec": "element:\n  type: container\n  name: Api Gateway\n  description: Provides intercepts and processes requests in the middleware pipeline and related capabilities\n  technology: TypeScript/Express\n  responsibilities:\n    - Intercepts and processes requests in the middleware pipeline\n    - Defines API route endpoints and request handling\n  dependencies:\n    - User Service\n    - Order Service\n    - Redis",
+      "documentation": "# Api Gateway\n\nProvides intercepts and processes requests in the middleware pipeline and related capabilities.\n\n## Components\n- **Auth Middleware** (middleware)\n- **Rate Limiter** (middleware)\n- **Auth** (route)\n- **Orders** (route)\n- **Products** (route)\n\n## Responsibilities\n- Intercepts and processes requests in the middleware pipeline\n- Defines API route endpoints and request handling",
+      "sourceMapping": {
+        "filePath": "ecommerce-platform/services/api-gateway",
+        "language": "typescript"
+      },
+      "parentId": "system:ecommerce-platform",
+      "childIds": [
+        "component:authmiddleware",
+        "component:ratelimiter",
+        "component:auth",
+        "component:orders",
+        "component:products"
+      ],
+      "technology": "TypeScript/Express",
+      "tags": []
+    },
     {
       "id": "container:order-service",
       "c4Level": "container",
       "name": "Order Service",
       "type": "container",
-      "designSpec": "",
-      "documentation": "Order Service container",
+      "designSpec": "element:\n  type: container\n  name: Order Service\n  description: Provides handles incoming http requests and delegates to service components and related capabilities\n  technology: TypeScript/Express\n  responsibilities:\n    - Handles incoming HTTP requests and delegates to service components\n    - Manages event definitions and event-driven communication\n    - Defines data structures and domain models\n    - Contains business logic and orchestrates operations\n  dependencies:\n    - PostgreSQL\n    - Stripe\n    - Notification Service",
+      "documentation": "# Order Service\n\nProvides handles incoming http requests and delegates to service components and related capabilities.\n\n## Components\n- **Order Controller** (controller)\n- **Order Events** (event)\n- **Order** (model)\n- **Order Service** (service)\n- **Payment Service** (service)\n\n## Responsibilities\n- Handles incoming HTTP requests and delegates to service components\n- Manages event definitions and event-driven communication\n- Defines data structures and domain models\n- Contains business logic and orchestrates operations",
       "sourceMapping": {
         "filePath": "ecommerce-platform/services/order-service",
         "language": "typescript"
@@ -35,8 +57,8 @@
       "c4Level": "container",
       "name": "User Service",
       "type": "container",
-      "designSpec": "",
-      "documentation": "User Service container",
+      "designSpec": "element:\n  type: container\n  name: User Service\n  description: Provides handles incoming http requests and delegates to service components and related capabilities\n  technology: TypeScript/Express\n  responsibilities:\n    - Handles incoming HTTP requests and delegates to service components\n    - Defines data structures and domain models\n    - Manages data access and persistence operations\n    - Contains business logic and orchestrates operations\n  dependencies:\n    - PostgreSQL\n    - Notification Service",
+      "documentation": "# User Service\n\nProvides handles incoming http requests and delegates to service components and related capabilities.\n\n## Components\n- **User Controller** (controller)\n- **User** (model)\n- **User Repository** (repository)\n- **Email Service** (service)\n- **User Service** (service)\n\n## Responsibilities\n- Handles incoming HTTP requests and delegates to service components\n- Defines data structures and domain models\n- Manages data access and persistence operations\n- Contains business logic and orchestrates operations",
       "sourceMapping": {
         "filePath": "ecommerce-platform/services/user-service",
         "language": "typescript"
@@ -53,34 +75,12 @@
       "tags": []
     },
     {
-      "id": "container:api-gateway",
-      "c4Level": "container",
-      "name": "Api Gateway",
-      "type": "container",
-      "designSpec": "",
-      "documentation": "Api Gateway container",
-      "sourceMapping": {
-        "filePath": "ecommerce-platform/services/api-gateway",
-        "language": "typescript"
-      },
-      "parentId": "system:ecommerce-platform",
-      "childIds": [
-        "component:authmiddleware",
-        "component:ratelimiter",
-        "component:auth",
-        "component:orders",
-        "component:products"
-      ],
-      "technology": "TypeScript/Express",
-      "tags": []
-    },
-    {
       "id": "container:notification-service",
       "c4Level": "container",
       "name": "Notification Service",
       "type": "container",
-      "designSpec": "",
-      "documentation": "Notification Service container",
+      "designSpec": "element:\n  type: container\n  name: Notification Service\n  description: Provides processes events or messages and related capabilities\n  technology: Python/Kafka\n  responsibilities:\n    - Processes events or messages\n  dependencies:\n    - SendGrid\n    - Twilio",
+      "documentation": "# Notification Service\n\nProvides processes events or messages and related capabilities.\n\n## Components\n- **Email Handler** (handler)\n- **Sms Handler** (handler)\n\n## Responsibilities\n- Processes events or messages",
       "sourceMapping": {
         "filePath": "ecommerce-platform/services/notification-service",
         "language": "python"
@@ -98,8 +98,8 @@
       "c4Level": "container",
       "name": "Shared",
       "type": "container",
-      "designSpec": "",
-      "documentation": "Shared container",
+      "designSpec": "element:\n  type: container\n  name: Shared\n  description: Provides manages event definitions and event-driven communication and related capabilities\n  technology: TypeScript\n  responsibilities:\n    - Manages event definitions and event-driven communication",
+      "documentation": "# Shared\n\nProvides manages event definitions and event-driven communication and related capabilities.\n\n## Components\n- **Schemas** (event)\n\n## Responsibilities\n- Manages event definitions and event-driven communication",
       "sourceMapping": {
         "filePath": "ecommerce-platform/services/shared",
         "language": "typescript"
@@ -116,8 +116,8 @@
       "c4Level": "container",
       "name": "PostgreSQL",
       "type": "dataStore",
-      "designSpec": "",
-      "documentation": "PostgreSQL data store",
+      "designSpec": "element:\n  type: dataStore\n  name: PostgreSQL\n  description: PostgreSQL 15 data store\n  technology: PostgreSQL 15",
+      "documentation": "# PostgreSQL\n\nA PostgreSQL 15 data store used by Order Service, User Service.",
       "parentId": "system:ecommerce-platform",
       "childIds": [],
       "technology": "PostgreSQL 15",
@@ -130,8 +130,8 @@
       "c4Level": "container",
       "name": "Redis",
       "type": "dataStore",
-      "designSpec": "",
-      "documentation": "Redis data store",
+      "designSpec": "element:\n  type: dataStore\n  name: Redis\n  description: Redis 7 data store\n  technology: Redis 7",
+      "documentation": "# Redis\n\nA Redis 7 data store used by Api Gateway.",
       "parentId": "system:ecommerce-platform",
       "childIds": [],
       "technology": "Redis 7",
@@ -144,80 +144,17 @@
       "c4Level": "container",
       "name": "Kafka",
       "type": "dataStore",
-      "designSpec": "",
-      "documentation": "Kafka data store",
+      "designSpec": "element:\n  type: dataStore\n  name: Kafka\n  description: Apache Kafka 7.5.0 data store\n  technology: Apache Kafka 7.5.0",
+      "documentation": "# Kafka\n\nA Apache Kafka 7.5.0 data store.",
       "parentId": "system:ecommerce-platform",
       "childIds": [],
       "technology": "Apache Kafka 7.5.0",
       "tags": [
         "database"
       ]
-    },
-    {
-      "id": "external:stripe",
-      "name": "Stripe",
-      "type": "externalSystem",
-      "c4Level": "context",
-      "designSpec": "",
-      "documentation": "",
-      "childIds": [],
-      "boundary": true
-    },
-    {
-      "id": "external:sendgrid",
-      "name": "SendGrid",
-      "type": "externalSystem",
-      "c4Level": "context",
-      "designSpec": "",
-      "documentation": "",
-      "childIds": [],
-      "boundary": true
-    },
-    {
-      "id": "external:twilio",
-      "name": "Twilio",
-      "type": "externalSystem",
-      "c4Level": "context",
-      "designSpec": "",
-      "documentation": "",
-      "childIds": [],
-      "boundary": true
     }
   ],
   "edges": [
-    {
-      "id": "edge:order-service-to-postgresql",
-      "source": "container:order-service",
-      "target": "datastore:postgresql",
-      "label": "Reads/writes data",
-      "technology": "PostgreSQL protocol",
-      "c4Level": "container",
-      "tags": [
-        "data"
-      ]
-    },
-    {
-      "id": "edge:order-service-to-stripe",
-      "source": "container:order-service",
-      "target": "external:stripe",
-      "label": "Uses Stripe",
-      "technology": "REST/HTTPS (Stripe API)",
-      "c4Level": "container",
-      "tags": [
-        "external"
-      ]
-    },
-    {
-      "id": "edge:user-service-to-postgresql",
-      "source": "container:user-service",
-      "target": "datastore:postgresql",
-      "label": "Reads/writes data",
-      "technology": "PostgreSQL protocol",
-      "c4Level": "container",
-      "tags": [
-        "data"
-      ]
-    },
     {
       "id": "edge:api-gateway-to-user-service",
       "source": "container:api-gateway",
@@ -249,6 +186,39 @@
       "c4Level": "container",
       "tags": [
         "cache"
+      ]
+    },
+    {
+      "id": "edge:order-service-to-postgresql",
+      "source": "container:order-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
+      ]
+    },
+    {
+      "id": "edge:order-service-to-stripe",
+      "source": "container:order-service",
+      "target": "external:stripe",
+      "label": "Uses Stripe",
+      "technology": "REST/HTTPS (Stripe API)",
+      "c4Level": "container",
+      "tags": [
+        "external"
+      ]
+    },
+    {
+      "id": "edge:user-service-to-postgresql",
+      "source": "container:user-service",
+      "target": "datastore:postgresql",
+      "label": "Reads/writes data",
+      "technology": "PostgreSQL protocol",
+      "c4Level": "container",
+      "tags": [
+        "data"
       ]
     },
     {

@@ -1,14 +1,14 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-02-07T20:38:44.496Z",
+  "generatedAt": "2026-02-15T06:01:14.320Z",
   "projectName": "internal-tools",
   "landscapeFile": "levels/context.dad.json",
-  "nodeCount": 5,
+  "nodeCount": 4,
   "edgeCount": 1,
   "levels": {
     "context": {
       "file": "levels/context.dad.json",
-      "nodeCount": 4,
+      "nodeCount": 3,
       "edgeCount": 1
     },
     "container": {
@@ -27,6 +27,6 @@
       "edgeCount": 0
     }
   },
-  "totalNodes": 5,
+  "totalNodes": 4,
   "totalEdges": 1
 }

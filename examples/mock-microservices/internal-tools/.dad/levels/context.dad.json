@@ -2,9 +2,9 @@
   "version": "1.0",
   "metadata": {
     "projectName": "internal-tools",
-    "generatedAt": "2026-02-07T20:38:44.496Z",
+    "generatedAt": "2026-02-15T06:01:14.320Z",
     "generatedBy": "dad-pipeline/0.0.1",
-    "totalNodes": 4,
+    "totalNodes": 3,
     "totalEdges": 1
   },
   "nodes": [
@@ -13,8 +13,8 @@
       "c4Level": "context",
       "name": "Internal Tools",
       "type": "softwareSystem",
-      "designSpec": "",
-      "documentation": "Internal Tools software system",
+      "designSpec": "element:\n  type: softwareSystem\n  name: Internal Tools\n  description: Software system comprising 1 service and 0 data stores\n  technology: TypeScript/React\n  containers:\n    - Admin Dashboard",
+      "documentation": "# Internal Tools\n\nSoftware system comprising 1 service and 0 data stores.\n\n## Services\n- **Admin Dashboard** (TypeScript/React)",
       "parentId": null,
       "childIds": [
         "container:admin-dashboard"
@@ -27,7 +27,7 @@
       "c4Level": "context",
       "name": "Customer",
       "type": "person",
-      "designSpec": "",
+      "designSpec": "element:\n  type: person\n  name: Customer\n  description: End user who interacts with the system through a web browser or mobile app.\n  scope: external",
       "documentation": "End user who interacts with the system through a web browser or mobile app.",
       "parentId": null,
       "childIds": [],
@@ -41,7 +41,7 @@
       "c4Level": "context",
       "name": "Admin User",
       "type": "person",
-      "designSpec": "",
+      "designSpec": "element:\n  type: person\n  name: Admin User\n  description: Internal administrator who manages the platform via admin tools.\n  scope: internal",
       "documentation": "Internal administrator who manages the platform via admin tools.",
       "parentId": null,
       "childIds": [],
@@ -49,16 +49,6 @@
       "tags": [
         "internal-person"
       ]
-    },
-    {
-      "id": "container:admin-dashboard",
-      "name": "Admin Dashboard",
-      "type": "container",
-      "c4Level": "container",
-      "designSpec": "",
-      "documentation": "",
-      "childIds": [],
-      "boundary": true
     }
   ],
   "edges": [

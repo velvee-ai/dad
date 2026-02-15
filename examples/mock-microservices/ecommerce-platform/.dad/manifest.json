@@ -1,9 +1,9 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-02-07T20:41:20.338Z",
+  "generatedAt": "2026-02-15T06:00:46.618Z",
   "projectName": "ecommerce-platform",
   "landscapeFile": "levels/context.dad.json",
-  "nodeCount": 36,
+  "nodeCount": 30,
   "edgeCount": 32,
   "levels": {
     "context": {
@@ -13,12 +13,12 @@
     },
     "container": {
       "file": "levels/container.dad.json",
-      "nodeCount": 11,
+      "nodeCount": 8,
       "edgeCount": 10
     },
     "component": {
       "file": "levels/component.dad.json",
-      "nodeCount": 21,
+      "nodeCount": 18,
       "edgeCount": 22
     },
     "code": {
@@ -27,6 +27,6 @@
       "edgeCount": 0
     }
   },
-  "totalNodes": 36,
+  "totalNodes": 30,
   "totalEdges": 32
 }
