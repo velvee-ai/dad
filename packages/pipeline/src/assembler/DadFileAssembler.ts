@@ -8,8 +8,9 @@ import type {
   ComponentGroup,
   AnalyzedFile,
   DadFileSet,
+  ProfileActor,
 } from '../types';
-import { codeUnitId } from './IdGenerator';
+import { codeUnitId, personId } from './IdGenerator';
 import { EdgeInference } from './EdgeInference';
 import { PersonDetector } from './PersonDetector';
 import { ViewsStylesGenerator } from './ViewsStylesGenerator';
@@ -37,10 +38,19 @@ export class DadFileAssembler {
     const componentNodes = this.buildComponentNodes(components);
     const codeNodes = this.buildCodeNodes(analyzedFiles, components);
 
-    // Detect persons heuristically
-    const detectedPersons = this.personDetector.detect(scanResult);
-    const personNodes = detectedPersons.map(p => p.node);
-    const personEdges = detectedPersons.flatMap(p => p.edges);
+    // Detect persons: use profile actors if available, otherwise heuristic detection
+    let personNodes: DadNode[];
+    let personEdges: DadEdge[];
+
+    if (scanResult.profileActors?.length) {
+      const profilePersons = this.buildPersonsFromProfile(scanResult.profileActors, scanResult);
+      personNodes = profilePersons.map(p => p.node);
+      personEdges = profilePersons.flatMap(p => p.edges);
+    } else {
+      const detectedPersons = this.personDetector.detect(scanResult);
+      personNodes = detectedPersons.map(p => p.node);
+      personEdges = detectedPersons.flatMap(p => p.edges);
+    }
 
     // Update childIds for context nodes
     for (const sys of scanResult.systems) {
@@ -54,7 +64,15 @@ export class DadFileAssembler {
     }
 
     // Build edges
-    const containerEdges = this.edgeInference.inferContainerEdges(scanResult);
+    // Profile edges take priority over heuristic edges when available
+    const profileEdges = this.edgeInference.inferEdgesFromProfile(scanResult);
+    const containerEdges = profileEdges.length > 0
+      ? profileEdges.filter(e => e.c4Level === 'container')
+      : this.edgeInference.inferContainerEdges(scanResult);
+    const contextEdges = profileEdges.length > 0
+      ? profileEdges.filter(e => e.c4Level === 'context')
+      : this.edgeInference.inferContextEdges(scanResult);
+
     // Use LSP-based import edges when imports are available; fall back to role-based heuristics
     const hasImports = analyzedFiles.some(f => f.imports.length > 0);
     const importEdges = hasImports
@@ -67,7 +85,6 @@ export class DadFileAssembler {
       ...importEdges,
       ...roleEdges.filter(e => !importEdgeKeys.has(`${e.source}->${e.target}`)),
     ];
-    const contextEdges = this.edgeInference.inferContextEdges(scanResult);
 
     const allNodes = [...contextNodes, ...personNodes, ...containerNodes, ...componentNodes, ...codeNodes];
     const allEdges = [...contextEdges, ...personEdges, ...containerEdges, ...componentEdges];
@@ -92,6 +109,31 @@ export class DadFileAssembler {
         styles,
       },
     };
+  }
+
+  private buildPersonsFromProfile(
+    actors: ProfileActor[],
+    scanResult: ScanResult
+  ): Array<{ node: DadNode; edges: DadEdge[] }> {
+    return actors.map(actor => {
+      const id = personId(actor.name);
+      const node: DadNode = {
+        id,
+        c4Level: 'context',
+        name: actor.name,
+        type: 'person',
+        designSpec: '',
+        documentation: actor.description,
+        parentId: null,
+        childIds: [],
+        scope: actor.scope,
+        tags: [actor.scope === 'external' ? 'external-person' : 'internal-person'],
+      };
+
+      // Edges from actors to containers come from profileRelationships
+      // (handled by EdgeInference.inferEdgesFromProfile)
+      return { node, edges: [] };
+    });
   }
 
   private buildContextNodes(scanResult: ScanResult): DadNode[] {

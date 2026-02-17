@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { Pipeline, LandscapeAggregator } from '@dad/pipeline';
+import * as fs from 'fs';
+import { Pipeline, LandscapeAggregator, ClaudeProvider } from '@dad/pipeline';
 import { DadStorage, type DadFileSetInput } from '@dad/generation';
 import { FlowVisualizerProvider } from './extension/providers/FlowVisualizerProvider';
 import type { DadFile } from '@dad/shared-types';
@@ -60,6 +61,23 @@ export function activate(context: vscode.ExtensionContext) {
       const rootPath = uri.fsPath;
       const projectName = path.basename(rootPath);
 
+      // Check for cached profile and let user choose
+      const profilePath = path.join(rootPath, '.dad', 'profile.json');
+      const hasCache = fs.existsSync(profilePath);
+
+      let forceReprofile = false;
+      if (hasCache) {
+        const choice = await vscode.window.showQuickPick(
+          [
+            { label: 'Use cached profile', description: 'Fast (~30 sec)', value: 'cached' },
+            { label: 'Re-analyze with AI', description: 'Regenerate profile from scratch (~3-5 min)', value: 'reprofile' },
+          ],
+          { placeHolder: 'A project profile already exists (.dad/profile.json)' }
+        );
+        if (!choice) return; // User cancelled
+        forceReprofile = choice.value === 'reprofile';
+      }
+
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
@@ -71,6 +89,8 @@ export function activate(context: vscode.ExtensionContext) {
             const pipeline = new Pipeline({
               rootPath,
               projectName,
+              llmProvider: new ClaudeProvider(undefined, 'claude-sonnet-4-5-20250929', 16384),
+              forceReprofile,
               onProgress: (_stage, message, percent) => {
                 progress.report({ message, increment: percent });
               },

@@ -22,6 +22,13 @@ export { PersonDetector } from './assembler/PersonDetector';
 export { ViewsStylesGenerator } from './assembler/ViewsStylesGenerator';
 export * from './assembler/IdGenerator';
 
+// Profiler (Stage 0)
+export { ProjectProfiler } from './profiler/ProjectProfiler';
+export { SkeletonCollector } from './profiler/SkeletonCollector';
+export { ProfilePromptBuilder } from './profiler/ProfilePromptBuilder';
+export { ProfileToScanResult } from './profiler/ProfileToScanResult';
+export type { ProjectProfile, ProjectSkeleton } from './profiler/types';
+
 // Enrichment (Stage 4.5 + Stage 5)
 export { StaticEnricher } from './enrichment/StaticEnricher';
 export { LLMEnricher } from './enrichment/LLMEnricher';
@@ -69,4 +76,6 @@ export type {
   DadViews,
   DadStyles,
   StyleRule,
+  ProfileRelationship,
+  ProfileActor,
 } from './types';

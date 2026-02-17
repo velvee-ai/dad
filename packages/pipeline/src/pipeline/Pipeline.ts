@@ -13,6 +13,8 @@ import { ComponentGrouper } from '../grouper/ComponentGrouper';
 import { DadFileAssembler } from '../assembler/DadFileAssembler';
 import { LLMEnricher } from '../enrichment/LLMEnricher';
 import { StaticEnricher } from '../enrichment/StaticEnricher';
+import { ProjectProfiler } from '../profiler/ProjectProfiler';
+import { ProfileToScanResult } from '../profiler/ProfileToScanResult';
 
 /**
  * Main pipeline orchestrator: scan → analyze → group → assemble → enrich.
@@ -28,10 +30,49 @@ export class Pipeline {
    * Run the full pipeline and produce a DadFileSet.
    */
   async run(): Promise<DadFileSet> {
-    // Stage 1: Scan filesystem
-    this.progress('scan', 'Scanning project filesystem...', 0);
-    const scanner = new FilesystemScanner();
-    const scanResult = await scanner.scan(this.config.rootPath);
+    let scanResult: ScanResult;
+    let profileSucceeded = false;
+
+    // Stage 0: Try cached profile first, then LLM, then heuristic scan
+    const cachedProfile = this.config.forceReprofile
+      ? null
+      : ProjectProfiler.loadCached(this.config.rootPath);
+
+    if (cachedProfile) {
+      // Fast path: use cached .dad/profile.json
+      this.progress('profile', 'Loading cached project profile...', 0);
+      profileSucceeded = true;
+      const converter = new ProfileToScanResult();
+      scanResult = await converter.convert(cachedProfile, this.config.rootPath);
+      this.progress('profile', `Cached profile: ${scanResult.containerMeta.length} containers, ${scanResult.dataStores.length} data stores`, 15);
+
+    } else if (this.config.llmProvider) {
+      // Slow path: LLM profiling
+      this.progress('profile', 'Analyzing project structure with LLM...', 0);
+      const profiler = new ProjectProfiler(this.config.llmProvider);
+      const profile = await profiler.profile(this.config.rootPath);
+
+      if (profile) {
+        profileSucceeded = true;
+        // Save for future runs
+        ProjectProfiler.saveProfile(this.config.rootPath, profile);
+        this.progress('profile', 'Profile saved to .dad/profile.json', 10);
+        const converter = new ProfileToScanResult();
+        scanResult = await converter.convert(profile, this.config.rootPath);
+        this.progress('profile', `Profile: ${scanResult.containerMeta.length} containers, ${scanResult.dataStores.length} data stores`, 15);
+      } else {
+        // LLM profiling failed — fall back to heuristic scan
+        this.progress('scan', 'Profile failed, falling back to heuristic scan...', 0);
+        const scanner = new FilesystemScanner();
+        scanResult = await scanner.scan(this.config.rootPath);
+      }
+
+    } else {
+      // No LLM — use heuristic scan
+      this.progress('scan', 'Scanning project filesystem...', 0);
+      const scanner = new FilesystemScanner();
+      scanResult = await scanner.scan(this.config.rootPath);
+    }
 
     if (this.config.projectName) {
       scanResult.projectName = this.config.projectName;
@@ -111,14 +152,14 @@ export class Pipeline {
     staticEnricher.enrich(dadFileSet, scanResult, components);
     this.progress('static-enrich', 'Static enrichment complete', 80);
 
-    // Stage 5: LLM enrichment (if provider is available)
-    if (this.config.llmProvider) {
+    // Stage 5: LLM enrichment (only when profile was NOT used — profile already provides descriptions)
+    if (this.config.llmProvider && !profileSucceeded) {
       this.progress('enrich', 'Enriching with LLM descriptions...', 80);
       const enricher = new LLMEnricher(this.config.llmProvider);
       await enricher.enrich(dadFileSet, scanResult);
       this.progress('enrich', 'Enrichment complete', 100);
     } else {
-      this.progress('enrich', 'Skipping LLM enrichment (no provider)', 100);
+      this.progress('enrich', profileSucceeded ? 'Skipping LLM enrichment (profile provided descriptions)' : 'Skipping LLM enrichment (no provider)', 100);
     }
 
     return dadFileSet;
