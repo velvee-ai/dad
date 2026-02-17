@@ -128,6 +128,18 @@ export class ProfileToScanResult {
     };
   }
 
+  /**
+   * Find source files for a container.
+   *
+   * The pipeline contract is: sourceFiles are relative to container.path,
+   * so `path.resolve(rootPath, container.path, relFile)` must resolve to
+   * the actual file on disk.
+   *
+   * This is generic — it uses path.relative() to compute the real filesystem
+   * relationship between the container directory and each source file,
+   * producing correct relative paths regardless of repo layout (Polylith,
+   * Nx, monorepos with shared code, symlinks, etc.).
+   */
   private findSourceFiles(
     rootPath: string,
     containerPath: string,
@@ -135,24 +147,19 @@ export class ProfileToScanResult {
   ): string[] {
     const allFiles: string[] = [];
     const seen = new Set<string>();
+    const containerAbsDir = path.resolve(rootPath, containerPath);
 
     // Determine which directories to scan
     const dirsToScan = componentPaths.length > 0 ? componentPaths : ['.'];
 
     for (const compPath of dirsToScan) {
       // Try resolving relative to container path first, then relative to root
-      // This handles Polylith-style projects where componentPaths like
-      // "components/velvee/ask" are relative to workspace root, not the project dir
       let scanDir = path.resolve(rootPath, containerPath, compPath);
-      let effectivePath = compPath;
 
       if (!fs.existsSync(scanDir)) {
-        // Try relative to root path
         const rootRelative = path.resolve(rootPath, compPath);
         if (fs.existsSync(rootRelative)) {
           scanDir = rootRelative;
-          // Use path relative to root for file paths
-          effectivePath = compPath;
         } else {
           continue;
         }
@@ -179,9 +186,11 @@ export class ProfileToScanResult {
         });
 
         for (const file of files) {
-          const relativePath = effectivePath === '.'
-            ? file
-            : path.join(effectivePath, file);
+          // Compute absolute path of the found file
+          const fileAbsPath = path.resolve(scanDir, file);
+          // Compute path relative to the container directory
+          // This ensures path.resolve(rootPath, containerPath, relFile) === fileAbsPath
+          const relativePath = path.relative(containerAbsDir, fileAbsPath);
 
           if (!seen.has(relativePath)) {
             seen.add(relativePath);

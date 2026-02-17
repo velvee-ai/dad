@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import type { LLMProvider } from '../types';
 import type { ProjectProfile } from './types';
 import { SkeletonCollector } from './SkeletonCollector';
@@ -12,6 +14,50 @@ import { ProfilePromptBuilder } from './ProfilePromptBuilder';
  */
 export class ProjectProfiler {
   constructor(private llmProvider: LLMProvider) {}
+
+  /** Load cached profile from .dad/profile.json, or return null if missing/invalid. */
+  static loadCached(rootPath: string): ProjectProfile | null {
+    const profilePath = path.join(rootPath, '.dad', 'profile.json');
+    if (!fs.existsSync(profilePath)) return null;
+    try {
+      const content = fs.readFileSync(profilePath, 'utf-8');
+      const parsed = JSON.parse(content);
+      return ProjectProfiler.validateProfileStatic(parsed);
+    } catch {
+      return null;
+    }
+  }
+
+  /** Save profile to .dad/profile.json for future fast loads. */
+  static saveProfile(rootPath: string, profile: ProjectProfile): void {
+    const dadDir = path.join(rootPath, '.dad');
+    if (!fs.existsSync(dadDir)) {
+      fs.mkdirSync(dadDir, { recursive: true });
+    }
+    const profilePath = path.join(dadDir, 'profile.json');
+    fs.writeFileSync(profilePath, JSON.stringify(profile, null, 2));
+  }
+
+  private static validateProfileStatic(obj: unknown): ProjectProfile | null {
+    if (!obj || typeof obj !== 'object') return null;
+
+    const profile = obj as Record<string, unknown>;
+
+    if (!profile.system || typeof profile.system !== 'object') return null;
+    if (!Array.isArray(profile.containers)) return null;
+    if (profile.containers.length === 0) return null;
+
+    return {
+      system: profile.system as ProjectProfile['system'],
+      containers: profile.containers as ProjectProfile['containers'],
+      dataStores: Array.isArray(profile.dataStores) ? profile.dataStores as ProjectProfile['dataStores'] : [],
+      messageQueues: Array.isArray(profile.messageQueues) ? profile.messageQueues as ProjectProfile['messageQueues'] : [],
+      objectStores: Array.isArray(profile.objectStores) ? profile.objectStores as ProjectProfile['objectStores'] : [],
+      externalSystems: Array.isArray(profile.externalSystems) ? profile.externalSystems as ProjectProfile['externalSystems'] : [],
+      actors: Array.isArray(profile.actors) ? profile.actors as ProjectProfile['actors'] : [],
+      relationships: Array.isArray(profile.relationships) ? profile.relationships as ProjectProfile['relationships'] : [],
+    };
+  }
 
   async profile(rootPath: string): Promise<ProjectProfile | null> {
     // 1. Collect skeleton

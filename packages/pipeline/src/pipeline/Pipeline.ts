@@ -33,15 +33,30 @@ export class Pipeline {
     let scanResult: ScanResult;
     let profileSucceeded = false;
 
-    // Stage 0: LLM-driven project profiling (when provider available)
-    if (this.config.llmProvider) {
+    // Stage 0: Try cached profile first, then LLM, then heuristic scan
+    const cachedProfile = this.config.forceReprofile
+      ? null
+      : ProjectProfiler.loadCached(this.config.rootPath);
+
+    if (cachedProfile) {
+      // Fast path: use cached .dad/profile.json
+      this.progress('profile', 'Loading cached project profile...', 0);
+      profileSucceeded = true;
+      const converter = new ProfileToScanResult();
+      scanResult = await converter.convert(cachedProfile, this.config.rootPath);
+      this.progress('profile', `Cached profile: ${scanResult.containerMeta.length} containers, ${scanResult.dataStores.length} data stores`, 15);
+
+    } else if (this.config.llmProvider) {
+      // Slow path: LLM profiling
       this.progress('profile', 'Analyzing project structure with LLM...', 0);
       const profiler = new ProjectProfiler(this.config.llmProvider);
       const profile = await profiler.profile(this.config.rootPath);
 
       if (profile) {
         profileSucceeded = true;
-        this.progress('profile', 'Converting profile to scan result...', 10);
+        // Save for future runs
+        ProjectProfiler.saveProfile(this.config.rootPath, profile);
+        this.progress('profile', 'Profile saved to .dad/profile.json', 10);
         const converter = new ProfileToScanResult();
         scanResult = await converter.convert(profile, this.config.rootPath);
         this.progress('profile', `Profile: ${scanResult.containerMeta.length} containers, ${scanResult.dataStores.length} data stores`, 15);
@@ -51,6 +66,7 @@ export class Pipeline {
         const scanner = new FilesystemScanner();
         scanResult = await scanner.scan(this.config.rootPath);
       }
+
     } else {
       // No LLM — use heuristic scan
       this.progress('scan', 'Scanning project filesystem...', 0);

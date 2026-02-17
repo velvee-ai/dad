@@ -379,6 +379,8 @@ export interface PipelineConfig {
   projectName?: string;
   languageServiceAdapter?: LanguageServiceAdapter;
   llmProvider?: LLMProvider;
+  /** Skip cached profile and force a fresh LLM re-profile */
+  forceReprofile?: boolean;
   /** Progress callback */
   onProgress?: (stage: string, message: string, percent: number) => void;
 }
